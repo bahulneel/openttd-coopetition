@@ -15,6 +15,7 @@ on:
 permissions:
   contents: write
   packages: read
+  pull-requests: write
 
 # Ensure only one workflow runs at a time
 concurrency:
@@ -22,16 +23,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    # Explicitly specify the runner version for better stability
+  # First job: Get current version and increment it
+  increment-version:
     runs-on: ubuntu-22.04
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     outputs:
-      version: ${{ steps.get_version.outputs.version }}
+      current_version: ${{ steps.get_current_version.outputs.version }}
+      new_version: ${{ steps.increment_version.outputs.new_version }}
     steps:
-      - uses: actions/checkout@v5
-      
-      - name: Get version
-        id: get_version
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          
+      - name: Get current version
+        id: get_current_version
         run: |
           if [ -n "${{ github.event.inputs.version_override }}" ]; then
             echo "version=${{ github.event.inputs.version_override }}" >> $GITHUB_OUTPUT
@@ -42,12 +48,56 @@ jobs:
             echo "Using version from version.nut: $VERSION"
           fi
       
+      - name: Increment version
+        id: increment_version
+        run: |
+          # Calculate new version
+          NEW_VERSION=$((${{ steps.get_current_version.outputs.version }} + 1))
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Incrementing version from ${{ steps.get_current_version.outputs.version }} to $NEW_VERSION"
+      
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+      
+      - name: Update version.nut
+        run: |
+          # Update version.nut with new version
+          sed -i "s/COOPETITION_VERSION = ${{ steps.get_current_version.outputs.version }}/COOPETITION_VERSION = ${{ steps.increment_version.outputs.new_version }}/" version.nut
+          cat version.nut
+      
+      - name: Create branch for version increment
+        run: |
+          # Create a new branch for the version increment
+          BRANCH_NAME="release-v${{ steps.increment_version.outputs.new_version }}"
+          git checkout -b $BRANCH_NAME
+          git add version.nut
+          git commit -m "Increment version to v${{ steps.increment_version.outputs.new_version }}"
+          git push origin $BRANCH_NAME
+      
+      - name: Version Summary
+        run: |
+          echo "## Version Increment" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Incremented version from ${{ steps.get_current_version.outputs.version }} to ${{ steps.increment_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "🔀 Created branch release-v${{ steps.increment_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+  
+  # Second job: Build and release with the new version
+  build:
+    needs: increment-version
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v5
+        with:
+          ref: release-v${{ needs.increment-version.outputs.new_version }}
+      
       - name: Create dist directory
         run: mkdir -p dist
       
       - name: Package mod
         run: |
-          zip -r "dist/coopetition-v${{ steps.get_version.outputs.version }}.zip" \
+          zip -r "dist/coopetition-v${{ needs.increment-version.outputs.new_version }}.zip" \
             *.nut \
             LICENSE \
             README.md
@@ -55,7 +105,7 @@ jobs:
       - name: Validate zip file
         run: |
           echo "Validating zip file integrity..."
-          if unzip -t "dist/coopetition-v${{ steps.get_version.outputs.version }}.zip"; then
+          if unzip -t "dist/coopetition-v${{ needs.increment-version.outputs.new_version }}.zip"; then
             echo "✅ Zip file is valid"
           else
             echo "❌ Zip file validation failed"
@@ -73,8 +123,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*.zip
-          tag_name: v${{ steps.get_version.outputs.version }}
-          name: Coopetition v${{ steps.get_version.outputs.version }}
+          tag_name: v${{ needs.increment-version.outputs.new_version }}
+          name: Coopetition v${{ needs.increment-version.outputs.new_version }}
           draft: false
           prerelease: false
           generate_release_notes: true
@@ -84,63 +134,36 @@ jobs:
       - name: Build Summary
         run: |
           echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Successfully built and released Coopetition v${{ steps.get_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully built and released Coopetition v${{ needs.increment-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "📦 Release URL: ${{ steps.create_release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "📅 Released at: $(date)" >> $GITHUB_STEP_SUMMARY
-          
-  # Job to increment version and create PR back to develop
-  increment-version:
-    needs: build
+  
+  # Third job: Create PR back to develop
+  create-pr:
+    needs: [increment-version, build]
     runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-      pull-requests: write
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          
-      - name: Setup Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          
-      - name: Create branch for version increment
-        run: |
-          # Create a new branch for the version increment
-          NEW_VERSION=$((${{ needs.build.outputs.version }} + 1))
-          BRANCH_NAME="version-increment-${NEW_VERSION}"
-          git checkout -b $BRANCH_NAME
-          
-      - name: Update version number
-        run: |
-          # Increment the version number in version.nut
-          NEW_VERSION=$((${{ needs.build.outputs.version }} + 1))
-          sed -i "s/COOPETITION_VERSION = ${{ needs.build.outputs.version }}/COOPETITION_VERSION = ${NEW_VERSION}/" version.nut
-          
-      - name: Commit changes
-        run: |
-          git add version.nut
-          git commit -m "Increment version to v$((${{ needs.build.outputs.version }} + 1))"
-          git push origin HEAD
-          
+      
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.PAT_TOKEN }}
           base: develop
-          title: "Increment version to v$((${{ needs.build.outputs.version }} + 1))"
+          head: release-v${{ needs.increment-version.outputs.new_version }}
+          title: "Release v${{ needs.increment-version.outputs.new_version }}"
           body: |
-            This PR automatically increments the version number after release v${{ needs.build.outputs.version }}.
+            This PR merges the release v${{ needs.increment-version.outputs.new_version }} back to the develop branch.
             
             ## Changes
-            - Incremented version number from ${{ needs.build.outputs.version }} to $((${{ needs.build.outputs.version }} + 1))
+            - Incremented version number from ${{ needs.increment-version.outputs.current_version }} to ${{ needs.increment-version.outputs.new_version }}
+            - Created release v${{ needs.increment-version.outputs.new_version }}
           labels: version-bump, automated-pr
-          branch: version-increment-$((${{ needs.build.outputs.version }} + 1))
           
       - name: PR Summary
         run: |
-          echo "## Version Increment" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Created PR to increment version from ${{ needs.build.outputs.version }} to $((${{ needs.build.outputs.version }} + 1))" >> $GITHUB_STEP_SUMMARY
+          echo "## Pull Request" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Created PR to merge release-v${{ needs.increment-version.outputs.new_version }} to develop" >> $GITHUB_STEP_SUMMARY
