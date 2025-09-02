@@ -153,7 +153,7 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
           base: develop
-          head: release-v${{ needs.increment-version.outputs.new_version }}
+          branch: release-v${{ needs.increment-version.outputs.new_version }}
           title: "Release v${{ needs.increment-version.outputs.new_version }}"
           body: |
             This PR merges the release v${{ needs.increment-version.outputs.new_version }} back to the develop branch.
