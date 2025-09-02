@@ -151,7 +151,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           base: develop
           branch: release-v${{ needs.increment-version.outputs.new_version }}
           title: "Release v${{ needs.increment-version.outputs.new_version }}"
