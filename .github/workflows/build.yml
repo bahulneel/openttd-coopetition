@@ -1,18 +1,44 @@
 name: Build and Release
 
+# Trigger workflow on push to main branch or manual trigger
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      version_override:
+        description: 'Override version number (leave empty to use version.nut)'
+        required: false
+        type: string
+
+# Define permissions needed for GitHub releases
+permissions:
+  contents: write
+  packages: read
+
+# Ensure only one workflow runs at a time
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Explicitly specify the runner version for better stability
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       
       - name: Get version
         id: get_version
-        run: echo "version=$(grep -o 'COOPETITION_VERSION = [0-9]\+' version.nut | grep -o '[0-9]\+')" >> $GITHUB_OUTPUT
+        run: |
+          if [ -n "${{ github.event.inputs.version_override }}" ]; then
+            echo "version=${{ github.event.inputs.version_override }}" >> $GITHUB_OUTPUT
+            echo "Using manually provided version: ${{ github.event.inputs.version_override }}"
+          else
+            VERSION=$(grep -o 'COOPETITION_VERSION = [0-9]\+' version.nut | grep -o '[0-9]\+')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Using version from version.nut: $VERSION"
+          fi
       
       - name: Create dist directory
         run: mkdir -p dist
@@ -23,16 +49,26 @@ jobs:
             *.nut \
             LICENSE \
             README.md
+          
+      - name: Validate zip file
+        run: |
+          echo "Validating zip file integrity..."
+          if unzip -t "dist/coopetition-v${{ steps.get_version.outputs.version }}.zip"; then
+            echo "✅ Zip file is valid"
+          else
+            echo "❌ Zip file validation failed"
+            exit 1
+          fi
       
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coopetition-mod
           path: dist/*.zip
       
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: dist/*.zip
           tag_name: v${{ steps.get_version.outputs.version }}
@@ -42,3 +78,10 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build Summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully built and released Coopetition v${{ steps.get_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Release URL: ${{ steps.create_release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "📅 Released at: $(date)" >> $GITHUB_STEP_SUMMARY
