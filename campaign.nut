@@ -584,7 +584,7 @@ class Campaign {
     }
     
     /*
-     * Save campaign state to table for savegame
+     * Save campaign state to table for save game
      */
     function SaveToTable() {
         local data = {};
@@ -600,7 +600,7 @@ class Campaign {
     }
     
     /*
-     * Load campaign state from table (savegame)
+     * Load campaign state from table (save game)
      */
     static function LoadFromTable(data) {
         local campaign = Campaign();
