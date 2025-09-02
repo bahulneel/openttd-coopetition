@@ -69,11 +69,7 @@ class Campaign {
                     },
                     target = 500 // 500 units of cargo
                 },
-                {
-                    type = SharedGoalType.NETWORK_LENGTH,
-                    params = {},
-                    target = 100 // 100 tiles of network
-                }
+                // NETWORK_LENGTH goal removed due to portability concerns
             ],
             player_goals = [
                 {
@@ -146,9 +142,8 @@ class Campaign {
                     type = SharedGoalType.VEHICLE_COUNT,
                     params = {
                         vehicle_type = GSVehicle.VT_RAIL,
-                        target = 20 // 20 trains collectively
-                    },
-                    target = 20
+                        target = 20
+                    }
                 }
             ],
             player_goals = [
@@ -223,9 +218,7 @@ class Campaign {
                                      "Maintain high station ratings", goal_config.target);
                     break;
                     
-                case SharedGoalType.NETWORK_LENGTH:
-                    goal = SharedGoal.CreateNetworkLengthGoal(goal_config.target);
-                    break;
+                // NETWORK_LENGTH skipped
                     
                 case SharedGoalType.VEHICLE_COUNT:
                     goal = SharedGoal.CreateVehicleCountGoal(

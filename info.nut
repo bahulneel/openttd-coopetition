@@ -11,7 +11,7 @@ class Coopetition extends GSInfo {
     function GetDate()        { return "2023-06-01"; }
     function CreateInstance() { return "Coopetition"; }
     function GetShortName()   { return "COOP"; }
-    function GetAPIVersion()  { return "12"; }
+    function GetAPIVersion()  { return "1.2"; }
     function GetURL()         { return "https://github.com/bahulneel/openttd-coopetition"; }
     
     function GetSettings() {
@@ -43,4 +43,4 @@ class Coopetition extends GSInfo {
 }
 
 /* Register the class to make it available to the game */
-RegisterGSInfo(Coopetition());
+RegisterGS(Coopetition());

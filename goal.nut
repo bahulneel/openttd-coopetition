@@ -127,27 +127,7 @@ class SharedGoal {
                 }
                 break;
                 
-            case SharedGoalType.NETWORK_LENGTH:
-                // Calculate total network length across all companies
-                local total_length = 0;
-                local company_list = GSCompanyList();
-                
-                foreach (company_id, _ in company_list) {
-                    local rail_length = GSRail.GetTotalRailLength(company_id);
-                    local road_length = GSRoad.GetTotalRoadLength(company_id);
-                    
-                    local company_length = rail_length + road_length;
-                    total_length += company_length;
-                    
-                    // Track individual company contributions
-                    if (!(company_id in this.contributions)) {
-                        this.contributions[company_id] <- 0;
-                    }
-                    this.contributions[company_id] = company_length;
-                }
-                
-                this.current_progress = total_length;
-                break;
+            // NETWORK_LENGTH removed
                 
             case SharedGoalType.VEHICLE_COUNT:
                 // Count vehicles of specific type across all companies
@@ -312,13 +292,7 @@ class SharedGoal {
         return goal;
     }
     
-    static function CreateNetworkLengthGoal(target) {
-        local description = "Build a combined network of " + target + " tiles";
-        
-        local goal = SharedGoal(SharedGoalType.NETWORK_LENGTH, description, target);
-        
-        return goal;
-    }
+    // NETWORK_LENGTH factory removed
     
     static function CreateVehicleCountGoal(vehicle_type, target) {
         local type_name = "";
