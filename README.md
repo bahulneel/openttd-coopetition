@@ -1,6 +1,6 @@
 # OpenTTD Coopetition Game Script
 
-A Game Script for OpenTTD that manages competitive cooperative gameplay, tracking both shared and personal goals.
+A Game Script (server-side mod) for OpenTTD that manages competitive cooperative gameplay, tracking both shared and personal goals.
 
 ## Overview
 
@@ -54,14 +54,49 @@ Predefine weekly objectives and script progression:
 ## Installation
 
 1. Download the latest release from the [GitHub repository](https://github.com/bahulneel/openttd-coopetition)
-2. Extract the files to your OpenTTD game script directory:
-   - Windows: `C:\Users\[Username]\Documents\OpenTTD\game`
-   - macOS: `~/Documents/OpenTTD/game`
-   - Linux: `~/.openttd/game`
-3. Start OpenTTD and create a new game
-4. In the Game Script settings, select "Coopetition"
-5. Adjust settings as desired
-6. Start the game
+2. To keep this mod separate from other mods, create a dedicated subdirectory in your OpenTTD game script directory:
+   - Windows: `C:\Users\[Username]\Documents\OpenTTD\game\coopetition`
+   - macOS: `~/Documents/OpenTTD/game/coopetition`
+   - Linux: `~/.openttd/game/coopetition`
+3. Extract all the mod files into this new subdirectory
+4. Start OpenTTD and create a new game
+5. In the Game Script settings, select "Coopetition"
+6. Adjust settings as desired
+7. Start the game
+
+### Server-Side Mod
+
+Coopetition is a Game Script, which is a server-side mod in OpenTTD. This means:
+
+- Only the server/host needs to have the mod installed
+- When hosting a multiplayer game, clients will automatically download the mod when they connect
+- All game logic runs on the server, and the UI elements are synchronized to all connected clients
+- Game state is saved with the save game, so the mod's progress is preserved when saving and loading
+
+### Mod Isolation
+
+By installing the mod in its own subdirectory (`coopetition`), you ensure that:
+
+- The mod files won't interfere with other game scripts
+- You can easily update or remove the mod without affecting other scripts
+- The mod will be properly identified in the Game Script selection menu
+- Multiple versions can be maintained by using different subdirectories (e.g., `coopetition-v1`, `coopetition-v2`)
+
+### Packaging for Distribution
+
+If you're developing or modifying the mod, you can use the included packaging scripts to create a distributable zip file:
+
+**On macOS/Linux:**
+```bash
+./package.sh
+```
+
+**On Windows:**
+```cmd
+package.bat
+```
+
+This will create a versioned zip file in the `dist` directory that can be shared with others.
 
 ## Usage
 
@@ -85,6 +120,15 @@ When the game starts, the script will automatically initialize the first week of
   - All shared goals are completed AND at least one company has completed all personal goals, OR
   - A week has passed in game time (28 days)
 - At the end of each week, a summary will be displayed showing progress and contributions
+
+### Multiplayer Compatibility
+
+As a server-side mod, Coopetition is designed specifically for multiplayer games:
+
+- All players see the same shared goals and progress
+- Each player can only see their own personal goals
+- The leaderboard is visible to all players
+- Goal progress updates in real-time for all connected players
 
 ## Configuration
 
