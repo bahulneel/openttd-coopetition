@@ -1,0 +1,17 @@
+{
+  "name": "openttd-coopetition-devtools",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Dev tools for verifying OpenTTD GS API usage in Coopetition.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "verify:gs": "node tools/verify-gs-api.mjs"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "globby": "^14.0.1"
+  }
+}

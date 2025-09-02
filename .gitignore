@@ -21,3 +21,6 @@ Thumbs.db
 *.bak
 *~
 temp/
+
+# NodeJS
+node_modules/
