@@ -98,6 +98,16 @@ package.bat
 
 This will create a versioned zip file in the `dist` directory that can be shared with others.
 
+### Automated GitHub Releases
+
+This project includes a GitHub workflow that automatically:
+
+1. Builds and packages the mod when code is pushed to the main branch
+2. Creates a new GitHub release with the version number from `version.nut`
+3. Attaches the packaged zip file to the release for easy downloading
+
+To use this feature, simply push your changes to the main branch, and the workflow will handle the release process.
+
 ## Usage
 
 ### Starting a Campaign
@@ -143,6 +153,31 @@ The script provides several configuration options:
 
 - OpenTTD 1.10.0 or later
 - Knowledge of the Squirrel programming language
+
+### Contributing
+
+Contributions to the Coopetition mod are welcome! Here's how to contribute:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+When your changes are merged to the main branch, the GitHub workflow will automatically:
+
+1. Build and package the mod
+2. Create a new release with the version number from `version.nut`
+3. Make the packaged zip file available for download
+
+### Versioning
+
+To update the version number for a new release:
+
+1. Modify the `COOPETITION_VERSION` value in `version.nut`
+2. Commit and push the change to the main branch
+3. The GitHub workflow will automatically create a new release with the updated version number
 
 ### Building
 

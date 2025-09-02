@@ -1,0 +1,44 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Get version
+        id: get_version
+        run: echo "version=$(grep -o 'COOPETITION_VERSION = [0-9]\+' version.nut | grep -o '[0-9]\+')" >> $GITHUB_OUTPUT
+      
+      - name: Create dist directory
+        run: mkdir -p dist
+      
+      - name: Package mod
+        run: |
+          zip -r "dist/coopetition-v${{ steps.get_version.outputs.version }}.zip" \
+            *.nut \
+            LICENSE \
+            README.md
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: coopetition-mod
+          path: dist/*.zip
+      
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.zip
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: Coopetition v${{ steps.get_version.outputs.version }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
