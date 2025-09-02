@@ -25,6 +25,8 @@ jobs:
   build:
     # Explicitly specify the runner version for better stability
     runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     steps:
       - uses: actions/checkout@v5
       
@@ -85,3 +87,60 @@ jobs:
           echo "✅ Successfully built and released Coopetition v${{ steps.get_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "📦 Release URL: ${{ steps.create_release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "📅 Released at: $(date)" >> $GITHUB_STEP_SUMMARY
+          
+  # Job to increment version and create PR back to develop
+  increment-version:
+    needs: build
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      pull-requests: write
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+      - name: Create branch for version increment
+        run: |
+          # Create a new branch for the version increment
+          NEW_VERSION=$((${{ needs.build.outputs.version }} + 1))
+          BRANCH_NAME="version-increment-${NEW_VERSION}"
+          git checkout -b $BRANCH_NAME
+          
+      - name: Update version number
+        run: |
+          # Increment the version number in version.nut
+          NEW_VERSION=$((${{ needs.build.outputs.version }} + 1))
+          sed -i "s/COOPETITION_VERSION = ${{ needs.build.outputs.version }}/COOPETITION_VERSION = ${NEW_VERSION}/" version.nut
+          
+      - name: Commit changes
+        run: |
+          git add version.nut
+          git commit -m "Increment version to v$((${{ needs.build.outputs.version }} + 1))"
+          git push origin HEAD
+          
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          base: develop
+          title: "Increment version to v$((${{ needs.build.outputs.version }} + 1))"
+          body: |
+            This PR automatically increments the version number after release v${{ needs.build.outputs.version }}.
+            
+            ## Changes
+            - Incremented version number from ${{ needs.build.outputs.version }} to $((${{ needs.build.outputs.version }} + 1))
+          labels: version-bump, automated-pr
+          branch: version-increment-$((${{ needs.build.outputs.version }} + 1))
+          
+      - name: PR Summary
+        run: |
+          echo "## Version Increment" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Created PR to increment version from ${{ needs.build.outputs.version }} to $((${{ needs.build.outputs.version }} + 1))" >> $GITHUB_STEP_SUMMARY
