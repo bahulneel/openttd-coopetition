@@ -13,29 +13,29 @@ class Coopetition extends GSInfo {
     function GetShortName()   { return "COOP"; }
     function GetAPIVersion()  { return "14"; }
     function GetURL()         { return "https://github.com/bahulneel/openttd-coopetition"; }
-    
+
     function GetSettings() {
         AddSetting({
-            name = "log_level", 
-            description = "Debug log level", 
-            easy_value = 1, 
-            medium_value = 1, 
-            hard_value = 1, 
-            custom_value = 1, 
-            flags = CONFIG_INGAME, 
-            min_value = 0, 
+            name = "log_level",
+            description = "Debug log level",
+            easy_value = 1,
+            medium_value = 1,
+            hard_value = 1,
+            custom_value = 1,
+            flags = CONFIG_INGAME,
+            min_value = 0,
             max_value = 3
         });
-        
+
         AddSetting({
-            name = "shared_goal_reward", 
-            description = "Cash reward for completing shared goals", 
-            easy_value = 100000, 
-            medium_value = 50000, 
-            hard_value = 25000, 
-            custom_value = 50000, 
-            flags = CONFIG_INGAME, 
-            min_value = 0, 
+            name = "shared_goal_reward",
+            description = "Cash reward for completing shared goals",
+            easy_value = 100000,
+            medium_value = 50000,
+            hard_value = 25000,
+            custom_value = 50000,
+            flags = CONFIG_INGAME,
+            min_value = 0,
             max_value = 1000000,
             step_size = 10000
         });
@@ -145,4 +145,4 @@ class Coopetition extends GSInfo {
 }
 
 /* Register the class to make it available to the game */
-RegisterGSInfo(Coopetition());
+RegisterGS(Coopetition());

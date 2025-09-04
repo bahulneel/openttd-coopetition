@@ -34,7 +34,7 @@ class Campaign {
         this.year_to_date_page_id = null;
         this.campaign_completed_logged = false;
         
-        // Initialize week goals
+    // Initialize week goals
         this.week_goals = [];
         this.InitializeDefaultCampaign();
     }
@@ -42,7 +42,7 @@ class Campaign {
     /*
      * Initialize default campaign structure
      */
-    function InitializeDefaultCampaign() {
+function InitializeDefaultCampaign() {
         // Week 1: Single town / shared station
         this.week_goals.append({
             shared_goals = [
@@ -53,7 +53,7 @@ class Campaign {
                     },
                     target = 80 // 80% rating
                 }
-            ],
+    ],
             player_goals = [
                 {
                     type = PlayerGoalType.PROFIT,
@@ -61,7 +61,7 @@ class Campaign {
                         target = 10000 // £10,000 profit
                     },
                     reward = 20000 // £20,000 reward
-                },
+            },
                 {
                     type = PlayerGoalType.STATION_COUNT,
                     params = {
@@ -70,20 +70,20 @@ class Campaign {
                     reward = 15000 // £15,000 reward
                 }
             ],
-            description = "Week 1: Single town / shared station"
+    description = "Week 1: Single town / shared station"
         });
         
-        // Week 2: Shared trunk line
+// Week 2: Shared trunk line
         this.week_goals.append({
             shared_goals = [
-                {
+        {
                     type = SharedGoalType.CARGO_DELIVERY,
                     params = {
                         // Parameters will be filled at runtime
-                    },
+            },
                     target = 500 // 500 units of cargo
                 },
-                {
+            {
                     type = SharedGoalType.NETWORK_LENGTH,
                     params = {},
                     target = 100 // 100 tiles of network
@@ -96,13 +96,13 @@ class Campaign {
                         vehicle_type = GSVehicle.VT_RAIL,
                         target = 5 // 5 trains
                     },
-                    reward = 25000 // £25,000 reward
+    reward = 25000 // £25,000 reward
                 },
                 {
                     type = PlayerGoalType.PROFIT,
                     params = {
                         target = 25000 // £25,000 profit
-                    },
+},
                     reward = 30000 // £30,000 reward
                 }
             ],
@@ -118,7 +118,7 @@ class Campaign {
                         // Parameters will be filled at runtime
                     },
                     target = 1000 // 1000 population
-                },
+
                 {
                     type = SharedGoalType.CARGO_DELIVERY,
                     params = {
@@ -128,74 +128,74 @@ class Campaign {
                 }
             ],
             player_goals = [
-                {
+
                     type = PlayerGoalType.TOWN_SERVICE,
                     params = {
                         target = 3 // 3 towns
                     },
                     reward = 40000 // £40,000 reward
-                },
+},
                 {
                     type = PlayerGoalType.ROUTE_EFFICIENCY,
                     params = {
                         target = 80 // 80% efficiency
-                    },
+    },
                     reward = 35000 // £35,000 reward
                 }
             ],
-            description = "Week 3: Intersecting networks"
+ion = "Week 3: Intersecting networks"
         });
         
-        // Week 4: Full coop corridor
+ull coop corridor
         this.week_goals.append({
             shared_goals = [
                 {
                     type = SharedGoalType.CARGO_DELIVERY,
                     params = {
                         // Parameters will be filled at runtime
-                    },
+    },
                     target = 2000 // 2000 units of cargo
                 },
-                {
+{
                     type = SharedGoalType.VEHICLE_COUNT,
                     params = {
                         vehicle_type = GSVehicle.VT_RAIL,
                         target = 20 // 20 trains collectively
                     },
-                    target = 20
+target = 20
                 }
             ],
             player_goals = [
-                {
+
                     type = PlayerGoalType.PERFORMANCE,
                     params = {
                         target = 800 // 800 performance rating
                     },
                     reward = 50000 // £50,000 reward
                 },
-                {
+
                     type = PlayerGoalType.PROFIT,
-                    params = {
+ms = {
                         target = 50000 // £50,000 profit
                     },
                     reward = 60000 // £60,000 reward
                 }
             ],
             description = "Week 4: Full coop corridor"
-        });
+
     }
     
     /*
      * Start a new week in the campaign
      */
-    function StartNewWeek(shared_goals, player_goals) {
+function StartNewWeek(shared_goals, player_goals) {
         if (this.current_week > this.total_weeks) {
             // Campaign is complete
             if (!this.campaign_completed_logged) {
                 GSLog.Info("Campaign complete!");
                 this.campaign_completed_logged = true;
             }
-            return false;
+        return false;
         }
         
         // Clear existing goals
@@ -210,30 +210,30 @@ class Campaign {
         // Create shared goals for this week
         foreach (goal_config in week_config.shared_goals) {
             local goal = null;
-            
+        
             switch (goal_config.type) {
                 case SharedGoalType.CARGO_DELIVERY:
                     // Find suitable towns and cargo type
                     local cargo_type = this.FindSuitableCargo();
                     local towns = this.FindSuitableTowns(2);
                     
-                    if (cargo_type != null && towns.len() >= 2) {
+            if (cargo_type != null && towns.len() >= 2) {
                         goal = SharedGoal.CreateCargoDeliveryGoal(
                             cargo_type, towns[0], towns[1], goal_config.target);
-                    }
+                }
                     break;
                     
                 case SharedGoalType.TOWN_POPULATION:
                     // Find suitable town
                     local towns = this.FindSuitableTowns(1);
                     
-                    if (towns.len() >= 1) {
+                if (towns.len() >= 1) {
                         goal = SharedGoal.CreateTownPopulationGoal(
                             towns[0], goal_config.target);
                     }
                     break;
                     
-                case SharedGoalType.STATION_RATING:
+        case SharedGoalType.STATION_RATING:
                     // This requires existing stations, so we'll create a placeholder
                     // and update it when stations are built
                     goal = SharedGoal(SharedGoalType.STATION_RATING, 
@@ -244,7 +244,7 @@ class Campaign {
                     goal = SharedGoal.CreateNetworkLengthGoal(goal_config.target);
                     break;
                     
-                case SharedGoalType.VEHICLE_COUNT:
+        case SharedGoalType.VEHICLE_COUNT:
                     goal = SharedGoal.CreateVehicleCountGoal(
                         goal_config.params.vehicle_type, goal_config.params.target);
                     break;
@@ -252,16 +252,16 @@ class Campaign {
             
             if (goal != null) {
                 shared_goals.append(goal);
-            }
+    }
         }
         
-        // Create player goals for each company
+    // Create player goals for each company
         local company_list = GSCompanyList();
         foreach (company_id, _ in company_list) {
             // Initialize player goals array if not exists
             if (!(company_id in player_goals)) {
                 player_goals[company_id] <- [];
-            }
+    }
             
             // Create goals for this company
             foreach (goal_config in week_config.player_goals) {
@@ -269,7 +269,7 @@ class Campaign {
                 
                 switch (goal_config.type) {
                     case PlayerGoalType.CARGO_DELIVERY:
-                        local cargo_type = this.FindSuitableCargo();
+                local cargo_type = this.FindSuitableCargo();
                         
                         if (cargo_type != null) {
                             goal = PlayerGoal.CreateCargoDeliveryGoal(
@@ -277,10 +277,10 @@ class Campaign {
                         }
                         break;
                         
-                    case PlayerGoalType.PROFIT:
+            case PlayerGoalType.PROFIT:
                         goal = PlayerGoal.CreateProfitGoal(
                             goal_config.params.target, goal_config.reward);
-                        break;
+                    break;
                         
                     case PlayerGoalType.PERFORMANCE:
                         goal = PlayerGoal.CreatePerformanceGoal(
@@ -288,45 +288,45 @@ class Campaign {
                         break;
                         
                     case PlayerGoalType.STATION_COUNT:
-                        goal = PlayerGoal.CreateStationCountGoal(
+                goal = PlayerGoal.CreateStationCountGoal(
                             goal_config.params.target, goal_config.reward);
                         break;
-                        
+                
                     case PlayerGoalType.VEHICLE_COUNT:
                         goal = PlayerGoal.CreateVehicleCountGoal(
                             goal_config.params.vehicle_type, 
                             goal_config.params.target, 
-                            goal_config.reward);
+                    goal_config.reward);
                         break;
                         
-                    case PlayerGoalType.TOWN_SERVICE:
+                case PlayerGoalType.TOWN_SERVICE:
                         goal = PlayerGoal.CreateTownServiceGoal(
                             goal_config.params.target, goal_config.reward);
                         break;
-                        
+                
                     case PlayerGoalType.ROUTE_EFFICIENCY:
                         goal = PlayerGoal.CreateRouteEfficiencyGoal(
-                            goal_config.params.target, goal_config.reward);
+                    goal_config.params.target, goal_config.reward);
                         break;
                 }
-                
+            
                 if (goal != null) {
                     player_goals[company_id].append(goal);
-                }
+        }
             }
         }
-        
+
         // Update week start date
         this.week_start_date = GSDate.GetCurrentDate();
-        
+    
         // Announce new week
         GSNews.Create(GSNews.NT_GENERAL, 
-            "Week " + this.current_week + " of the Coopetition Campaign: " + 
+    "Week " + this.current_week + " of the Coopetition Campaign: " + 
             week_config.description, 
-            GSCompany.COMPANY_INVALID);
+    GSCompany.COMPANY_INVALID, GSNews.NR_NONE, 0);
         
         return true;
-    }
+}
     
     /*
      * Assign initial goals to a new company
@@ -335,12 +335,12 @@ class Campaign {
         // Get current week configuration
         local week_config = this.week_goals[this.current_week - 1];
         
-        // Create player goals for this company
+// Create player goals for this company
         foreach (goal_config in week_config.player_goals) {
-            local goal = null;
+    local goal = null;
             
             switch (goal_config.type) {
-                case PlayerGoalType.CARGO_DELIVERY:
+        case PlayerGoalType.CARGO_DELIVERY:
                     local cargo_type = this.FindSuitableCargo();
                     
                     if (cargo_type != null) {
@@ -391,7 +391,7 @@ class Campaign {
         GSNews.Create(GSNews.NT_GENERAL, 
             "Welcome to Week " + this.current_week + " of the Coopetition Campaign: " + 
             week_config.description, 
-            company_id);
+            company_id, GSNews.NR_NONE, 0);
     }
     
     /*

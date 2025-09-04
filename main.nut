@@ -34,7 +34,7 @@ class Coopetition extends GSController {
     campaign = null;
     
     constructor() {
-        this.shared_goals = [];
+    this.shared_goals = [];
         this.player_goals = {};
         this.dashboard = null;
         this.campaign = null;
@@ -42,7 +42,7 @@ class Coopetition extends GSController {
     
     function Start() {
         // Initialize settings
-        this.settings = GSController.GetSetting("log_level");
+    this.settings = GSController.GetSetting("log_level");
         this.log_level = GSController.GetSetting("log_level");
         
         GSLog.Info("Coopetition Game Script started");
@@ -53,7 +53,7 @@ class Coopetition extends GSController {
         this.ui_next_update_date = GSDate.GetCurrentDate();
         this.next_reminder_date = GSDate.GetCurrentDate() + this.ui_reminder_days;
         GSLog.Info("Initial reminder scheduled for " + this.next_reminder_date + " (in " + this.ui_reminder_days + " days)");
-        // Initialize StoryBook on start (optional)
+// Initialize StoryBook on start (optional)
         if (this.ui_use_storybook) {
             this.dashboard.UpdateStoryBook(this.shared_goals, this.player_goals, true);
         }
@@ -61,7 +61,7 @@ class Coopetition extends GSController {
         // Initialize campaign scheduler
         this.campaign = Campaign();
         
-        // Send onboarding news to existing companies (for games that start with default company)
+    // Send onboarding news to existing companies (for games that start with default company)
         this.SendOnboardingToExistingCompanies();
         
         // Event polling is handled by GetNextEvent loop; no interval configuration in GS API
@@ -70,20 +70,20 @@ class Coopetition extends GSController {
         while (true) {
             // Handle events
             local event = GSEventController.GetNextEvent();
-            if (GSEventController.IsEventWaitingProcessing()) {
+    if (event != null) {
                 this.HandleEvent(event);
             }
-            
+    
             // Update goals and dashboard
             this.UpdateGoals();
-            this.dashboard.Update(this.shared_goals, this.player_goals);
+    this.dashboard.Update(this.shared_goals, this.player_goals);
             
             // Check for campaign progression
             this.campaign.CheckProgression(this.shared_goals, this.player_goals);
 
             // Periodic UI windows
             if (this.ui_enabled) {
-                local today = GSDate.GetCurrentDate();
+            local today = GSDate.GetCurrentDate();
                 if (this.ui_next_update_date == null || today >= this.ui_next_update_date) {
                     // Render shared goals for all
                     this.dashboard.RenderSharedGoalsWindow(this.shared_goals);
@@ -96,7 +96,7 @@ class Coopetition extends GSController {
                         this.dashboard.UpdateStoryBook(this.shared_goals, this.player_goals, false);
                     }
                     // Publish to Goals window removed; StoryBook acts as dashboard
-                    // Update map signs if enabled
+    // Update map signs if enabled
                     if (this.ui_use_signs) {
                         this.dashboard.UpdateSignsForSharedGoals(this.shared_goals);
                     }
@@ -118,7 +118,7 @@ class Coopetition extends GSController {
             // Sleep for a bit to avoid hogging CPU
             GSController.Sleep(1);
 
-            // Periodic reminders via GSNews
+a GSNews
             if (this.ui_reminders_enabled) {
                 local today2 = GSDate.GetCurrentDate();
                 // Safety check: if reminder date is in the past, reset it
@@ -128,74 +128,74 @@ class Coopetition extends GSController {
                 }
                 if (this.next_reminder_date != null && today2 >= this.next_reminder_date) {
                     GSLog.Info("Sending reminder: today=" + today2 + ", next_reminder=" + this.next_reminder_date);
-                    this.SendReminderNews();
+this.SendReminderNews();
                     // Schedule next reminder for the future to prevent multiple reminders on same day
                     this.next_reminder_date = today2 + this.ui_reminder_days;
                     GSLog.Info("Reminder sent, next reminder scheduled for " + this.next_reminder_date);
                 }
             }
-        }
+
     }
     
     function HandleEvent(event) {
         if (event == null) return;
-        
+
         switch (event.GetEventType()) {
             case GSEvent.ET_COMPANY_DELIVERED_CARGO:
                 this.OnCompanyDeliveredCargo(GSEventCompanyDeliveredCargo.Convert(event));
-                break;
+k;
                 
             case GSEvent.ET_COMPANY_PERFORMANCE_RATING:
-                this.OnCompanyPerformanceRating(GSEventCompanyPerformanceRating.Convert(event));
+.OnCompanyPerformanceRating(GSEventCompanyPerformanceRating.Convert(event));
                 break;
                 
             case GSEvent.ET_COMPANY_NEW:
                 this.OnCompanyNew(GSEventCompanyNew.Convert(event));
                 break;
                 
-            case GSEvent.ET_COMPANY_BANKRUPT:
+ GSEvent.ET_COMPANY_BANKRUPT:
                 this.OnCompanyBankrupt(GSEventCompanyBankrupt.Convert(event));
                 break;
-        }
+
     }
     
     function OnCompanyDeliveredCargo(event) {
         local company_id = event.GetCompanyID();
         local cargo_type = event.GetCargoType();
-        local amount = event.GetCargoAmount();
+ = event.GetCargoAmount();
         
         // Update shared goals that involve cargo delivery
         foreach (goal in this.shared_goals) {
-            if (goal.type == SharedGoalType.CARGO_DELIVERY && goal.cargo_type == cargo_type) {
+e == SharedGoalType.CARGO_DELIVERY && goal.cargo_type == cargo_type) {
                 goal.UpdateProgress(company_id, amount);
             }
         }
         
         // Update player goals
         if (company_id in this.player_goals) {
-            foreach (goal in this.player_goals[company_id]) {
+l in this.player_goals[company_id]) {
                 if (goal.type == PlayerGoalType.CARGO_DELIVERY && goal.cargo_type == cargo_type) {
-                    goal.UpdateProgress(amount);
+.UpdateProgress(amount);
                 }
             }
         }
     }
     
     function OnCompanyPerformanceRating(event) {
-        local company_id = event.GetCompanyID();
+y_id = event.GetCompanyID();
         local performance = event.GetPerformance();
         
         // Update player goals related to performance
         if (company_id in this.player_goals) {
             foreach (goal in this.player_goals[company_id]) {
-                if (goal.type == PlayerGoalType.PERFORMANCE) {
+            if (goal.type == PlayerGoalType.PERFORMANCE) {
                     goal.UpdateProgress(performance);
                 }
             }
         }
     }
     
-    function OnCompanyNew(event) {
+function OnCompanyNew(event) {
         local company_id = event.GetCompanyID();
         
         // Initialize player goals for new company
@@ -210,41 +210,41 @@ class Coopetition extends GSController {
         this.SendOnboardingNews(company_id);
 
         // Publish StoryBook personal page for the new company if enabled
-        if (this.ui_use_storybook) {
+    if (this.ui_use_storybook) {
             this.dashboard.UpdateStoryBook(this.shared_goals, this.player_goals, true);
         }
     }
     
     function OnCompanyBankrupt(event) {
         local company_id = event.GetCompanyID();
-        
+
         // Clean up player goals for bankrupt company
         if (company_id in this.player_goals) {
-            delete this.player_goals[company_id];
+        delete this.player_goals[company_id];
         }
         
         GSLog.Info("Company bankrupt: " + GSCompany.GetName(company_id));
     }
     
     function UpdateGoals() {
-        // Update shared goals
+    // Update shared goals
         foreach (goal in this.shared_goals) {
             goal.Update();
             
             // Check for goal completion
             if (goal.IsCompleted() && !goal.reward_given) {
-                this.GiveSharedGoalReward(goal);
+        this.GiveSharedGoalReward(goal);
                 goal.reward_given = true;
                 
                 // Announce completion
                 GSNews.Create(GSNews.NT_GENERAL, 
                     "Shared goal completed: " + goal.description, 
-                    GSCompany.COMPANY_INVALID);
+                    GSCompany.COMPANY_INVALID, GSNews.NR_NONE, 0);
             }
         }
         
         // Update player goals
-        foreach (company_id, goals in this.player_goals) {
+foreach (company_id, goals in this.player_goals) {
             foreach (goal in goals) {
                 goal.Update();
                 
@@ -252,24 +252,24 @@ class Coopetition extends GSController {
                 if (goal.IsCompleted() && !goal.reward_given) {
                     this.GivePlayerGoalReward(company_id, goal);
                     goal.reward_given = true;
-                    
+            
                     // Announce completion to the specific company
                     GSNews.Create(GSNews.NT_GENERAL, 
-                        "Personal goal completed: " + goal.description, 
-                        company_id);
+                    "Personal goal completed: " + goal.description, 
+                        company_id, GSNews.NR_NONE, 0);
                 }
             }
         }
     }
-    
+
     function GiveSharedGoalReward(goal) {
         local reward = GSController.GetSetting("shared_goal_reward");
         
         // Distribute reward based on contribution
         foreach (company_id, contribution in goal.contributions) {
             local company_reward = (contribution * reward) / goal.target;
-            GSCompany.ChangeBankBalance(company_id, company_reward, GSCompany.EXPENSES_OTHER);
-            
+            GSCompany.ChangeBankBalance(company_id, company_reward, GSCompany.EXPENSES_OTHER, 0);
+    
             GSLog.Info("Company " + GSCompany.GetName(company_id) + 
                 " received " + company_reward + " for shared goal contribution");
         }
@@ -277,10 +277,10 @@ class Coopetition extends GSController {
     
     function GivePlayerGoalReward(company_id, goal) {
         local reward = goal.reward;
-        GSCompany.ChangeBankBalance(company_id, reward, GSCompany.EXPENSES_OTHER);
+GSCompany.ChangeBankBalance(company_id, reward, GSCompany.EXPENSES_OTHER, 0);
         
         GSLog.Info("Company " + GSCompany.GetName(company_id) + 
-            " received " + reward + " for completing personal goal");
+        " received " + reward + " for completing personal goal");
     }
     
     function Save() {
@@ -288,45 +288,45 @@ class Coopetition extends GSController {
         
         // Save shared goals
         data.shared_goals <- [];
-        foreach (goal in this.shared_goals) {
+foreach (goal in this.shared_goals) {
             data.shared_goals.append(goal.SaveToTable());
         }
-        
+
         // Save player goals
         data.player_goals <- {};
         foreach (company_id, goals in this.player_goals) {
             data.player_goals[company_id] <- [];
-            foreach (goal in goals) {
+    foreach (goal in goals) {
                 data.player_goals[company_id].append(goal.SaveToTable());
             }
-        }
+    }
         
         // Save campaign state
         data.campaign <- this.campaign.SaveToTable();
 
         // Save reminder schedule
         data.next_reminder_date <- this.next_reminder_date;
-        data.last_reminder_date <- this.last_reminder_date;
+data.last_reminder_date <- this.last_reminder_date;
         
         return data;
-    }
+}
     
     function Load(version, data) {
-        // Load shared goals
+// Load shared goals
         this.shared_goals = [];
         foreach (goal_data in data.shared_goals) {
-            this.shared_goals.append(SharedGoal.LoadFromTable(goal_data));
+    this.shared_goals.append(SharedGoal.LoadFromTable(goal_data));
         }
         
-        // Load player goals
+    // Load player goals
         this.player_goals = {};
         foreach (company_id, goals_data in data.player_goals) {
-            this.player_goals[company_id] <- [];
+    this.player_goals[company_id] <- [];
             foreach (goal_data in goals_data) {
-                this.player_goals[company_id].append(PlayerGoal.LoadFromTable(goal_data));
+        this.player_goals[company_id].append(PlayerGoal.LoadFromTable(goal_data));
             }
         }
-        
+    
         // Load campaign state
         this.campaign = Campaign.LoadFromTable(data.campaign);
         
@@ -335,12 +335,12 @@ class Coopetition extends GSController {
 
         // Restore reminder schedule
         if ("next_reminder_date" in data) this.next_reminder_date = data.next_reminder_date;
-        if ("last_reminder_date" in data) this.last_reminder_date = data.last_reminder_date;
+if ("last_reminder_date" in data) this.last_reminder_date = data.last_reminder_date;
         
-        GSLog.Info("Coopetition Game Script loaded from save");
+GSLog.Info("Coopetition Game Script loaded from save");
     }
 
-    function SendOnboardingToExistingCompanies() {
+tion SendOnboardingToExistingCompanies() {
         // Send global onboarding news to all players
         GSLog.Info("Sending global onboarding message");
         local msg = "Welcome to Coopetition! Check the StoryBook for details.";
