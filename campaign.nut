@@ -3,22 +3,36 @@
  * The script manages competitive cooperative gameplay in OpenTTD
  */
 
+require("constants.nut");
+
 /*
  * Campaign class
  * Manages progression and scheduling of goals over time
  */
 class Campaign {
     current_week = null;       // Current week in the campaign
+    current_year = null;       // Current year in the campaign
+    current_month = null;      // Current month in the campaign
     total_weeks = null;        // Total number of weeks in the campaign
     week_start_date = null;    // Game date when current week started
+    year_start_date = null;    // Game date when current year started
+    month_start_date = null;   // Game date when current month started
     week_goals = null;         // Array of goals for each week
     auto_progression = null;   // Whether to automatically progress to next week
+    year_to_date_page_id = null; // StoryBook page ID for current year (Year to Date)
+    campaign_completed_logged = null; // Whether we've already logged campaign completion
     
     constructor() {
         this.current_week = 1;
+        this.current_year = GSDate.GetYear(GSDate.GetCurrentDate());
+        this.current_month = GSDate.GetMonth(GSDate.GetCurrentDate());
         this.total_weeks = 4; // Default 4-week campaign
         this.week_start_date = GSDate.GetCurrentDate();
+        this.year_start_date = GSDate.GetCurrentDate();
+        this.month_start_date = GSDate.GetCurrentDate();
         this.auto_progression = true;
+        this.year_to_date_page_id = null;
+        this.campaign_completed_logged = false;
         
         // Initialize week goals
         this.week_goals = [];
@@ -177,7 +191,10 @@ class Campaign {
     function StartNewWeek(shared_goals, player_goals) {
         if (this.current_week > this.total_weeks) {
             // Campaign is complete
-            GSLog.Info("Campaign complete!");
+            if (!this.campaign_completed_logged) {
+                GSLog.Info("Campaign complete!");
+                this.campaign_completed_logged = true;
+            }
             return false;
         }
         
@@ -229,7 +246,7 @@ class Campaign {
                     
                 case SharedGoalType.VEHICLE_COUNT:
                     goal = SharedGoal.CreateVehicleCountGoal(
-                        goal_config.params.vehicle_type, goal_config.target);
+                        goal_config.params.vehicle_type, goal_config.params.target);
                     break;
             }
             
@@ -383,6 +400,9 @@ class Campaign {
     function CheckProgression(shared_goals, player_goals) {
         if (!this.auto_progression) return false;
         
+        // Check if we need to handle year/month progression
+        this.CheckYearMonthProgression(shared_goals, player_goals);
+        
         // Check if all shared goals are completed
         local all_shared_completed = true;
         foreach (goal in shared_goals) {
@@ -415,8 +435,8 @@ class Campaign {
         
         // Progress to next week if conditions are met
         if ((all_shared_completed && any_company_completed) || week_timeout) {
-            // Display summary of current week
-            this.DisplayWeekSummary(shared_goals, player_goals);
+            // Update Year to Date page with current week summary
+            this.UpdateYearToDatePage(shared_goals, player_goals);
             
             // Increment week counter
             this.current_week++;
@@ -429,97 +449,146 @@ class Campaign {
     }
     
     /*
-     * Display summary of the current week
+     * Check for year and month progression
      */
-    function DisplayWeekSummary(shared_goals, player_goals) {
-        // Create summary window
-        local summary_window = GSWindow.New("Week Summary", 
-            "Week " + this.current_week + " Summary");
-        GSWindow.SetSize(summary_window, 500, 400);
+    function CheckYearMonthProgression(shared_goals, player_goals) {
+        local current_date = GSDate.GetCurrentDate();
+        local current_year = GSDate.GetYear(current_date);
+        local current_month = GSDate.GetMonth(current_date);
         
-        // Add header
-        local y = 10;
-        GSWindow.AddLabel(summary_window, 0, y, 0, 
-            "Week " + this.current_week + " Summary");
-        y += 20;
+        // Check for year change
+        if (current_year != this.current_year) {
+            this.HandleYearTransition(shared_goals, player_goals);
+            this.current_year = current_year;
+            this.year_start_date = current_date;
+            this.current_month = current_month;
+            this.month_start_date = current_date;
+            this.InitializeYearToDatePage();
+        }
+        // Check for month change within same year
+        else if (current_month != this.current_month) {
+            this.HandleMonthTransition();
+            this.current_month = current_month;
+            this.month_start_date = current_date;
+        }
+    }
+    
+    function HandleYearTransition(shared_goals, player_goals) {
+        // Create year summary page for the completed year
+        local completed_year = this.current_year;
+        local title = "Year " + completed_year + " Summary";
+        local year_page_id = GSStoryPage.New(GSCompany.COMPANY_INVALID, title);
+        if (GSStoryPage.IsValidStoryPage(year_page_id)) {
+            this.CreateYearSummaryPage(year_page_id, completed_year, shared_goals, player_goals);
+        }
+    }
+    
+    function HandleMonthTransition() {
+        // Add month separator to Year to Date page
+        if (this.year_to_date_page_id != null && GSStoryPage.IsValidStoryPage(this.year_to_date_page_id)) {
+            local month_names = ["January", "February", "March", "April", "May", "June",
+                               "July", "August", "September", "October", "November", "December"];
+            local month_name = month_names[this.current_month - 1];
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "");
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "=== " + month_name + " ===");
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "");
+        }
+    }
+    
+    function InitializeYearToDatePage() {
+        // Remove old Year to Date page if it exists
+        if (this.year_to_date_page_id != null) {
+            try { GSStoryPage.Remove(this.year_to_date_page_id); } catch (e) {}
+            this.year_to_date_page_id = null;
+        }
         
-        // Shared goals summary
-        GSWindow.AddLabel(summary_window, 10, y, 1, "Shared Goals:");
-        y += 15;
+        // Create new Year to Date page
+        local title = "Year to Date - " + this.current_year;
+        this.year_to_date_page_id = GSStoryPage.New(GSCompany.COMPANY_INVALID, title);
+        if (!GSStoryPage.IsValidStoryPage(this.year_to_date_page_id)) return;
         
+        // Add year header
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "=== YEAR TO DATE - " + this.current_year + " ===");
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "");
+        
+        // Add current month header
+        local month_names = ["January", "February", "March", "April", "May", "June",
+                           "July", "August", "September", "October", "November", "December"];
+        local month_name = month_names[this.current_month - 1];
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "=== " + month_name + " ===");
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "");
+    }
+    
+    function UpdateYearToDatePage(shared_goals, player_goals) {
+        if (this.year_to_date_page_id == null || !GSStoryPage.IsValidStoryPage(this.year_to_date_page_id)) {
+            this.InitializeYearToDatePage();
+            if (this.year_to_date_page_id == null) return;
+        }
+        
+        // Add week summary to Year to Date page
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "Week " + this.current_week + ":");
+        
+        // Shared Goals section
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "  Shared Goals:");
         foreach (goal in shared_goals) {
             local status = goal.IsCompleted() ? "COMPLETED" : "IN PROGRESS";
-            local progress = (goal.current_progress * 100) / goal.target;
-            
-            local text = goal.description + " - " + status + " (" + progress + "%)";
-            local color = goal.IsCompleted() ? GSColor.RGB(0, 255, 0) : GSColor.RGB(255, 255, 0);
-            
-            GSWindow.AddLabelColored(summary_window, 20, y, 2, text, color);
-            y += 15;
-            
-            // Show top contributors
-            local sorted_contributors = [];
-            foreach (company_id, contribution in goal.contributions) {
-                sorted_contributors.append({
-                    company_id = company_id,
-                    contribution = contribution
-                });
-            }
-            
-            sorted_contributors.sort(function(a, b) {
-                return b.contribution - a.contribution;
-            });
-            
-            foreach (idx, contributor in sorted_contributors) {
-                if (idx >= 3) break; // Show only top 3
-                
-                local company_id = contributor.company_id;
-                local company_name = GSCompany.GetName(company_id);
-                local contribution = contributor.contribution;
-                local contribution_percent = goal.GetCompanyContribution(company_id);
-                
-                local text = "  " + company_name + ": " + contribution + " (" + contribution_percent + "%)";
-                
-                GSWindow.AddLabel(summary_window, 30, y, 3 + idx, text);
-                y += 10;
-            }
-            
-            y += 10;
+            local progress = goal.target > 0 ? (goal.current_progress * 100) / goal.target : 0;
+            if (progress > 100) progress = 100;
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "    " + LIST_ITEM + " " + goal.description + " - " + status + " (" + progress + "%)");
         }
-        
-        // Player goals summary
-        y += 10;
-        GSWindow.AddLabel(summary_window, 10, y, 10, "Personal Goals:");
-        y += 15;
-        
-        local company_list = GSCompanyList();
-        foreach (company_id, _ in company_list) {
-            if (company_id in player_goals) {
-                local company_name = GSCompany.GetName(company_id);
-                GSWindow.AddLabel(summary_window, 20, y, 11, company_name + ":");
-                y += 10;
-                
-                local completed = 0;
-                local total = 0;
-                
-                foreach (goal in player_goals[company_id]) {
-                    total++;
-                    if (goal.IsCompleted()) {
-                        completed++;
+
+        // Personal Goals section
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "  Personal Goals:");
+        for (local company_id = 0; company_id < 16; company_id++) {
+            if (GSCompany.ResolveCompanyID(company_id) != GSCompany.COMPANY_INVALID) {
+                if (company_id in player_goals) {
+                    local completed = 0;
+                    local total = 0;
+                    foreach (goal in player_goals[company_id]) {
+                        total++;
+                        if (goal.IsCompleted()) completed++;
                     }
+                    local pct = total > 0 ? (completed * 100) / total : 0;
+                    GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "    " + LIST_ITEM + " " + GSCompany.GetName(company_id) + ": " + completed + "/" + total + " (" + pct + "%)");
                 }
-                
-                local completion_percent = total > 0 ? (completed * 100) / total : 0;
-                local text = "  Completed " + completed + " of " + total + " goals (" + completion_percent + "%)";
-                local color = completion_percent >= 50 ? GSColor.RGB(0, 255, 0) : GSColor.RGB(255, 255, 0);
-                
-                GSWindow.AddLabelColored(summary_window, 30, y, 12, text, color);
-                y += 15;
             }
         }
+        GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, ""); // Empty line after each week
+    }
+    
+    function CreateYearSummaryPage(page_id, year, shared_goals, player_goals) {
+        // Add year summary header
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "=== YEAR " + year + " SUMMARY ===");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "Final Status at Year End:");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "");
         
-        // Show window to all companies
-        GSWindow.ShowWindow(summary_window, GSCompany.COMPANY_INVALID);
+        // Shared Goals final status
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "Shared Goals:");
+        foreach (goal in shared_goals) {
+            local status = goal.IsCompleted() ? "COMPLETED" : "IN PROGRESS";
+            local progress = goal.target > 0 ? (goal.current_progress * 100) / goal.target : 0;
+            if (progress > 100) progress = 100;
+            GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " " + goal.description + " - " + status + " (" + progress + "%)");
+        }
+
+        // Personal Goals final status
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "Personal Goals:");
+        for (local company_id = 0; company_id < 16; company_id++) {
+            if (GSCompany.ResolveCompanyID(company_id) != GSCompany.COMPANY_INVALID) {
+                if (company_id in player_goals) {
+                    local completed = 0;
+                    local total = 0;
+                    foreach (goal in player_goals[company_id]) {
+                        total++;
+                        if (goal.IsCompleted()) completed++;
+                    }
+                    local pct = total > 0 ? (completed * 100) / total : 0;
+                    GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " " + GSCompany.GetName(company_id) + ": " + completed + "/" + total + " (" + pct + "%)");
+                }
+            }
+        }
     }
     
     /*
@@ -590,9 +659,15 @@ class Campaign {
         local data = {};
         
         data.current_week <- this.current_week;
+        data.current_year <- this.current_year;
+        data.current_month <- this.current_month;
         data.total_weeks <- this.total_weeks;
         data.week_start_date <- this.week_start_date;
+        data.year_start_date <- this.year_start_date;
+        data.month_start_date <- this.month_start_date;
         data.auto_progression <- this.auto_progression;
+        data.year_to_date_page_id <- this.year_to_date_page_id;
+        data.campaign_completed_logged <- this.campaign_completed_logged;
         
         // We don't need to save week_goals as they're initialized in constructor
         
@@ -606,9 +681,15 @@ class Campaign {
         local campaign = Campaign();
         
         campaign.current_week = data.current_week;
+        campaign.current_year = data.current_year;
+        campaign.current_month = data.current_month;
         campaign.total_weeks = data.total_weeks;
         campaign.week_start_date = data.week_start_date;
+        campaign.year_start_date = data.year_start_date;
+        campaign.month_start_date = data.month_start_date;
         campaign.auto_progression = data.auto_progression;
+        campaign.year_to_date_page_id = data.year_to_date_page_id;
+        campaign.campaign_completed_logged = data.campaign_completed_logged;
         
         return campaign;
     }

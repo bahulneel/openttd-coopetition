@@ -8,9 +8,15 @@
  * Handles UI elements for displaying progress to players
  */
 class Dashboard {
-    shared_goal_window = null;  // Window for shared goals
-    player_goal_window = null;  // Window for player goals
-    leaderboard = null;         // Leaderboard data
+    shared_goal_window = null;
+    player_goal_window = null;
+    leaderboard = null;
+    story_onboarding_page_id = null;
+    story_shared_page_id = null;
+    story_personal_page_ids = null;
+    gsgoal_shared_ids = null;
+    gsgoal_personal_ids = null;
+    sign_ids = null;
     
     constructor() {
         this.leaderboard = {};
@@ -297,11 +303,235 @@ class Dashboard {
                        goal.description + " with " + dominance_percent + "% contribution.";
         
         // Send to all companies except the dominant one
-        local company_list = GSCompanyList();
-        foreach (company_id, _ in company_list) {
-            if (company_id != dominant_company_id) {
-                GSNews.Create(GSNews.NT_GENERAL, message, company_id);
+        // Note: GSCompanyList doesn't exist, so we iterate manually
+        for (local company_id = 0; company_id < 16; company_id++) {
+            if (GSCompany.ResolveCompanyID(company_id) != GSCompany.COMPANY_INVALID && company_id != dominant_company_id) {
+                GSNews.Create(GSNews.NT_GENERAL, message, company_id, GSNews.NR_NONE, 0);
             }
+        }
+    }
+
+    /*
+     * Render a concise shared goals window for all companies
+     */
+    function RenderSharedGoalsWindow(shared_goals) {
+        // In GS API, custom windows can't be created; use StoryBook instead
+        this.UpdateStoryBook(shared_goals, {}, false);
+    }
+
+    /*
+     * Render personal goals windows, one per company
+     */
+    function RenderPlayerGoalsWindows(player_goals) {
+        // In GS API, custom windows can't be created; use StoryBook instead
+        this.UpdateStoryBook([], player_goals, false);
+    }
+
+    // Goals Window (GSGoal) integration removed pending API alignment
+
+    /*
+     * Map signs for shared goals
+     */
+    function IsSignAvailable() {
+        try {
+            local dummy = GSSign;
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function ClearSigns() {
+        if (!this.IsSignAvailable()) return;
+        foreach (sid in this.sign_ids) {
+            try { GSSign.RemoveSign(sid); } catch (e) {}
+        }
+        this.sign_ids.clear();
+    }
+
+    function UpdateSignsForSharedGoals(shared_goals) {
+        if (!this.IsSignAvailable()) return;
+        // Rebuild all signs each refresh to keep simple and avoid duplicates
+        this.ClearSigns();
+        foreach (goal in shared_goals) {
+            // Only place signs for cargo delivery goals where towns are known
+            if (goal.type == SharedGoalType.CARGO_DELIVERY && goal.source_town != null && goal.dest_town != null) {
+                try {
+                    local src_tile = GSTown.GetLocation(goal.source_town);
+                    local dst_tile = GSTown.GetLocation(goal.dest_town);
+                    local src_name = GSTown.GetName(goal.source_town);
+                    local dst_name = GSTown.GetName(goal.dest_town);
+                    local cargo_name = goal.cargo_type != null ? GSCargo.GetCargoLabel(goal.cargo_type) : "Cargo";
+                    local s1 = GSSign.BuildSign(src_tile, "Shared Goal: Send " + cargo_name + " " + ARROW_RIGHT + " " + dst_name);
+                    local s2 = GSSign.BuildSign(dst_tile, "Shared Goal: Receive " + cargo_name + " " + ARROW_LEFT + " " + src_name);
+                    this.sign_ids.append(s1);
+                    this.sign_ids.append(s2);
+                } catch (e) {}
+            }
+        }
+    }
+
+    /*
+     * Helper to render a simple ASCII progress bar
+     */
+    function RenderProgressBar(percent, width) {
+        if (percent < 0) percent = 0;
+        if (percent > 100) percent = 100;
+        if (width < 4) width = 4;
+        local filled = (percent * width) / 100;
+        local bar = "[";
+        for (local i = 0; i < width; i++) {
+            bar += (i < filled) ? "#" : ".";
+        }
+        bar += "]";
+        return bar;
+    }
+
+    /*
+     * StoryBook integration using native OpenTTD Game Script API
+     */
+    function IsStoryBookAvailable() {
+        // Check if GSStoryPage is available (OpenTTD 1.4+)
+        try {
+            local dummy = GSStoryPage; // access to trigger name resolution
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function UpdateStoryBook(shared_goals, player_goals, show_initial) {
+        if (!this.IsStoryBookAvailable()) return;
+
+        // Build and (re)publish onboarding page (global)
+        this.CreateOrReplaceOnboardingStoryPage(show_initial);
+
+        // Build and (re)publish shared goals page (global)
+        this.CreateOrReplaceSharedStoryPage(shared_goals, show_initial);
+
+        // Build and (re)publish per-company personal goal pages
+        foreach (company_id, goals in player_goals) {
+            this.CreateOrReplacePersonalStoryPage(company_id, goals, show_initial);
+        }
+    }
+
+    function CreateOrReplaceSharedStoryPage(shared_goals, show_page) {
+        // Always recreate shared goals page since content changes dynamically
+        // Remove previous if it exists
+        if (this.story_shared_page_id != null) {
+            try { GSStoryPage.Remove(this.story_shared_page_id); } catch (e) {}
+            this.story_shared_page_id = null;
+        }
+
+        local title = "Shared Goals";
+        local page_id = GSStoryPage.New(GSCompany.COMPANY_INVALID, title);
+        if (!GSStoryPage.IsValidStoryPage(page_id)) return;
+
+        this.BuildSharedGoalsElements(page_id, shared_goals);
+
+        this.story_shared_page_id = page_id;
+        // Note: ShowPage doesn't exist in GS API, pages are automatically visible when created
+    }
+
+    function CreateOrReplaceOnboardingStoryPage(show_page) {
+        // Check if page already exists
+        if (this.story_onboarding_page_id != null && GSStoryPage.IsValidStoryPage(this.story_onboarding_page_id)) {
+            return; // Page already exists, no need to recreate
+        }
+
+        // Remove previous if it exists but is invalid
+        if (this.story_onboarding_page_id != null) {
+            try { GSStoryPage.Remove(this.story_onboarding_page_id); } catch (e) {}
+            this.story_onboarding_page_id = null;
+        }
+
+        local title = "Welcome to Coopetition";
+        local page_id = GSStoryPage.New(GSCompany.COMPANY_INVALID, title);
+        if (!GSStoryPage.IsValidStoryPage(page_id)) return;
+
+        this.BuildOnboardingElements(page_id);
+
+        this.story_onboarding_page_id = page_id;
+        // Note: ShowPage doesn't exist in GS API, pages are automatically visible when created
+    }
+
+    function CreateOrReplacePersonalStoryPage(company_id, goals, show_page) {
+        if (!(company_id in this.story_personal_page_ids)) {
+            this.story_personal_page_ids[company_id] <- null;
+        }
+        
+        // Always recreate personal goals page since content changes dynamically
+        local prev = this.story_personal_page_ids[company_id];
+        if (prev != null) {
+            try { GSStoryPage.Remove(prev); } catch (e) {}
+            this.story_personal_page_ids[company_id] = null;
+        }
+
+        local company_name = GSCompany.GetName(company_id);
+        local title = "Personal Goals - " + company_name;
+        local page_id = GSStoryPage.New(company_id, title);
+        if (!GSStoryPage.IsValidStoryPage(page_id)) return;
+
+        this.BuildPersonalGoalsElements(page_id, goals);
+
+        this.story_personal_page_ids[company_id] = page_id;
+        // Note: ShowPage doesn't exist in GS API, pages are automatically visible when created
+    }
+
+    function BuildOnboardingElements(page_id) {
+        // Title
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "=== WELCOME TO COOPETITION! ===");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "");
+        
+        // Description
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "A competitive cooperative gameplay experience where you work with other players to achieve shared goals while pursuing personal objectives.");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "");
+        
+        // Getting Started section
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "GETTING STARTED:");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Open the Goals window to see your objectives");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Check StoryBook pages for Shared and Personal Goals");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Look for map signs marking shared cargo routes");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Toggle 'Show goals now' in settings to refresh UI");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "");
+        
+        // How it works section
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "HOW IT WORKS:");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Shared Goals: Work together with other companies to achieve common objectives");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Personal Goals: Complete individual challenges for your company");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Progress is tracked automatically as you play");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Check back regularly to see your progress");
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "");
+        
+        // Closing
+        GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "Good luck and have fun!");
+    }
+
+    function BuildSharedGoalsElements(page_id, shared_goals) {
+        if (shared_goals.len() == 0) {
+            GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "No active shared goals.");
+            return;
+        }
+        foreach (goal in shared_goals) {
+            local percent = goal.target > 0 ? (goal.current_progress * 100) / goal.target : 0;
+            if (percent > 100) percent = 100;
+            local bar = this.RenderProgressBar(percent, 24);
+            GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " " + goal.description + " (" + percent + "%)");
+            GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "  " + bar);
+        }
+    }
+
+    function BuildPersonalGoalsElements(page_id, goals) {
+        if (goals.len() == 0) {
+            GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "No active personal goals.");
+            return;
+        }
+        foreach (goal in goals) {
+            local percent = goal.target > 0 ? (goal.current_progress * 100) / goal.target : 0;
+            if (percent > 100) percent = 100;
+            local bar = this.RenderProgressBar(percent, 24);
+            GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " " + goal.description + " (" + percent + "%)");
+            GSStoryPage.NewElement(page_id, GSStoryPage.SPET_TEXT, 0, "  " + bar);
         }
     }
 }
