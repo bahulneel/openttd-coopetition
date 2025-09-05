@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  campaign-editor:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NUXT_SPA_MODE=true
+    volumes:
+      # Mount campaigns directory for persistence
+      - campaigns_data:/app/campaigns
+      # Optional: mount local campaigns folder for development
+      # - ../../campaigns:/app/campaigns:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "--input-type=module", "--eval", "
+        import { request } from 'http';
+        const req = request('http://localhost:3000', { timeout: 5000 }, (res) => {
+          process.exit(res.statusCode === 200 ? 0 : 1);
+        });
+        req.on('error', () => process.exit(1));
+        req.on('timeout', () => process.exit(1));
+        req.end();
+      "]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Development service with file system access
+  campaign-editor-dev:
+    build: .
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - NUXT_SPA_MODE=false
+    volumes:
+      # Mount the actual campaigns directory for development
+      - ../../campaigns:/app/campaigns
+    profiles:
+      - dev
+    restart: unless-stopped
+
+volumes:
+  campaigns_data:
+    driver: local

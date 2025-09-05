@@ -49,10 +49,10 @@ npm install
 npm run start --workspace=@coopetition/compile-authoring
 
 # Lint all workspaces
-npm run lint:workspaces
+npm run lint
 
 # Test all workspaces
-npm run test:workspaces
+npm run test
 ```
 
 ### Adding New Tools
@@ -68,16 +68,16 @@ From the project root:
 
 ```bash
 # Lint all workspaces
-npm run lint:workspaces
+npm run lint
 
 # Test all workspaces  
-npm run test:workspaces
+npm run test
 
 # Build all workspaces
-npm run build:workspaces
+npm run build
 
 # Run all workspaces in development mode
-npm run dev:workspaces
+npm run dev
 ```
 
 ### Individual Workspace Commands

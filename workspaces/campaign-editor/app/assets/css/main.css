@@ -1,0 +1,274 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* OpenTTD Color Scheme - Light Mode */
+  /* Based on OpenTTD GUI Style Guide with OKLCH colors for shadcn-vue */
+  
+  --background: oklch(94% 0.02 45);
+  --foreground: oklch(15% 0.06 25);
+  --card: oklch(88% 0.04 40);
+  --card-foreground: oklch(15% 0.06 25);
+  --popover: oklch(88% 0.04 40);
+  --popover-foreground: oklch(15% 0.06 25);
+  --primary: oklch(35% 0.12 130);
+  --primary-foreground: oklch(98% 0 0);
+  --secondary: oklch(80% 0 0);
+  --secondary-foreground: oklch(15% 0.06 25);
+  --muted: oklch(85% 0 0);
+  --muted-foreground: oklch(45% 0 0);
+  --accent: oklch(75% 0.06 30);
+  --accent-foreground: oklch(15% 0.06 25);
+  --destructive: oklch(50% 0.22 0);
+  --destructive-foreground: oklch(98% 0 0);
+  --border: oklch(75% 0.03 30);
+  --input: oklch(88% 0.04 40);
+  --ring: oklch(35% 0.12 130);
+  
+  /* Chart colors */
+  --chart-1: oklch(55% 0.13 210);
+  --chart-2: oklch(65% 0.12 130);
+  --chart-3: oklch(55% 0.13 270);
+  --chart-4: oklch(65% 0.06 30);
+  --chart-5: oklch(70% 0 0);
+  
+  /* OpenTTD specific theme colors */
+  --openttd-green: oklch(35% 0.12 130);
+  --openttd-brown: oklch(65% 0.06 30);
+  --openttd-grey: oklch(70% 0 0);
+  --openttd-purple: oklch(55% 0.13 270);
+  --openttd-blue: oklch(55% 0.13 210);
+  --openttd-light-blue: oklch(70% 0.15 190);
+  --openttd-cream: oklch(85% 0.08 45);
+  
+  --radius: 0.5rem;
+  
+  /* Sidebar colors */
+  --sidebar: oklch(88% 0.04 40);
+  --sidebar-foreground: oklch(15% 0.06 25);
+  --sidebar-primary: oklch(35% 0.12 130);
+  --sidebar-primary-foreground: oklch(98% 0 0);
+  --sidebar-accent: oklch(75% 0.06 30);
+  --sidebar-accent-foreground: oklch(15% 0.06 25);
+  --sidebar-border: oklch(75% 0.03 30);
+  --sidebar-ring: oklch(35% 0.12 130);
+}
+
+.dark {
+  /* OpenTTD Color Scheme - Dark Mode */
+  
+  --background: oklch(12% 0.02 25);
+  --foreground: oklch(90% 0.02 45);
+  --card: oklch(15% 0.02 25);
+  --card-foreground: oklch(90% 0.02 45);
+  --popover: oklch(15% 0.02 25);
+  --popover-foreground: oklch(90% 0.02 45);
+  --primary: oklch(45% 0.12 130);
+  --primary-foreground: oklch(12% 0.02 25);
+  --secondary: oklch(25% 0.01 25);
+  --secondary-foreground: oklch(90% 0.02 45);
+  --muted: oklch(20% 0.01 25);
+  --muted-foreground: oklch(65% 0.01 45);
+  --accent: oklch(30% 0.03 30);
+  --accent-foreground: oklch(90% 0.02 45);
+  --destructive: oklch(45% 0.15 0);
+  --destructive-foreground: oklch(90% 0.02 45);
+  --border: oklch(25% 0.01 25);
+  --input: oklch(15% 0.02 25);
+  --ring: oklch(45% 0.12 130);
+  
+  /* Chart colors for dark mode */
+  --chart-1: oklch(65% 0.13 210);
+  --chart-2: oklch(55% 0.12 130);
+  --chart-3: oklch(65% 0.13 270);
+  --chart-4: oklch(45% 0.06 30);
+  --chart-5: oklch(50% 0 0);
+  
+  /* OpenTTD specific dark colors */
+  --openttd-green: oklch(45% 0.12 130);
+  --openttd-brown: oklch(35% 0.04 30);
+  --openttd-grey: oklch(35% 0 0);
+  --openttd-purple: oklch(65% 0.13 270);
+  --openttd-blue: oklch(65% 0.13 210);
+  --openttd-light-blue: oklch(60% 0.12 190);
+  --openttd-cream: oklch(25% 0.03 45);
+  
+  /* Sidebar dark colors */
+  --sidebar: oklch(15% 0.02 25);
+  --sidebar-foreground: oklch(90% 0.02 45);
+  --sidebar-primary: oklch(45% 0.12 130);
+  --sidebar-primary-foreground: oklch(12% 0.02 25);
+  --sidebar-accent: oklch(30% 0.03 30);
+  --sidebar-accent-foreground: oklch(90% 0.02 45);
+  --sidebar-border: oklch(25% 0.01 25);
+  --sidebar-ring: oklch(45% 0.12 130);
+}
+
+@theme inline {
+  /* shadcn-vue color mappings for Tailwind CSS 4 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  
+  /* Radius utilities */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Sidebar variables */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* OpenTTD theme colors as Tailwind variables */
+  --color-openttd-green: var(--openttd-green);
+  --color-openttd-brown: var(--openttd-brown);
+  --color-openttd-grey: var(--openttd-grey);
+  --color-openttd-purple: var(--openttd-purple);
+  --color-openttd-blue: var(--openttd-blue);
+  --color-openttd-light-blue: var(--openttd-light-blue);
+  --color-openttd-cream: var(--openttd-cream);
+
+  /* shadcn-vue animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--reka-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--reka-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold;
+  }
+
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer components {
+  /* Custom component styles for campaign editor with OpenTTD theming */
+  .campaign-editor-layout {
+    @apply min-h-screen bg-background;
+  }
+
+  .campaign-card {
+    @apply bg-card text-card-foreground rounded border-2 border-border shadow-md p-6;
+    /* OpenTTD-style beveled appearance */
+    box-shadow: inset 2px 2px 0 rgba(255,255,255,0.3), inset -2px -2px 0 rgba(0,0,0,0.3);
+  }
+
+  .form-section {
+    @apply space-y-4 p-4 rounded border-2 bg-card;
+    /* Slight inset appearance like OpenTTD panels */
+    box-shadow: inset 1px 1px 0 rgba(0,0,0,0.2), inset -1px -1px 0 rgba(255,255,255,0.2);
+  }
+
+  .goal-item {
+    @apply bg-openttd-green/10 rounded p-4 border-2 border-openttd-green/30;
+    /* OpenTTD construction window styling */
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2), inset -1px -1px 0 rgba(0,0,0,0.2);
+  }
+
+  .scenario-item {
+    @apply bg-openttd-brown/10 rounded p-4 border-2 border-openttd-brown/30;
+    /* OpenTTD neutral window styling */
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2), inset -1px -1px 0 rgba(0,0,0,0.2);
+  }
+
+  /* OpenTTD-style buttons */
+  .openttd-button {
+    @apply px-4 py-2 bg-openttd-grey text-foreground border-2 border-border rounded;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.3);
+    transition: all 0.1s ease;
+  }
+
+  .openttd-button:hover {
+    @apply bg-openttd-grey/80;
+  }
+
+  .openttd-button:active {
+    box-shadow: inset 2px 2px 0 rgba(0,0,0,0.3), 1px 1px 0 rgba(255,255,255,0.3);
+    transform: translate(1px, 1px);
+  }
+
+  /* OpenTTD-style toolbar */
+  .openttd-toolbar {
+    @apply bg-openttd-green border-2 border-border;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.3);
+  }
+
+  /* OpenTTD-style title bar */
+  .openttd-titlebar {
+    @apply bg-openttd-brown text-foreground border-2 border-border;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.3), inset 2px 2px 0 rgba(255,255,255,0.3);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

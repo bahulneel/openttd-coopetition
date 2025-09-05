@@ -42,6 +42,7 @@
   "scripts": {
     "test": "echo \"No tests specified\" && exit 0",
     "lint": "eslint compile-authoring.mjs",
+    "lint:fix": "eslint compile-authoring.mjs --fix",
     "build": "echo \"No build step required\" && exit 0",
     "start": "node compile-authoring.mjs"
   }

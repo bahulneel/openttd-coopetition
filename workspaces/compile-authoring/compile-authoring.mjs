@@ -52,7 +52,7 @@ function validateGoal(doc, file) {
   assert(['player', 'company', 'scenario', 'campaign'].includes(doc.type), 'invalid type', file);
   assert(doc.objective && typeof doc.objective === 'object', 'objective required', file);
   if (doc.constraints) {
-    const { players, date, comment, ...rest } = doc.constraints;
+    const { players, date } = doc.constraints;
     if (players) {
       if (players.min != null) assert(Number.isInteger(players.min) && players.min >= 1, 'players.min >= 1', file);
       if (players.max != null) assert(Number.isInteger(players.max) && players.max >= (players.min ?? 1), 'players.max >= players.min', file);

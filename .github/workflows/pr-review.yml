@@ -42,7 +42,7 @@ jobs:
           GS_LINT_VERBOSE: 1
         run: |
           # Run ESLint on .nut files and pipe to reviewdog
-          npm run lint:nut 2>&1 | reviewdog -f=eslint -name="GameScript Linter" -reporter=github-pr-review -fail-on-error=false
+          npm run lint 2>&1 | reviewdog -f=eslint -name="GameScript Linter" -reporter=github-pr-review -fail-on-error=false
 
   # Lint workspace files
   lint-workspaces:
@@ -72,7 +72,7 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Run ESLint on workspace files and pipe to reviewdog
-          npm run lint:workspaces 2>&1 | reviewdog -f=eslint -name="Workspace Linter" -reporter=github-pr-review -fail-on-error=false
+          npm run lint 2>&1 | reviewdog -f=eslint -name="Workspace Linter" -reporter=github-pr-review -fail-on-error=false
 
   # Validate YAML content
   validate-yaml:
