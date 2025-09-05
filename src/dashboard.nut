@@ -34,7 +34,7 @@ class Dashboard {
         // Create player goal window
         this.player_goal_window = GSWindow.New("Personal Goals", "Your individual objectives");
         GSWindow.SetSize(this.player_goal_window, 400, 300);
-}
+    }
     
     /*
      * Update dashboard with current goal progress
@@ -42,7 +42,7 @@ class Dashboard {
     function Update(shared_goals, player_goals) {
         this.UpdateSharedGoalWindow(shared_goals);
         this.UpdatePlayerGoalWindow(player_goals);
-    this.UpdateLeaderboard(shared_goals, player_goals);
+        this.UpdateLeaderboard(shared_goals, player_goals);
     }
     
     /*
@@ -53,7 +53,7 @@ class Dashboard {
         GSWindow.RemoveAllWidgets(this.shared_goal_window);
         
         // Add header
-local y = 10;
+        local y = 10;
         GSWindow.AddLabel(this.shared_goal_window, 0, y, 0, "Shared Goals");
         y += 20;
         
@@ -61,7 +61,7 @@ local y = 10;
         foreach (idx, goal in shared_goals) {
             // Goal description
             GSWindow.AddLabel(this.shared_goal_window, 10, y, 1, goal.description);
-        y += 15;
+            y += 15;
             
             // Progress bar
             local progress_percent = (goal.current_progress * 100) / goal.target;
@@ -70,20 +70,20 @@ local y = 10;
             
             // Progress text
             local progress_text = goal.current_progress + " / " + goal.target + " (" + progress_percent + "%)";
-    GSWindow.AddLabel(this.shared_goal_window, 10, y, 3, progress_text);
+            GSWindow.AddLabel(this.shared_goal_window, 10, y, 3, progress_text);
             y += 15;
             
-    // Tier information if applicable
+            // Tier information if applicable
             local tier = goal.GetCurrentTier();
             if (tier != null) {
-        local tier_text = "Current tier: ";
+                local tier_text = "Current tier: ";
                 switch (tier) {
-                    case GoalTier.BRONZE: tier_text += "Bronze" break;
+                    case GoalTier.BRONZE: tier_text += "Bronze"; break;
                     case GoalTier.SILVER: tier_text += "Silver"; break;
-            case GoalTier.GOLD: tier_text += "Gold"; break;
+                    case GoalTier.GOLD: tier_text += "Gold"; break;
                 }
                 GSWindow.AddLabel(this.shared_goal_window, 10, y, 4, tier_text);
-            y += 15;
+                y += 15;
             }
             
             // Company contributions
@@ -96,13 +96,13 @@ local y = 10;
                 local contribution_text = company_name + ": " + contribution + " (" + contribution_percent + "%)";
                 
                 // Color code based on contribution
-local color = GSColor.RGB(255, 255, 255); // Default white
+                local color = GSColor.RGB(255, 255, 255); // Default white
                 if (contribution_percent >= 50) {
                     color = GSColor.RGB(0, 255, 0); // Green for good contribution
                 } else if (contribution_percent >= 25) {
                     color = GSColor.RGB(255, 255, 0); // Yellow for medium contribution
                 } else {
-color = GSColor.RGB(255, 0, 0); // Red for low contribution
+                    color = GSColor.RGB(255, 0, 0); // Red for low contribution
                 }
                 
                 GSWindow.AddLabelColored(this.shared_goal_window, 20, y, 6 + idx, contribution_text, color);
@@ -128,22 +128,22 @@ color = GSColor.RGB(255, 0, 0); // Red for low contribution
             
             // Add header
             local y = 10;
-.AddLabel(this.player_goal_window, 0, y, 0, "Personal Goals for " + GSCompany.GetName(company_id));
+            GSWindow.AddLabel(this.player_goal_window, 0, y, 0, "Personal Goals for " + GSCompany.GetName(company_id));
             y += 20;
             
             // Add goal information
             foreach (idx, goal in goals) {
                 // Goal description
-GSWindow.AddLabel(this.player_goal_window, 10, y, 1, goal.description);
+                GSWindow.AddLabel(this.player_goal_window, 10, y, 1, goal.description);
                 y += 15;
                 
                 // Progress bar
                 local progress_percent = goal.GetProgressPercentage();
-GSWindow.AddProgressBar(this.player_goal_window, 10, y, 2, progress_percent);
+                GSWindow.AddProgressBar(this.player_goal_window, 10, y, 2, progress_percent);
                 y += 15;
                 
                 // Progress text
-l progress_text = goal.current_progress + " / " + goal.target + " (" + progress_percent + "%)";
+                local progress_text = goal.current_progress + " / " + goal.target + " (" + progress_percent + "%)";
                 GSWindow.AddLabel(this.player_goal_window, 10, y, 3, progress_text);
                 y += 15;
 
@@ -153,16 +153,16 @@ l progress_text = goal.current_progress + " / " + goal.target + " (" + progress_
                 y += 15;
                 
                 // Completion status
-if (goal.IsCompleted()) {
+                if (goal.IsCompleted()) {
                     GSWindow.AddLabelColored(this.player_goal_window, 10, y, 5, "COMPLETED", GSColor.RGB(0, 255, 0));
                 } else {
-    local remaining = goal.GetRemainingProgress();
+                    local remaining = goal.GetRemainingProgress();
                     GSWindow.AddLabel(this.player_goal_window, 10, y, 5, "Remaining: " + remaining);
                 }
                 y += 20;
             }
             
-window only to the specific company
+            // Show window only to the specific company
             GSWindow.ShowWindow(this.player_goal_window, company_id);
         }
     }
@@ -175,27 +175,27 @@ window only to the specific company
         this.leaderboard = {};
 
         // Initialize leaderboard for all companies
-st = GSCompanyList();
+        local company_list = GSCompanyList();
         foreach (company_id, _ in company_list) {
             this.leaderboard[company_id] <- {
                 shared_contribution = 0,
                 personal_completion = 0,
                 total_score = 0
             };
-
+        }
         
         // Calculate shared goal contributions
         foreach (goal in shared_goals) {
             foreach (company_id, contribution in goal.contributions) {
                 if (company_id in this.leaderboard) {
-                this.leaderboard[company_id].shared_contribution += 
+                    this.leaderboard[company_id].shared_contribution += 
                         goal.GetCompanyContribution(company_id);
                 }
             }
         }
         
         // Calculate personal goal completion
-    foreach (company_id, goals in player_goals) {
+        foreach (company_id, goals in player_goals) {
             if (company_id in this.leaderboard) {
                 local completed = 0;
                 local total = 0;
@@ -210,30 +210,30 @@ st = GSCompanyList();
                 if (total > 0) {
                     this.leaderboard[company_id].personal_completion = 
                         (completed * 100) / total;
-            }
+                }
             }
         }
         
         // Calculate total score (50% shared, 50% personal)
         foreach (company_id, scores in this.leaderboard) {
             this.leaderboard[company_id].total_score = 
-        (this.leaderboard[company_id].shared_contribution * 0.5) + 
+                (this.leaderboard[company_id].shared_contribution * 0.5) + 
                 (this.leaderboard[company_id].personal_completion * 0.5);
         }
-}
+    }
     
     /*
      * Display session summary
      */
     function DisplaySessionSummary() {
         // Create summary window
-    local summary_window = GSWindow.New("Session Summary", "Coopetition Results");
+        local summary_window = GSWindow.New("Session Summary", "Coopetition Results");
         GSWindow.SetSize(summary_window, 500, 400);
         
         // Add header
         local y = 10;
         GSWindow.AddLabel(summary_window, 0, y, 0, "Session Summary");
-y += 20;
+        y += 20;
         
         // Sort companies by total score
         local sorted_companies = [];
@@ -244,7 +244,7 @@ y += 20;
             });
         }
         
-sorted_companies.sort(function(a, b) {
+        sorted_companies.sort(function(a, b) {
             return b.total_score - a.total_score;
         });
         
@@ -252,16 +252,16 @@ sorted_companies.sort(function(a, b) {
         GSWindow.AddLabel(summary_window, 10, y, 1, "Coopetition Rankings:");
         y += 20;
         
-foreach (idx, company in sorted_companies) {
+        foreach (idx, company in sorted_companies) {
             local company_id = company.company_id;
             local company_name = GSCompany.GetName(company_id);
-        local shared_score = this.leaderboard[company_id].shared_contribution;
+            local shared_score = this.leaderboard[company_id].shared_contribution;
             local personal_score = this.leaderboard[company_id].personal_completion;
             local total_score = this.leaderboard[company_id].total_score;
             
             local rank_text = (idx + 1) + ". " + company_name + 
                              " - Total: " + total_score + "%" + 
-                     " (Shared: " + shared_score + "%, Personal: " + personal_score + "%)";
+                             " (Shared: " + shared_score + "%, Personal: " + personal_score + "%)";
             
             // Color code based on ranking
             local color = GSColor.RGB(255, 255, 255); // Default white
@@ -269,7 +269,7 @@ foreach (idx, company in sorted_companies) {
                 color = GSColor.RGB(255, 215, 0); // Gold for 1st place
             } else if (idx == 1) {
                 color = GSColor.RGB(192, 192, 192); // Silver for 2nd place
-    } else if (idx == 2) {
+            } else if (idx == 2) {
                 color = GSColor.RGB(205, 127, 50); // Bronze for 3rd place
             }
             
@@ -277,7 +277,7 @@ foreach (idx, company in sorted_companies) {
             y += 15;
         }
         
-// Show window to all companies
+        // Show window to all companies
         GSWindow.ShowWindow(summary_window, GSCompany.COMPANY_INVALID);
     }
 
@@ -288,42 +288,42 @@ foreach (idx, company in sorted_companies) {
         if (company_id == null) {
             // Send to all companies
             GSNews.Create(GSNews.NT_GENERAL, message, GSCompany.COMPANY_INVALID, GSNews.NR_NONE, 0);
-} else {
+        } else {
             // Send to specific company
             GSNews.Create(GSNews.NT_GENERAL, message, company_id, GSNews.NR_NONE, 0);
-}
+        }
     }
     
     /*
      * Send conflict alert when one player dominates a shared goal
-
+     */
     function SendConflictAlert(goal, dominant_company_id, dominance_percent) {
         local company_name = GSCompany.GetName(dominant_company_id);
-    local message = company_name + " is dominating the shared goal: " + 
+        local message = company_name + " is dominating the shared goal: " + 
                        goal.description + " with " + dominance_percent + "% contribution.";
         
         // Send to all companies except the dominant one
-// Note: GSCompanyList doesn't exist, so we iterate manually
+        // Note: GSCompanyList doesn't exist, so we iterate manually
         for (local company_id = 0; company_id < 16; company_id++) {
             if (GSCompany.ResolveCompanyID(company_id) != GSCompany.COMPANY_INVALID && company_id != dominant_company_id) {
-        GSNews.Create(GSNews.NT_GENERAL, message, company_id, GSNews.NR_NONE, 0);
+                GSNews.Create(GSNews.NT_GENERAL, message, company_id, GSNews.NR_NONE, 0);
             }
         }
-}
+    }
 
     /*
-ender a concise shared goals window for all companies
+     * Render a concise shared goals window for all companies
      */
     function RenderSharedGoalsWindow(shared_goals) {
-// In GS API, custom windows can't be created; use StoryBook instead
+        // In GS API, custom windows can't be created; use StoryBook instead
         this.UpdateStoryBook(shared_goals, {}, false);
     }
 
     /*
      * Render personal goals windows, one per company
-
+     */
     function RenderPlayerGoalsWindows(player_goals) {
-// In GS API, custom windows can't be created; use StoryBook instead
+        // In GS API, custom windows can't be created; use StoryBook instead
         this.UpdateStoryBook([], player_goals, false);
     }
 

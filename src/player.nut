@@ -61,7 +61,7 @@ class PlayerGoal {
         return this.current_progress;
     }
     
-/*
+    /*
      * General update function called regularly
      */
     function Update() {
@@ -70,13 +70,13 @@ class PlayerGoal {
             case PlayerGoalType.PROFIT:
                 // Get company's quarterly profit (API v14+ under GSCompany)
                 local company_id = GSCompany.ResolveCompanyID(GSCompany.COMPANY_SELF);
-        local economy = GSCompanyEconomy.GetQuarterlyIncome(company_id, GSCompanyEconomy.CURRENT_QUARTER);
+                local economy = GSCompanyEconomy.GetQuarterlyIncome(company_id, GSCompanyEconomy.CURRENT_QUARTER);
                 this.current_progress = economy;
                 break;
         
             case PlayerGoalType.PERFORMANCE:
                 // Get company's performance rating
-        local company_id = GSCompany.ResolveCompanyID(GSCompany.COMPANY_SELF);
+                local company_id = GSCompany.ResolveCompanyID(GSCompany.COMPANY_SELF);
                 local performance = GSCompany.GetQuarterlyPerformanceRating(company_id, GSDate.GetCurrentDate());
                 this.current_progress = performance;
                 break;
@@ -95,7 +95,7 @@ class PlayerGoal {
                 this.current_progress = count;
                 break;
                 
- PlayerGoalType.VEHICLE_COUNT:
+            case PlayerGoalType.VEHICLE_COUNT:
                 // Count company's vehicles of specific type
                 if (this.vehicle_type != null) {
                     local company_id = GSCompany.ResolveCompanyID(GSCompany.COMPANY_SELF);
@@ -142,7 +142,7 @@ class PlayerGoal {
             case PlayerGoalType.ROUTE_EFFICIENCY:
                 // This is more complex and would require tracking specific routes
                 // For now, we'll leave this as a manual update
-k;
+                break;
         }
     }
 
@@ -155,33 +155,33 @@ k;
 
     /*
      * Get progress percentage
-
+     */
     function GetProgressPercentage() {
         if (this.target == 0) return 0;
         return (this.current_progress * 100) / this.target;
     }
     
-
+    /*
      * Get remaining progress needed
      */
     function GetRemainingProgress() {
-et - this.current_progress;
+        return this.target - this.current_progress;
     }
     
     /*
      * Save goal state to table for savegame
      */
     function SaveToTable() {
-
+        local data = {};
         
-id;
+        data.id <- this.id;
         data.type <- this.type;
         data.description <- this.description;
         data.target <- this.target;
         data.current_progress <- this.current_progress;
         data.start_date <- this.start_date;
         data.end_date <- this.end_date;
-<- this.reward;
+        data.reward <- this.reward;
         data.reward_given <- this.reward_given;
         
         // Save type-specific properties
@@ -194,7 +194,7 @@ id;
     /*
      * Load goal state from table (savegame)
      */
-static function LoadFromTable(data) {
+    static function LoadFromTable(data) {
         local goal = PlayerGoal(data.type, data.description, data.target, data.reward);
         
         goal.id = data.id;
@@ -226,13 +226,13 @@ static function LoadFromTable(data) {
     static function CreateProfitGoal(target, reward) {
         local description = "Reach quarterly profit of £" + target;
         
-    local goal = PlayerGoal(PlayerGoalType.PROFIT, description, target, reward);
+        local goal = PlayerGoal(PlayerGoalType.PROFIT, description, target, reward);
         
         return goal;
     }
     
     static function CreatePerformanceGoal(target, reward) {
-local description = "Achieve performance rating of " + target;
+        local description = "Achieve performance rating of " + target;
         
         local goal = PlayerGoal(PlayerGoalType.PERFORMANCE, description, target, reward);
         
@@ -251,10 +251,10 @@ local description = "Achieve performance rating of " + target;
         local type_name = "";
         switch (vehicle_type) {
             case GSVehicle.VT_RAIL: type_name = "trains"; break;
-    case GSVehicle.VT_ROAD: type_name = "road vehicles"; break;
+            case GSVehicle.VT_ROAD: type_name = "road vehicles"; break;
             case GSVehicle.VT_WATER: type_name = "ships"; break;
             case GSVehicle.VT_AIR: type_name = "aircraft"; break;
-    }
+        }
         
         local description = "Operate " + target + " " + type_name;
         
