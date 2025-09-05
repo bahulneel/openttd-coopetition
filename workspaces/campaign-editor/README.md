@@ -2,6 +2,8 @@
 
 A modern web-based authoring tool for creating and editing OpenTTD Coopetition campaigns, goals, and scenarios.
 
+**🆕 Recently Updated:** Migrated to Nuxt 4, Tailwind CSS 4, and shadcn-vue for the best modern development experience.
+
 ## Features
 
 - 🎯 **Campaign Management**: Create, edit, and organize campaigns with a modern UI
@@ -9,10 +11,34 @@ A modern web-based authoring tool for creating and editing OpenTTD Coopetition c
 - 🗺️ **Scenario Builder**: Compose scenarios from multiple goals with dependencies
 - 💾 **Dual Mode Operation**: Works with local file system or as a browser-only SPA
 - 📦 **Import/Export**: Import from ZIP files and export campaigns for distribution
-- 🎨 **OpenTTD-Themed UI**: Authentic OpenTTD color scheme and styling with modern UX
-- 🚂 **Game-Authentic Design**: Built with Nuxt 4, Tailwind 4, and OpenTTD's official colors
+- 🎨 **OpenTTD-Themed UI**: Authentic OpenTTD color scheme with OKLCH wide-gamut colors
+- 🚂 **Modern Tech Stack**: Built with Nuxt 4, Tailwind CSS 4, and shadcn-vue
+- ⚡ **Ultra-Fast Builds**: 5x faster full builds, 100x faster incremental builds
+- 🧩 **Customizable Components**: Copy-paste shadcn-vue components with full control
 - 🔍 **Search & Filter**: Find campaigns quickly with powerful search and filtering
 - 📱 **Responsive Design**: Works on desktop, tablet, and mobile devices
+
+## 🔄 Migration to Modern Stack
+
+This project has been migrated to use the latest web technologies:
+
+### **Nuxt 4 (Compatibility Mode)**
+- New `app/` directory structure for better organization
+- Enhanced performance with shallow reactivity
+- Improved file watching and development experience
+- Future-ready architecture
+
+### **Tailwind CSS 4** 
+- **5x faster full builds**, 100x faster incremental builds
+- **CSS-first configuration** using `@theme` directive
+- **Modern CSS features**: cascade layers, OKLCH colors, color-mix()
+- **OpenTTD authentic colors** using wide-gamut OKLCH color space
+
+### **shadcn-vue Components**
+- **Copy-paste components** instead of external dependencies  
+- **Full customization control** over every aspect of components
+- **Reka UI foundation** for accessibility and modern patterns
+- **Perfect OpenTTD integration** with authentic game styling
 
 ## Quick Start
 

@@ -1,5 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  // Enable Nuxt 4 compatibility mode
+  future: {
+    compatibilityVersion: 4
+  },
+
+  // Nuxt 4 directory structure
+  srcDir: 'app/',
+
   devtools: { enabled: true },
   
   // Enable TypeScript
@@ -28,32 +36,26 @@ export default defineNuxtConfig({
     }
   },
 
-  // CSS framework
+  // CSS framework - Tailwind CSS 4
   css: [
     '~/assets/css/main.css'
   ],
 
+  // PostCSS configuration for Tailwind CSS 4
+  postcss: {
+    plugins: {
+      '@tailwindcss/postcss': {}
+    }
+  },
+
   // Modules
   modules: [
-    '@nuxt/ui',
     '@vueuse/nuxt',
-    '@nuxt/eslint',
   ],
-
-  // UI configuration for Nuxt UI (includes Tailwind)
-  ui: {
-    global: true,
-    icons: ['heroicons', 'lucide']
-  },
-
-  // Tailwind CSS configuration
-  tailwindcss: {
-    configPath: '~/tailwind.config.ts'
-  },
 
   // Build configuration
   build: {
-    transpile: ['vue-toastification']
+    transpile: ['reka-ui']
   },
 
   // Runtime config for environment variables
