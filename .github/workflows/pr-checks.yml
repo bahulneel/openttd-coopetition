@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   # Run all validation checks
-  validate:
+  check:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository

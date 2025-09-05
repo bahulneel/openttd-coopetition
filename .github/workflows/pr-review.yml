@@ -3,8 +3,7 @@ name: PR Code Review
 # Trigger on pull requests
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
-  pull_request_target:
+    branches: [ develop ]
     types: [opened, synchronize, reopened]
 
 # Define permissions needed for reviewdog
