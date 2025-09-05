@@ -40,7 +40,8 @@
           <!-- Actions -->
           <div class="flex items-center space-x-3">
             <!-- SPA Mode indicator -->
-            <div v-if="spaMode"
+            <div
+v-if="spaMode"
               class="text-xs bg-openttd-light-blue/20 text-openttd-blue px-3 py-1 rounded border-2 border-openttd-blue/30">
               Browser Mode
             </div>
@@ -49,10 +50,8 @@
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button variant="outline" size="sm" class="openttd-button">
-                  <Moon
-                    class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <Sun
-                    class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <Moon class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Sun class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                   <span class="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -112,7 +111,8 @@
             </span>
           </div>
           <div class="flex items-center space-x-4 text-sm text-foreground/80">
-            <a href="https://github.com/bahulneel/openttd-coopetition" target="_blank" rel="noopener noreferrer"
+            <a
+href="https://github.com/bahulneel/openttd-coopetition" target="_blank" rel="noopener noreferrer"
               class="hover:text-foreground transition-colors underline">
               📂 GitHub
             </a>
@@ -126,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { Moon, Sun } from '~/utils/icons'
+import { Moon, Sun } from 'lucide-vue-next'
 
 const colorMode = useColorMode()
 const { public: { spaMode } } = useRuntimeConfig()

@@ -16,9 +16,9 @@ useSeoMeta({
   ogType: 'website'
 })
 
-// Check if we're in SPA mode
-const { public: { spaMode } } = useRuntimeConfig()
+// Check if we have backend capabilities
+const hasBackend = useHasBackend()
 
-// Provide global state for SPA mode
-provide('spaMode', spaMode)
+// Provide global state for backend detection
+provide('hasBackend', hasBackend)
 </script>

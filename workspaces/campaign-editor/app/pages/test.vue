@@ -189,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { Folder, Moon, Sun, Plus, Save, Settings } from '~/utils/icons'
+import { Folder, Moon, Sun, Plus, Save, Settings } from 'lucide-vue-next'
 
 definePageMeta({
   title: 'Test - OpenTTD Campaign Editor'

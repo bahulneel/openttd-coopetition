@@ -67,7 +67,7 @@ const { goals, loading, loadGoals } = useCampaignStore()
 
 // Load goals on mount
 onMounted(async () => {
-  if (goals.value.length === 0) {
+  if (goals.length === 0) {
     await loadGoals()
   }
 })

@@ -51,7 +51,8 @@
           👁️ Preview
         </Button>
 
-        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+        <Button
+:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
           @click="saveCampaign">
           {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
         </Button>
@@ -138,10 +139,12 @@
               <Label for="tags">Tags</Label>
               <div class="space-y-2">
                 <div class="flex flex-wrap gap-2">
-                  <Badge v-for="(tag, index) in formData.meta?.tags || []" :key="index" variant="secondary"
+                  <Badge
+v-for="(tag, index) in formData.meta?.tags || []" :key="index" variant="secondary"
                     class="flex items-center space-x-1">
                     <span>{{ tag }}</span>
-                    <button type="button" class="ml-1 text-muted-foreground hover:text-foreground text-sm"
+                    <button
+type="button" class="ml-1 text-muted-foreground hover:text-foreground text-sm"
                       @click="removeTag(index)">
                       ✕
                     </button>
@@ -150,7 +153,8 @@
 
                 <div class="flex space-x-2">
                   <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
-                  <Button type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
+                  <Button
+type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
                     @click="addTag">
                     ➕ Add
                   </Button>
@@ -239,7 +243,8 @@
           </div>
 
           <div v-else class="space-y-4">
-            <div v-for="(scenario, index) in formData.scenarios" :key="index"
+            <div
+v-for="(scenario, index) in formData.scenarios" :key="index"
               class="bg-secondary/50 rounded-md p-4 border border-border">
               <div class="flex items-center justify-between mb-4">
                 <h4 class="font-medium">Scenario {{ index + 1 }}</h4>
@@ -454,7 +459,8 @@
               🔄 Reset
             </Button>
 
-            <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+            <Button
+type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
               @click="saveCampaign">
               {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
             </Button>
@@ -500,11 +506,11 @@ const campaignId = computed(() => route.params.id as string)
 const isNew = computed(() => campaignId.value === 'new')
 
 // Form values and validation
-const { values: formData, errors, meta } = form
+const { values: formData, meta } = form
 
 // Load data on mount
 onMounted(async () => {
-  if (campaigns.value.length === 0 || availableScenarios.value.length === 0) {
+  if (campaigns.length === 0 || availableScenarios.length === 0) {
     await loadAll()
   }
 
@@ -517,7 +523,7 @@ onMounted(async () => {
       form.setValues(JSON.parse(JSON.stringify(campaign))) // Deep clone
       originalData.value = campaign
     } else {
-      error.value = 'Campaign not found'
+      // error.value = 'Campaign not found' // Error is readonly from store
     }
   }
 })
@@ -591,9 +597,9 @@ const addScenario = () => {
 
 const removeScenario = (index: number) => {
   const currentScenarios = formData.scenarios || []
-  const newScenarios = currentScenarios.filter((_: any, i: number) => i !== index)
+  const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
   // Reorder remaining scenarios
-  newScenarios.forEach((scenario: any, idx: number) => {
+  newScenarios.forEach((scenario: { order: number }, idx: number) => {
     scenario.order = idx + 1
   })
   form.setFieldValue('scenarios', newScenarios)

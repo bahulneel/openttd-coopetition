@@ -1,40 +1,30 @@
+import { defineStore } from 'pinia'
 import type { 
   Campaign, 
   Goal, 
   Scenario, 
-  CampaignManifest, 
-  CampaignStore, 
-  FileSystemAdapter 
+  CampaignManifest
 } from '~/types/campaign'
-import { createFileSystemAdapter } from '~/utils/fileSystem'
 
-// Global store state
-const store = reactive<CampaignStore>({
-  campaigns: [],
-  goals: [],
-  scenarios: [],
-  manifest: undefined,
-  loading: false,
-  error: undefined
-})
+export const useCampaignStore = defineStore('campaign', () => {
+  // State
+  const campaigns = ref<Campaign[]>([])
+  const goals = ref<Goal[]>([])
+  const scenarios = ref<Scenario[]>([])
+  const manifest = ref<CampaignManifest | undefined>(undefined)
+  const loading = ref(false)
+  const error = ref<string | undefined>(undefined)
 
-let fileSystem: FileSystemAdapter | undefined = undefined
-
-export const useCampaignStore = () => {
-  const { public: { spaMode } } = useRuntimeConfig()
-
-  // Initialize file system adapter
-  if (!fileSystem) {
-    fileSystem = createFileSystemAdapter(spaMode)
-  }
+  // Get file system instance
+  const fileSystem = useFileSystem()
 
   // Loading state management
-  const setLoading = (loading: boolean) => {
-    store.loading = loading
+  const setLoading = (loadingState: boolean) => {
+    loading.value = loadingState
   }
 
-  const setError = (error: string | undefined) => {
-    store.error = error
+  const setError = (errorState: string | undefined) => {
+    error.value = errorState
   }
 
   // Data loading
@@ -45,20 +35,20 @@ export const useCampaignStore = () => {
     setError(undefined)
 
     try {
-      const [campaigns, goals, scenarios, manifest] = await Promise.all([
+      const [campaignsData, goalsData, scenariosData, manifestData] = await Promise.all([
         fileSystem.loadCampaigns(),
         fileSystem.loadGoals(),
         fileSystem.loadScenarios(),
         fileSystem.loadManifest()
       ])
 
-      store.campaigns = campaigns
-      store.goals = goals
-      store.scenarios = scenarios
-      store.manifest = manifest || undefined
-    } catch (error) {
-      console.error('Failed to load data:', error)
-      setError(error instanceof Error ? error.message : 'Failed to load data')
+      campaigns.value = campaignsData
+      goals.value = goalsData
+      scenarios.value = scenariosData
+      manifest.value = manifestData || undefined
+    } catch (err) {
+      console.error('Failed to load data:', err)
+      setError(err instanceof Error ? err.message : 'Failed to load data')
     } finally {
       setLoading(false)
     }
@@ -71,9 +61,9 @@ export const useCampaignStore = () => {
     setError(undefined)
 
     try {
-      store.campaigns = await fileSystem.loadCampaigns()
-    } catch (error) {
-      console.error('Failed to load campaigns:', error)
+      campaigns.value = await fileSystem.loadCampaigns()
+    } catch (err) {
+      console.error('Failed to load campaigns:', err)
       setError('Failed to load campaigns')
     } finally {
       setLoading(false)
@@ -87,9 +77,9 @@ export const useCampaignStore = () => {
     setError(undefined)
 
     try {
-      store.goals = await fileSystem.loadGoals()
-    } catch (error) {
-      console.error('Failed to load goals:', error)
+      goals.value = await fileSystem.loadGoals()
+    } catch (err) {
+      console.error('Failed to load goals:', err)
       setError('Failed to load goals')
     } finally {
       setLoading(false)
@@ -103,9 +93,9 @@ export const useCampaignStore = () => {
     setError(undefined)
 
     try {
-      store.scenarios = await fileSystem.loadScenarios()
-    } catch (error) {
-      console.error('Failed to load scenarios:', error)
+      scenarios.value = await fileSystem.loadScenarios()
+    } catch (err) {
+      console.error('Failed to load scenarios:', err)
       setError('Failed to load scenarios')
     } finally {
       setLoading(false)
@@ -121,16 +111,16 @@ export const useCampaignStore = () => {
       await fileSystem.saveCampaign(campaign)
       
       // Update store
-      const existingIndex = store.campaigns.findIndex(c => c.id === campaign.id)
+      const existingIndex = campaigns.value.findIndex(c => c.id === campaign.id)
       if (existingIndex !== -1) {
-        store.campaigns[existingIndex] = campaign
+        campaigns.value[existingIndex] = campaign
       } else {
-        store.campaigns.push(campaign)
+        campaigns.value.push(campaign)
       }
-    } catch (error) {
-      console.error('Failed to save campaign:', error)
+    } catch (err) {
+      console.error('Failed to save campaign:', err)
       setError('Failed to save campaign')
-      throw error
+      throw err
     }
   }
 
@@ -140,16 +130,16 @@ export const useCampaignStore = () => {
     setError(undefined)
     try {
       await fileSystem.deleteCampaign(id)
-      store.campaigns = store.campaigns.filter(c => c.id !== id)
-    } catch (error) {
-      console.error('Failed to delete campaign:', error)
+      campaigns.value = campaigns.value.filter(c => c.id !== id)
+    } catch (err) {
+      console.error('Failed to delete campaign:', err)
       setError('Failed to delete campaign')
-      throw error
+      throw err
     }
   }
 
   const getCampaign = (id: string): Campaign | undefined => {
-    return store.campaigns.find(c => c.id === id)
+    return campaigns.value.find(c => c.id === id)
   }
 
   const duplicateCampaign = async (id: string, newId?: string): Promise<Campaign> => {
@@ -158,7 +148,7 @@ export const useCampaignStore = () => {
 
     const duplicate: Campaign = {
       ...JSON.parse(JSON.stringify(original)), // Deep clone
-      id: newId || `${original.id}_copy_${Date.now()}`,
+      id: newId || useIdentifier(`${original.id}_copy`),
       meta: {
         ...original.meta,
         title: original.meta?.title ? `${original.meta.title} (Copy)` : undefined
@@ -179,16 +169,16 @@ export const useCampaignStore = () => {
     try {
       await fileSystem.saveGoal(goal)
       
-      const existingIndex = store.goals.findIndex(g => g.id === goal.id)
+      const existingIndex = goals.value.findIndex(g => g.id === goal.id)
       if (existingIndex !== -1) {
-        store.goals[existingIndex] = goal
+        goals.value[existingIndex] = goal
       } else {
-        store.goals.push(goal)
+        goals.value.push(goal)
       }
-    } catch (error) {
-      console.error('Failed to save goal:', error)
+    } catch (err) {
+      console.error('Failed to save goal:', err)
       setError('Failed to save goal')
-      throw error
+      throw err
     }
   }
 
@@ -198,16 +188,16 @@ export const useCampaignStore = () => {
     setError(undefined)
     try {
       await fileSystem.deleteGoal(id)
-      store.goals = store.goals.filter(g => g.id !== id)
-    } catch (error) {
-      console.error('Failed to delete goal:', error)
+      goals.value = goals.value.filter(g => g.id !== id)
+    } catch (err) {
+      console.error('Failed to delete goal:', err)
       setError('Failed to delete goal')
-      throw error
+      throw err
     }
   }
 
   const getGoal = (id: string): Goal | undefined => {
-    return store.goals.find(g => g.id === id)
+    return goals.value.find(g => g.id === id)
   }
 
   const duplicateGoal = async (id: string, newId?: string): Promise<Goal> => {
@@ -216,7 +206,7 @@ export const useCampaignStore = () => {
 
     const duplicate: Goal = {
       ...JSON.parse(JSON.stringify(original)),
-      id: newId || `${original.id}_copy_${Date.now()}`,
+      id: newId || useIdentifier(`${original.id}_copy`),
       meta: {
         ...original.meta,
         title: original.meta?.title ? `${original.meta.title} (Copy)` : undefined
@@ -235,16 +225,16 @@ export const useCampaignStore = () => {
     try {
       await fileSystem.saveScenario(scenario)
       
-      const existingIndex = store.scenarios.findIndex(s => s.id === scenario.id)
+      const existingIndex = scenarios.value.findIndex(s => s.id === scenario.id)
       if (existingIndex !== -1) {
-        store.scenarios[existingIndex] = scenario
+        scenarios.value[existingIndex] = scenario
       } else {
-        store.scenarios.push(scenario)
+        scenarios.value.push(scenario)
       }
-    } catch (error) {
-      console.error('Failed to save scenario:', error)
+    } catch (err) {
+      console.error('Failed to save scenario:', err)
       setError('Failed to save scenario')
-      throw error
+      throw err
     }
   }
 
@@ -254,16 +244,16 @@ export const useCampaignStore = () => {
     setError(undefined)
     try {
       await fileSystem.deleteScenario(id)
-      store.scenarios = store.scenarios.filter(s => s.id !== id)
-    } catch (error) {
-      console.error('Failed to delete scenario:', error)
+      scenarios.value = scenarios.value.filter(s => s.id !== id)
+    } catch (err) {
+      console.error('Failed to delete scenario:', err)
       setError('Failed to delete scenario')
-      throw error
+      throw err
     }
   }
 
   const getScenario = (id: string): Scenario | undefined => {
-    return store.scenarios.find(s => s.id === id)
+    return scenarios.value.find(s => s.id === id)
   }
 
   const duplicateScenario = async (id: string, newId?: string): Promise<Scenario> => {
@@ -272,7 +262,7 @@ export const useCampaignStore = () => {
 
     const duplicate: Scenario = {
       ...JSON.parse(JSON.stringify(original)),
-      id: newId || `${original.id}_copy_${Date.now()}`,
+      id: newId || useIdentifier(`${original.id}_copy`),
       meta: {
         ...original.meta,
         title: original.meta?.title ? `${original.meta.title} (Copy)` : undefined
@@ -284,17 +274,17 @@ export const useCampaignStore = () => {
   }
 
   // Manifest operations
-  const saveManifest = async (manifest: CampaignManifest) => {
+  const saveManifest = async (manifestData: CampaignManifest) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
     setError(undefined)
     try {
-      await fileSystem.saveManifest(manifest)
-      store.manifest = manifest
-    } catch (error) {
-      console.error('Failed to save manifest:', error)
+      await fileSystem.saveManifest(manifestData)
+      manifest.value = manifestData
+    } catch (err) {
+      console.error('Failed to save manifest:', err)
       setError('Failed to save manifest')
-      throw error
+      throw err
     }
   }
 
@@ -304,27 +294,24 @@ export const useCampaignStore = () => {
 
     try {
       return await fileSystem.exportAll()
-    } catch (error) {
-      console.error('Failed to export data:', error)
+    } catch (err) {
+      console.error('Failed to export data:', err)
       setError('Failed to export data')
-      throw error
+      throw err
     }
   }
 
   const importFromFile = async (file: File) => {
-    if (!fileSystem) throw new Error('File system not initialized')
-
-    // For SPA mode, we can import directly
-    if (spaMode && 'importFromZip' in fileSystem) {
+    // Check if the file system adapter supports ZIP import
+    if (hasFeatureZipImport(fileSystem)) {
       setLoading(true)
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic method call on optional interface property
-        await (fileSystem as any).importFromZip(file)
+        await fileSystem.importFromZip(file)
         await loadAll() // Reload all data
-      } catch (error) {
-        console.error('Failed to import data:', error)
+      } catch (err) {
+        console.error('Failed to import data:', err)
         setError('Failed to import data')
-        throw error
+        throw err
       } finally {
         setLoading(false)
       }
@@ -334,9 +321,8 @@ export const useCampaignStore = () => {
   }
 
   const downloadExport = async (filename = 'campaigns.zip') => {
-    if (spaMode && fileSystem && 'downloadExport' in fileSystem) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic method call on optional interface property
-      await (fileSystem as any).downloadExport(filename)
+    if (hasFeatureZipExport(fileSystem)) {
+      await fileSystem.downloadExport(filename)
     } else {
       const blob = await exportAll()
       const url = URL.createObjectURL(blob)
@@ -350,7 +336,7 @@ export const useCampaignStore = () => {
 
   // Utility functions
   const createEmptyCampaign = (id?: string): Campaign => ({
-    id: id || `campaign_${Date.now()}`,
+    id: id || useIdentifier('campaign'),
     comment: 'New campaign created with the editor',
     scenarios: [],
     constraints: {
@@ -368,7 +354,7 @@ export const useCampaignStore = () => {
   })
 
   const createEmptyGoal = (id?: string): Goal => ({
-    id: id || `goal_${Date.now()}`,
+    id: id || useIdentifier('goal'),
     comment: 'New goal created with the editor',
     type: 'player',
     objective: {
@@ -398,7 +384,7 @@ export const useCampaignStore = () => {
   })
 
   const createEmptyScenario = (id?: string): Scenario => ({
-    id: id || `scenario_${Date.now()}`,
+    id: id || useIdentifier('scenario'),
     comment: 'New scenario created with the editor',
     goals: [],
     constraints: {
@@ -414,7 +400,7 @@ export const useCampaignStore = () => {
   // Search and filtering
   const searchCampaigns = (query: string) => {
     const lowerQuery = query.toLowerCase()
-    return store.campaigns.filter(campaign => 
+    return campaigns.value.filter(campaign => 
       campaign.id.toLowerCase().includes(lowerQuery) ||
       campaign.meta?.title?.toLowerCase().includes(lowerQuery) ||
       campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
@@ -424,7 +410,7 @@ export const useCampaignStore = () => {
 
   const searchGoals = (query: string) => {
     const lowerQuery = query.toLowerCase()
-    return store.goals.filter(goal =>
+    return goals.value.filter(goal =>
       goal.id.toLowerCase().includes(lowerQuery) ||
       goal.meta?.title?.toLowerCase().includes(lowerQuery) ||
       goal.meta?.description?.toLowerCase().includes(lowerQuery)
@@ -433,7 +419,7 @@ export const useCampaignStore = () => {
 
   const searchScenarios = (query: string) => {
     const lowerQuery = query.toLowerCase()
-    return store.scenarios.filter(scenario =>
+    return scenarios.value.filter(scenario =>
       scenario.id.toLowerCase().includes(lowerQuery) ||
       scenario.meta?.title?.toLowerCase().includes(lowerQuery) ||
       scenario.meta?.description?.toLowerCase().includes(lowerQuery)
@@ -442,7 +428,12 @@ export const useCampaignStore = () => {
 
   return {
     // State
-    ...toRefs(store),
+    campaigns: readonly(campaigns),
+    goals: readonly(goals),
+    scenarios: readonly(scenarios),
+    manifest: readonly(manifest),
+    loading: readonly(loading),
+    error: readonly(error),
     
     // Loading
     loadAll,
@@ -484,9 +475,6 @@ export const useCampaignStore = () => {
     // Search
     searchCampaigns,
     searchGoals,
-    searchScenarios,
-    
-    // Config
-    spaMode: readonly(ref(spaMode))
+    searchScenarios
   }
-}
+})

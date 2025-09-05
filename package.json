@@ -19,6 +19,7 @@
     "lint:fix": "turbo run lint:fix",
     "typecheck": "turbo run typecheck",
     "compile": "node workspaces/compile-authoring/compile-authoring.mjs",
+    "clean": "turbo run clean && rm -rf .turbo",
     "validate:yaml": "find campaigns -name '*.yaml' -exec echo 'Validating {}' \\; -exec npx yaml-lint {} \\;",
     "validate:docs": "find docs -name '*.md' -exec echo 'Checking {}' \\;",
     "validate:all": "npm run validate:yaml && npm run validate:docs",

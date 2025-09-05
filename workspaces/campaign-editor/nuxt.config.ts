@@ -8,8 +8,8 @@ export default defineNuxtConfig({
     typeCheck: true
   },
 
-  // SPA mode for GitHub Pages deployment
-  ssr: process.env.NUXT_SPA_MODE === 'true' ? false : true,
+  // SSR enabled by default, can be disabled for static generation
+  ssr: true,
   
   // Configure for GitHub Pages deployment
   nitro: {
@@ -46,7 +46,8 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxtjs/color-mode',
     '@nuxt/eslint',
-    'shadcn-nuxt'
+    'shadcn-nuxt',
+    '@pinia/nuxt'
   ],
 
   // Color mode configuration for dark/light theme toggle
@@ -75,7 +76,6 @@ export default defineNuxtConfig({
   // Runtime config for environment variables
   runtimeConfig: {
     public: {
-      spaMode: process.env.NUXT_SPA_MODE === 'true',
       baseUrl: process.env.NUXT_BASE_URL || '/'
     }
   },
@@ -84,5 +84,13 @@ export default defineNuxtConfig({
   devServer: {
     port: 3000,
     host: '0.0.0.0'
+  },
+
+  // Auto-imports configuration
+  imports: {
+    dirs: [
+      'composables/**',
+      'stores/**'
+    ]
   }
 })
