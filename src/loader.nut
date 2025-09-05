@@ -1,5 +1,5 @@
 /*
- * Coopetition data-driven loader utilities
+ * Coopetition campaign loader utilities
  */
 
 require("goal.nut");
