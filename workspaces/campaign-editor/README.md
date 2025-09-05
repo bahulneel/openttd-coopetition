@@ -9,7 +9,8 @@ A modern web-based authoring tool for creating and editing OpenTTD Coopetition c
 - 🗺️ **Scenario Builder**: Compose scenarios from multiple goals with dependencies
 - 💾 **Dual Mode Operation**: Works with local file system or as a browser-only SPA
 - 📦 **Import/Export**: Import from ZIP files and export campaigns for distribution
-- 🎨 **Modern UI**: Built with Nuxt 4, Tailwind 4, and shadcn-vue components
+- 🎨 **OpenTTD-Themed UI**: Authentic OpenTTD color scheme and styling with modern UX
+- 🚂 **Game-Authentic Design**: Built with Nuxt 4, Tailwind 4, and OpenTTD's official colors
 - 🔍 **Search & Filter**: Find campaigns quickly with powerful search and filtering
 - 📱 **Responsive Design**: Works on desktop, tablet, and mobile devices
 
@@ -89,6 +90,27 @@ npm run dev:editor
 
 # Access at http://localhost:3000
 ```
+
+## 🎨 OpenTTD Theming
+
+The campaign editor uses an authentic OpenTTD color scheme based on the official [OpenTTD GUI Style Guide](https://wiki.openttd.org/en/Development/GUI%20Style%20Guide):
+
+### Color Scheme
+- **Green** (`--openttd-green`): Construction windows and primary actions (like OpenTTD toolbars)
+- **Brown** (`--openttd-brown`): Neutral windows and general UI elements
+- **Grey** (`--openttd-grey`): Company windows and secondary information
+- **Purple** (`--openttd-purple`): Options and settings
+- **Blue** (`--openttd-blue`): Informational messages
+- **Red** (`--destructive`): Warning messages and errors
+- **Cream** (`--openttd-cream`): Background accents
+
+### UI Elements
+- **Beveled Buttons**: Classic OpenTTD-style 3D buttons with inset/outset shadows
+- **Window Frames**: Styled like OpenTTD dialog windows with proper borders
+- **Toolbars**: Green-themed like construction toolbars in the game
+- **Icons**: Transport and railway-themed emojis (🚂, 📁, 🎯, 🗺️)
+
+The design maintains modern usability while staying true to OpenTTD's distinctive visual identity from the 1990s transport simulation era.
 
 ## Usage Guide
 

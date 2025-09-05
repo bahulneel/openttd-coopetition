@@ -54,6 +54,14 @@ export default <Config>{
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        // OpenTTD-specific colors
+        'openttd-green': 'hsl(var(--openttd-green))',
+        'openttd-brown': 'hsl(var(--openttd-brown))',
+        'openttd-grey': 'hsl(var(--openttd-grey))',
+        'openttd-purple': 'hsl(var(--openttd-purple))',
+        'openttd-blue': 'hsl(var(--openttd-blue))',
+        'openttd-light-blue': 'hsl(var(--openttd-light-blue))',
+        'openttd-cream': 'hsl(var(--openttd-cream))',
       },
       borderRadius: {
         lg: 'var(--radius)',

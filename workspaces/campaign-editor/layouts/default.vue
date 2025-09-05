@@ -1,63 +1,61 @@
 <template>
   <div class="min-h-screen bg-background">
-    <!-- Header/Navigation -->
-    <header class="border-b bg-card/50 sticky top-0 z-50 backdrop-blur">
+    <!-- Header/Navigation - OpenTTD Style -->
+    <header class="openttd-toolbar sticky top-0 z-50">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
           <!-- Logo/Title -->
           <div class="flex items-center space-x-4">
-            <NuxtLink to="/" class="flex items-center space-x-2">
-              <div class="h-8 w-8 bg-primary rounded-md flex items-center justify-center">
-                <span class="text-primary-foreground font-bold text-sm">C</span>
+            <NuxtLink to="/" class="flex items-center space-x-3">
+              <div class="h-10 w-10 bg-openttd-brown rounded border-2 border-border flex items-center justify-center openttd-button">
+                <span class="text-foreground font-bold text-lg">🚂</span>
               </div>
-              <span class="font-semibold text-foreground">Campaign Editor</span>
+              <div class="flex flex-col">
+                <span class="font-bold text-foreground text-lg">Coopetition</span>
+                <span class="text-sm text-foreground/80">Campaign Editor</span>
+              </div>
             </NuxtLink>
           </div>
 
           <!-- Navigation -->
-          <nav class="hidden md:flex items-center space-x-6">
-            <NuxtLink
-              to="/campaigns"
-              class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Campaigns
+          <nav class="hidden md:flex items-center space-x-2">
+            <NuxtLink to="/campaigns">
+              <button class="openttd-button text-sm font-medium">
+                📁 Campaigns
+              </button>
             </NuxtLink>
-            <NuxtLink
-              to="/goals"
-              class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Goals
+            <NuxtLink to="/goals">
+              <button class="openttd-button text-sm font-medium">
+                🎯 Goals
+              </button>
             </NuxtLink>
-            <NuxtLink
-              to="/scenarios"
-              class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Scenarios
+            <NuxtLink to="/scenarios">
+              <button class="openttd-button text-sm font-medium">
+                🗺️ Scenarios
+              </button>
             </NuxtLink>
           </nav>
 
           <!-- Actions -->
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center space-x-3">
             <!-- SPA Mode indicator -->
-            <div v-if="spaMode" class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-              SPA Mode
+            <div v-if="spaMode" class="text-xs bg-openttd-light-blue/20 text-openttd-blue px-3 py-1 rounded border-2 border-openttd-blue/30">
+              Browser Mode
             </div>
             
             <!-- Dark mode toggle -->
-            <UButton
-              variant="ghost"
-              size="sm"
-              icon="i-heroicons-sun"
+            <button
+              class="openttd-button text-sm"
               @click="toggleColorMode"
-            />
+            >
+              {{ colorMode.value === 'dark' ? '☀️' : '🌙' }}
+            </button>
             
             <!-- Import/Export -->
             <UDropdown :items="menuItems">
-              <UButton
-                variant="outline"
-                size="sm"
-                icon="i-heroicons-ellipsis-vertical"
-              />
+              <button class="openttd-button text-sm">
+                ⚙️ Tools
+              </button>
             </UDropdown>
           </div>
         </div>
@@ -69,21 +67,24 @@
       <slot />
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t bg-card/30 mt-16">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Footer - OpenTTD Style -->
+    <footer class="openttd-titlebar mt-16">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-          <p class="text-sm text-muted-foreground">
-            OpenTTD Coopetition Campaign Editor
-          </p>
-          <div class="flex items-center space-x-4 text-sm text-muted-foreground">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm text-foreground">🚂</span>
+            <span class="text-sm text-foreground font-medium">
+              OpenTTD Coopetition Campaign Editor
+            </span>
+          </div>
+          <div class="flex items-center space-x-4 text-sm text-foreground/80">
             <a
               href="https://github.com/bahulneel/openttd-coopetition"
               target="_blank"
               rel="noopener noreferrer"
-              class="hover:text-foreground transition-colors"
+              class="hover:text-foreground transition-colors underline"
             >
-              GitHub
+              📂 GitHub
             </a>
             <span>•</span>
             <span>v{{ version }}</span>

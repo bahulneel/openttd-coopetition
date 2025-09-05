@@ -32,55 +32,59 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Stats Cards - OpenTTD Style -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <UCard class="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 dark:from-blue-950 dark:to-blue-900 dark:border-blue-800">
+      <!-- Campaigns Card - OpenTTD Brown Theme -->
+      <div class="campaign-card bg-openttd-brown/20 border-openttd-brown/40">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Campaigns</p>
-            <p class="text-2xl font-bold text-blue-900 dark:text-blue-100">{{ campaignStats.total }}</p>
+            <p class="text-sm font-medium text-openttd-brown">📁 Campaigns</p>
+            <p class="text-2xl font-bold text-foreground">{{ campaignStats.total }}</p>
           </div>
-          <div class="h-12 w-12 bg-blue-500 rounded-lg flex items-center justify-center">
-            <Icon name="heroicons:folder" class="h-6 w-6 text-white" />
+          <div class="h-12 w-12 bg-openttd-brown rounded border-2 border-border flex items-center justify-center openttd-button">
+            <span class="text-lg">📂</span>
           </div>
         </div>
-      </UCard>
+      </div>
 
-      <UCard class="bg-gradient-to-br from-green-50 to-green-100 border-green-200 dark:from-green-950 dark:to-green-900 dark:border-green-800">
+      <!-- Goals Card - OpenTTD Green Theme -->
+      <div class="campaign-card bg-openttd-green/20 border-openttd-green/40">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-green-600 dark:text-green-400">Goals</p>
-            <p class="text-2xl font-bold text-green-900 dark:text-green-100">{{ goalStats.total }}</p>
+            <p class="text-sm font-medium text-openttd-green">🎯 Goals</p>
+            <p class="text-2xl font-bold text-foreground">{{ goalStats.total }}</p>
           </div>
-          <div class="h-12 w-12 bg-green-500 rounded-lg flex items-center justify-center">
-            <Icon name="heroicons:target" class="h-6 w-6 text-white" />
+          <div class="h-12 w-12 bg-openttd-green rounded border-2 border-border flex items-center justify-center openttd-button">
+            <span class="text-lg text-white">🎯</span>
           </div>
         </div>
-      </UCard>
+      </div>
 
-      <UCard class="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 dark:from-purple-950 dark:to-purple-900 dark:border-purple-800">
+      <!-- Scenarios Card - OpenTTD Purple Theme -->
+      <div class="campaign-card bg-openttd-purple/20 border-openttd-purple/40">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Scenarios</p>
-            <p class="text-2xl font-bold text-purple-900 dark:text-purple-100">{{ scenarioStats.total }}</p>
+            <p class="text-sm font-medium text-openttd-purple">🗺️ Scenarios</p>
+            <p class="text-2xl font-bold text-foreground">{{ scenarioStats.total }}</p>
           </div>
-          <div class="h-12 w-12 bg-purple-500 rounded-lg flex items-center justify-center">
-            <Icon name="heroicons:map" class="h-6 w-6 text-white" />
+          <div class="h-12 w-12 bg-openttd-purple rounded border-2 border-border flex items-center justify-center openttd-button">
+            <span class="text-lg text-white">🗺️</span>
           </div>
         </div>
-      </UCard>
+      </div>
 
-      <UCard class="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 dark:from-orange-950 dark:to-orange-900 dark:border-orange-800">
+      <!-- Modified Card - OpenTTD Blue Theme -->
+      <div class="campaign-card bg-openttd-blue/20 border-openttd-blue/40">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-orange-600 dark:text-orange-400">Modified</p>
-            <p class="text-2xl font-bold text-orange-900 dark:text-orange-100">{{ modifiedStats.count }}</p>
+            <p class="text-sm font-medium text-openttd-blue">⚡ Modified</p>
+            <p class="text-2xl font-bold text-foreground">{{ modifiedStats.count }}</p>
           </div>
-          <div class="h-12 w-12 bg-orange-500 rounded-lg flex items-center justify-center">
-            <Icon name="heroicons:clock" class="h-6 w-6 text-white" />
+          <div class="h-12 w-12 bg-openttd-blue rounded border-2 border-border flex items-center justify-center openttd-button">
+            <span class="text-lg text-white">⚡</span>
           </div>
         </div>
-      </UCard>
+      </div>
     </div>
 
     <!-- Recent Activity / Quick Actions -->
@@ -119,10 +123,13 @@
                 </div>
               </div>
               <div class="flex items-center space-x-2">
-                <UBadge :color="getDifficultyColor(campaign.meta?.difficulty)">
+                <div 
+                  class="px-2 py-1 text-xs rounded border-2 font-medium"
+                  :class="getDifficultyClasses(campaign.meta?.difficulty)"
+                >
                   {{ campaign.meta?.difficulty || 'Unknown' }}
-                </UBadge>
-                <Icon name="heroicons:chevron-right" class="h-4 w-4 text-muted-foreground" />
+                </div>
+                <span class="text-muted-foreground">→</span>
               </div>
             </div>
 
@@ -261,6 +268,23 @@ function getDifficultyColor(difficulty: string) {
     case 'expert': return 'red'
     case 'legendary': return 'purple'
     default: return 'gray'
+  }
+}
+
+function getDifficultyClasses(difficulty: string | undefined) {
+  switch (difficulty?.toLowerCase()) {
+    case 'easy': 
+      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
+    case 'medium': 
+      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
+    case 'hard': 
+      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
+    case 'expert': 
+      return 'bg-destructive/20 border-destructive/40 text-destructive'
+    case 'legendary': 
+      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
+    default: 
+      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
   }
 }
 
