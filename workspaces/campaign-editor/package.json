@@ -2,8 +2,8 @@
   "name": "@coopetition/campaign-editor",
   "version": "1.0.0",
   "description": "Campaign authoring tool for OpenTTD Coopetition with Nuxt 4, Tailwind 4, and shadcn-vue",
-  "private": true,
   "type": "module",
+  "private": true,
   "engines": {
     "node": ">=20"
   },
@@ -22,12 +22,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/bahulneel/openttd-coopetition.git",
-    "directory": "workspaces/campaign-editor"
+    "directory": "workspaces/site"
   },
-  "bugs": {
-    "url": "https://github.com/bahulneel/openttd-coopetition/issues"
-  },
-  "homepage": "https://github.com/bahulneel/openttd-coopetition#readme",
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
@@ -52,12 +48,14 @@
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "lucide-vue-next": "^0.447.0",
-    "nuxt": "^3.13.0",
+    "nuxt": "^4.1.0",
     "reka-ui": "^2.5.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^4.0.0",
     "tw-animate-css": "^1.3.8",
     "vee-validate": "^4.15.1",
+    "vue": "^3.5.20",
+    "vue-router": "^4.5.1",
     "vue-sonner": "^2.0.8",
     "yaml": "^2.5.1",
     "zod": "^3.25.76"

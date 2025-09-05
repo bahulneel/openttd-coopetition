@@ -1,16 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  // Enable Nuxt 4 compatibility mode
-  future: {
-    compatibilityVersion: 4
-  },
-
-  // Nuxt 4 directory structure
-  srcDir: 'app/',
-
+  compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  
-  // Enable TypeScript
+
+  // TypeScript configuration
   typescript: {
     typeCheck: true
   },
@@ -60,7 +53,6 @@ export default defineNuxtConfig({
     classSuffix: ''
   },
 
-
   // Build configuration
   build: {
     transpile: ['reka-ui']
@@ -78,8 +70,5 @@ export default defineNuxtConfig({
   devServer: {
     port: 3000,
     host: '0.0.0.0'
-  },
-
-  // Compatibility
-  compatibilityDate: '2024-01-01'
+  }
 })
