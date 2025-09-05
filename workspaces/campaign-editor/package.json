@@ -35,7 +35,8 @@
     "typecheck": "nuxt typecheck",
     "dev:openttd": "echo '🚂 Starting OpenTTD-themed Campaign Editor...' && npm run dev",
     "build:spa": "NUXT_SPA_MODE=true nuxt generate",
-    "preview:spa": "npm run build:spa && npm run preview"
+    "preview:spa": "npm run build:spa && npm run preview",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.0",

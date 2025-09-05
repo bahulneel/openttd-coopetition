@@ -7,7 +7,5 @@ export default [
       'openttd-gs': plugin,
     },
     processor: plugin['.nut'],
-  }
+  },
 ];
-
-
