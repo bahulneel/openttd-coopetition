@@ -1,0 +1,80 @@
+# Comprehensive scenario example with all key-value combinations
+id: industrial_hub_scenario
+comment: |
+  This scenario demonstrates all possible scenario configuration options.
+  Scenarios define collections of goals with shared defaults and constraints.
+
+defaults:
+  shared:
+    track: true
+    stations: true
+    vehicles: false
+  result:
+    cash: 50000
+    score: 5
+    reputation: 2
+  comment: "Default values applied to all goals in this scenario"
+
+goals:
+  - include: "player_profit_goal"
+    comment: "Include individual profit goal for each player"
+  - include: "company_efficiency_goal"
+    comment: "Include company efficiency goal"
+  - include: "scenario_network_goal"
+    comment: "Include shared network construction goal"
+
+constraints:
+  players:
+    min: 2
+    max: 6
+  date:
+    min: 1950
+    max: 2000
+  map_size:
+    min: 256
+    max: 1024
+  difficulty:
+    min: "easy"
+    max: "hard"
+  comment: "Scenario-wide constraints that apply to all goals"
+
+meta:
+  title: "Industrial Hub Development"
+  description: "Develop a major industrial hub with shared infrastructure"
+  difficulty: "medium"
+  estimated_time: "3-4 hours"
+  tags: ["industrial", "hub", "shared", "development"]
+  requirements:
+    - "basic_construction"
+    - "cargo_handling"
+  prerequisites:
+    - "tutorial_scenario"
+  comment: "Comprehensive scenario metadata for organization and filtering"
+
+# Scenario-specific configuration
+settings:
+  economy: "realistic"
+  disasters: true
+  breakdowns: true
+  inflation: true
+  comment: "Game settings that affect this scenario"
+
+rewards:
+  completion:
+    cash: 1000000
+    score: 100
+    reputation: 25
+    unlock: "advanced_industries"
+  partial:
+    cash: 500000
+    score: 50
+    reputation: 10
+  comment: "Different reward tiers based on completion level"
+
+objectives:
+  primary:
+    - "scenario_network_goal"
+  secondary:
+    - "player_profit_goal"
+    - "company_efficiency_goal"
+  comment: "Priority levels for different goals in the scenario"

@@ -7,9 +7,9 @@ const CAMPAIGNS = path.join(ROOT, 'campaigns');
 const BUILD = path.join(ROOT, 'build');
 
 const RANGES = {
-  cash: [-1000000, 1000000],
-  score: [-100, 100],
-  reputation: [-100, 100],
+  cash: [-10000000, 10000000],
+  score: [-1000, 1000],
+  reputation: [-1000, 1000],
 };
 
 function assert(cond, msg, ctx) {
@@ -21,6 +21,13 @@ function assert(cond, msg, ctx) {
 
 function clampRange(name, value) {
   if (value == null) return value;
+  
+  // Allow string values for certain fields
+  const stringFields = ['unlock', 'achievement', 'bonus', 'type', 'target', 'operator'];
+  if (stringFields.includes(name)) {
+    return value;
+  }
+  
   const [min, max] = RANGES[name] || [-Infinity, Infinity];
   assert(typeof value === 'number' && Number.isFinite(value), `${name} must be a finite number`);
   assert(value >= min && value <= max, `${name} out of range [${min}, ${max}]`);
@@ -45,7 +52,7 @@ function validateGoal(doc, file) {
   assert(['player','company','scenario','campaign'].includes(doc.type), 'invalid type', file);
   assert(doc.objective && typeof doc.objective === 'object', 'objective required', file);
   if (doc.constraints) {
-    const { players, date } = doc.constraints;
+    const { players, date, comment, ...rest } = doc.constraints;
     if (players) {
       if (players.min != null) assert(Number.isInteger(players.min) && players.min >= 1, 'players.min >= 1', file);
       if (players.max != null) assert(Number.isInteger(players.max) && players.max >= (players.min ?? 1), 'players.max >= players.min', file);
@@ -58,12 +65,16 @@ function validateGoal(doc, file) {
   }
   if (doc.shared) {
     for (const k of Object.keys(doc.shared)) {
-      assert(typeof doc.shared[k] === 'boolean', `shared.${k} must be boolean`, file);
+      if (k !== 'comment') {
+        assert(typeof doc.shared[k] === 'boolean', `shared.${k} must be boolean`, file);
+      }
     }
   }
   if (doc.result) {
     for (const [k, v] of Object.entries(doc.result)) {
-      clampRange(k, v);
+      if (k !== 'comment') {
+        clampRange(k, v);
+      }
     }
   }
 }
@@ -79,8 +90,13 @@ function toNutTable(obj, indent = 0) {
     const items = obj.map(v => padIn + toNutTable(v, indent + 1)).join(',\n');
     return '[\n' + items + '\n' + pad + ']';
   }
-  const entries = Object.entries(obj).map(([k,v]) => `${padIn}${k} = ${toNutTable(v, indent + 1)}`).join(',\n');
-  return '{\n' + entries + '\n' + pad + '}';
+  
+  // Handle comment field specially - don't include it in the output but use it for comments
+  const { comment, ...rest } = obj;
+  const commentStr = comment ? `\n${padIn}// ${comment.replace(/\n/g, `\n${padIn}// `)}` : '';
+  
+  const entries = Object.entries(rest).map(([k,v]) => `${padIn}${k} = ${toNutTable(v, indent + 1)}`).join(',\n');
+  return '{\n' + entries + '\n' + pad + '}' + commentStr;
 }
 
 async function compileGoals(campaignPack) {
@@ -103,6 +119,7 @@ async function compileGoals(campaignPack) {
       shared: doc.shared || undefined,
       result: doc.result || undefined,
       meta: doc.meta || undefined,
+      comment: doc.comment || undefined,
     };
     const nutBody = toNutTable(out);
     const varName = `Goal_${doc.id}`;
@@ -149,6 +166,7 @@ async function compileScenarios(campaignPack) {
       meta: doc.meta || undefined,
       defaults: doc.defaults || undefined,
       goals: compiledGoals,
+      comment: doc.comment || undefined,
     };
     const nutBody = toNutTable(out);
     const varName = `Scenario_${path.basename(f, '.yaml')}`;
@@ -175,6 +193,7 @@ async function compileCampaigns(campaignPack) {
     const out = {
       meta: doc.meta || undefined,
       scenarios: doc.scenarios || [],
+      comment: doc.comment || undefined,
     };
     const nutBody = toNutTable(out);
     const varName = `Campaign_${path.basename(f, '.yaml')}`;

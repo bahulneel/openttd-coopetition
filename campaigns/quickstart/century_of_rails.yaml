@@ -1,6 +1,118 @@
-meta:
-  title: "Coopetition Quickstart"
-  description: "A compact two-goal cooperative warmup."
+# Comprehensive campaign example showcasing all possible features
+id: century_of_rails
+comment: |
+  This campaign demonstrates all possible campaign configuration options.
+  Campaigns are collections of scenarios that form a cohesive experience.
 
 scenarios:
-  - include: bridge_wars.yaml
+  - include: "industrial_hub_scenario"
+    order: 1
+    required: true
+    comment: "First scenario - required for progression"
+  - include: "transport_challenge_scenario"
+    order: 2
+    required: false
+    comment: "Second scenario - optional advanced challenge"
+
+# Campaign progression and dependencies
+progression:
+  type: "linear"
+  unlock_requirements:
+    - scenario: "industrial_hub_scenario"
+      completion_threshold: 0.8
+      comment: "Must complete 80% of industrial hub scenario"
+  unlock_order:
+    - "basic_construction"
+    - "advanced_vehicles"
+    - "complex_networks"
+    - "mastery_techniques"
+  comment: "How scenarios unlock and progress through the campaign"
+
+# Campaign-wide constraints
+constraints:
+  players:
+    min: 2
+    max: 8
+  date:
+    min: 1950
+    max: 2000
+  map_size:
+    min: 256
+    max: 1024
+  difficulty:
+    min: "easy"
+    max: "expert"
+  comment: "Constraints that apply to all scenarios in the campaign"
+
+# Campaign rewards and achievements
+rewards:
+  completion:
+    cash: 10000000
+    score: 1000
+    reputation: 100
+    unlock: "century_master"
+    achievement: "rail_century_complete"
+  partial:
+    cash: 5000000
+    score: 500
+    reputation: 50
+    achievement: "rail_century_partial"
+  comment: "Rewards for completing the entire campaign"
+
+# Campaign metadata
+meta:
+  title: "Century of Rails"
+  description: "A comprehensive rail development campaign spanning decades"
+  difficulty: "medium"
+  estimated_time: "8-12 hours"
+  tags: ["rail", "century", "comprehensive", "progression"]
+  requirements:
+    - "basic_rail_construction"
+    - "multi_player_coordination"
+  prerequisites:
+    - "tutorial_campaign"
+  comment: "Comprehensive campaign metadata"
+
+# Campaign settings and configuration
+settings:
+  economy: "realistic"
+  disasters: true
+  breakdowns: true
+  inflation: true
+  seasons: true
+  comment: "Game settings that affect the entire campaign"
+
+# Campaign-specific features
+features:
+  - "progressive_unlocking"
+  - "scenario_dependencies"
+  - "campaign_achievements"
+  - "dynamic_difficulty"
+
+# Campaign milestones and checkpoints
+milestones:
+  - name: "Industrial Foundation"
+    description: "Complete the industrial hub scenario"
+    reward:
+      cash: 1000000
+      score: 100
+      unlock: "advanced_industries"
+  - name: "Transport Mastery"
+    description: "Complete the transport challenge scenario"
+    reward:
+      cash: 2000000
+      score: 200
+      unlock: "mastery_techniques"
+
+# Campaign difficulty scaling
+difficulty_scaling:
+  enabled: true
+  base_difficulty: "medium"
+  scaling_factors:
+    - factor: "player_count"
+      adjustment: 0.1
+    - factor: "map_size"
+      adjustment: 0.05
+    - factor: "completion_time"
+      adjustment: -0.02
+  comment: "Dynamic difficulty adjustment based on various factors"

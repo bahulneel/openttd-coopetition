@@ -1,0 +1,36 @@
+# Player-level goal example - individual company profit target
+id: player_profit_goal
+type: player
+comment: |
+  This is a player-level goal that tracks individual company performance.
+  Player goals are personal objectives that each company must achieve independently.
+  This example shows profit tracking with cash rewards and score points.
+
+objective:
+  type: profit
+  amount: 1000000
+  comment: "Track company profit - requires £1M total profit"
+
+constraints:
+  players:
+    min: 1
+    max: 8
+  comment: "Can be played with 1-8 players"
+
+shared:
+  track: false
+  stations: false
+  comment: "No shared infrastructure - each company builds independently"
+
+result:
+  cash: 500000
+  score: 25
+  reputation: 10
+  comment: "Reward: £500k cash, 25 score points, +10 reputation"
+
+meta:
+  title: "Millionaire Challenge"
+  description: "Accumulate £1,000,000 in company profit"
+  difficulty: "medium"
+  estimated_time: "2-3 hours"
+  comment: "Metadata for UI display and campaign organization"

@@ -1,0 +1,112 @@
+# Advanced scenario example with complex goal relationships
+id: transport_challenge_scenario
+comment: |
+  This scenario shows advanced features like goal dependencies,
+  conditional rewards, and complex constraint systems.
+
+defaults:
+  shared:
+    track: true
+    stations: true
+    vehicles: true
+    depots: true
+  result:
+    cash: 100000
+    score: 10
+    reputation: 5
+  constraints:
+    players:
+      min: 3
+      max: 8
+  comment: "Comprehensive defaults for all goals in this scenario"
+
+goals:
+  - include: "player_profit_goal"
+    overrides:
+      result:
+        cash: 200000
+        score: 15
+    comment: "Override default rewards for profit goal"
+  - include: "company_efficiency_goal"
+    overrides:
+      constraints:
+        players:
+          min: 4
+    comment: "Require at least 4 players for efficiency goal"
+  - include: "scenario_network_goal"
+    overrides:
+      objective:
+        amount: 1000
+      result:
+        cash: 2000000
+        score: 100
+    comment: "Enhanced network goal with higher requirements and rewards"
+
+# Goal dependencies and relationships
+dependencies:
+  - goal: "player_profit_goal"
+    required_by: "company_efficiency_goal"
+    comment: "Efficiency goal requires profit goal completion"
+  - goal: "company_efficiency_goal"
+    required_by: "scenario_network_goal"
+    comment: "Network goal requires efficiency goal completion"
+
+# Conditional rewards based on performance
+conditional_rewards:
+  - condition:
+      type: "time_bonus"
+      threshold: 180
+    reward:
+      cash: 500000
+      score: 25
+    comment: "Bonus for completing within 180 days"
+  - condition:
+      type: "efficiency_bonus"
+      threshold: 0.8
+    reward:
+      reputation: 15
+      unlock: "efficiency_master"
+    comment: "Bonus for high efficiency rating"
+
+constraints:
+  players:
+    min: 3
+    max: 8
+  date:
+    min: 1960
+    max: 1990
+  map_size:
+    min: 512
+    max: 1024
+  difficulty:
+    min: "medium"
+    max: "expert"
+  comment: "Strict constraints for this advanced scenario"
+
+meta:
+  title: "Transport Mastery Challenge"
+  description: "Master all aspects of transport management in a complex scenario"
+  difficulty: "expert"
+  estimated_time: "4-6 hours"
+  tags: ["mastery", "challenge", "advanced", "complex"]
+  requirements:
+    - "advanced_planning"
+    - "multi_player_coordination"
+    - "efficiency_optimization"
+  comment: "High-level scenario requiring advanced skills"
+
+# Scenario progression settings
+progression:
+  unlock_order:
+    - "basic_construction"
+    - "advanced_vehicles"
+    - "complex_networks"
+    - "mastery_techniques"
+  milestone_rewards:
+    - milestone: "25%"
+      reward: "unlock_advanced_vehicles"
+    - milestone: "50%"
+      reward: "unlock_complex_networks"
+    - milestone: "75%"
+      reward: "unlock_mastery_techniques"
+  comment: "Progressive unlocking of features and rewards"
