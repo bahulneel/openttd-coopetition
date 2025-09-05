@@ -67,7 +67,7 @@ const { scenarios, loading, loadScenarios } = useCampaignStore()
 
 // Load scenarios on mount
 onMounted(async () => {
-  if (scenarios.value.length === 0) {
+  if (scenarios.length === 0) {
     await loadScenarios()
   }
 })

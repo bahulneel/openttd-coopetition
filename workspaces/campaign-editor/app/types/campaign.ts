@@ -295,6 +295,21 @@ export interface CampaignStore {
 }
 
 // File system operations
+// File system feature detection
+export enum FileSystemFeature {
+  ZIP_IMPORT = 'zip_import',
+  ZIP_EXPORT = 'zip_export'
+}
+
+// Feature interfaces
+export interface FeatureZipImport {
+  importFromZip(file: File): Promise<void>
+}
+
+export interface FeatureZipExport {
+  downloadExport(filename?: string): Promise<void>
+}
+
 export interface FileSystemAdapter {
   loadCampaigns(): Promise<Campaign[]>
   loadGoals(): Promise<Goal[]>
@@ -308,13 +323,14 @@ export interface FileSystemAdapter {
   deleteGoal(id: string): Promise<void>
   deleteScenario(id: string): Promise<void>
   exportAll(): Promise<Blob>
-  importFromZip?(file: File): Promise<void>
-  downloadExport?(filename?: string): Promise<void>
+  
+  // Feature detection
+  supports(feature: FileSystemFeature): boolean
 }
 
 // Editor configuration
 export interface EditorConfig {
-  spaMode: boolean
+  hasBackend: boolean
   campaignsPath: string
   autoSave: boolean
   autoSaveInterval: number

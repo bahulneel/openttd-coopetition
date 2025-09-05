@@ -67,6 +67,12 @@
       "dependsOn": [],
       "cache": false,
       "persistent": true
+    },
+    "clean": {
+      "dependsOn": [
+        "^clean"
+      ],
+      "outputs": []
     }
   }
 }

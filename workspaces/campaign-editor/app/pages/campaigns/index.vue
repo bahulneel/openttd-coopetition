@@ -16,8 +16,8 @@
           ➕ New Campaign
         </Button>
 
-        <Button variant="outline" :disabled="loading" class="openttd-button" @click="refreshCampaigns">
-          {{ loading ? '🔄' : '↻' }} Refresh
+        <Button variant="outline" :disabled="campaignStore.loading" class="openttd-button" @click="refreshCampaigns">
+          {{ campaignStore.loading ? '🔄' : '↻' }} Refresh
         </Button>
       </div>
     </div>
@@ -62,7 +62,7 @@
     </Card>
 
     <!-- Loading State -->
-    <div v-if="loading && campaigns.length === 0" class="flex justify-center py-12">
+    <div v-if="campaignStore.loading && campaignStore.campaigns.length === 0" class="flex justify-center py-12">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
         <p class="text-muted-foreground">Loading campaigns...</p>
@@ -70,19 +70,20 @@
     </div>
 
     <!-- Error State -->
-    <Alert v-if="error" class="border-destructive bg-destructive/10">
+    <Alert v-if="campaignStore.error" class="border-destructive bg-destructive/10">
       <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
       <AlertDescription class="text-destructive">
-        {{ error }}
+        {{ campaignStore.error }}
         <Button variant="ghost" size="sm" class="ml-2 text-destructive hover:text-destructive-foreground"
-          @click="error = undefined">
+          @click="() => { }">
           ✕ Dismiss
         </Button>
       </AlertDescription>
     </Alert>
 
     <!-- Empty State -->
-    <Card v-if="!loading && filteredCampaigns.length === 0 && !error" class="openttd-titlebar">
+    <Card v-if="!campaignStore.loading && filteredCampaigns.length === 0 && !campaignStore.error"
+      class="openttd-titlebar">
       <CardContent class="pt-12 pb-12">
         <div class="text-center">
           <div class="text-6xl mb-4">📁</div>
@@ -100,7 +101,8 @@
     </Card>
 
     <!-- Campaigns Grid -->
-    <div v-if="!loading && filteredCampaigns.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="!campaignStore.loading && filteredCampaigns.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card v-for="campaign in filteredCampaigns" :key="campaign.id"
         class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
         @click="editCampaign(campaign.id)">
@@ -204,17 +206,7 @@
 </template>
 
 <script setup lang="ts">
-
-const {
-  campaigns,
-  loading,
-  error,
-  loadCampaigns,
-  deleteCampaign,
-  duplicateCampaign,
-  searchCampaigns,
-  spaMode: _spaMode
-} = useCampaignStore()
+const campaignStore = useCampaignStore()
 
 // Reactive data
 const searchQuery = ref('')
@@ -225,8 +217,8 @@ const pageSize = 12
 
 // Load campaigns on mount
 onMounted(async () => {
-  if (campaigns.value.length === 0) {
-    await loadCampaigns()
+  if (campaignStore.campaigns.length === 0) {
+    await campaignStore.loadCampaigns()
   }
 })
 
@@ -249,16 +241,16 @@ const _sortOptions = [
 
 // Computed
 const filteredCampaigns = computed(() => {
-  let filtered = campaigns.value
+  let filtered = campaignStore.campaigns
 
   // Search filter
   if (searchQuery.value) {
-    filtered = searchCampaigns(searchQuery.value)
+    filtered = campaignStore.searchCampaigns(searchQuery.value)
   }
 
   // Difficulty filter
   if (difficultyFilter.value) {
-    filtered = filtered.filter(c => c.meta?.difficulty === difficultyFilter.value)
+    filtered = filtered.filter((c) => c.meta?.difficulty === difficultyFilter.value)
   }
 
   // Sort
@@ -286,14 +278,14 @@ const filteredCampaigns = computed(() => {
 })
 
 const totalPages = computed(() => {
-  let totalCount = campaigns.value.length
+  let totalCount = campaignStore.campaigns.length
 
   if (searchQuery.value) {
-    totalCount = searchCampaigns(searchQuery.value).length
+    totalCount = campaignStore.searchCampaigns(searchQuery.value).length
   }
 
   if (difficultyFilter.value) {
-    totalCount = campaigns.value.filter(c => c.meta?.difficulty === difficultyFilter.value).length
+    totalCount = campaignStore.campaigns.filter((c) => c.meta?.difficulty === difficultyFilter.value).length
   }
 
   return Math.ceil(totalCount / pageSize)
@@ -354,12 +346,12 @@ function editCampaign(id: string) {
 }
 
 async function refreshCampaigns() {
-  await loadCampaigns()
+  await campaignStore.loadCampaigns()
 }
 
 async function handleDuplicate(id: string) {
   try {
-    const duplicate = await duplicateCampaign(id)
+    const duplicate = await campaignStore.duplicateCampaign(id)
     // Show success message
     const toast = useToast()
     toast.add({
@@ -379,7 +371,7 @@ async function handleDuplicate(id: string) {
 }
 
 async function handleDelete(id: string) {
-  const campaign = campaigns.value.find(c => c.id === id)
+  const campaign = campaignStore.campaigns.find((c) => c.id === id)
   if (!campaign) return
 
   // Show confirmation dialog
@@ -390,7 +382,7 @@ async function handleDelete(id: string) {
   if (!confirmed) return
 
   try {
-    await deleteCampaign(id)
+    await campaignStore.deleteCampaign(id)
     const toast = useToast()
     toast.add({
       title: '🗑️ Campaign Deleted',
