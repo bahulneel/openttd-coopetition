@@ -68,7 +68,7 @@ class PlayerGoal {
         // Different update logic based on goal type
         switch (this.type) {
             case PlayerGoalType.PROFIT:
-                // Get company's quarterly profit
+                // Get company's quarterly profit (API v14+ under GSCompany)
                 local company_id = GSCompany.ResolveCompanyID(GSCompany.COMPANY_SELF);
         local economy = GSCompanyEconomy.GetQuarterlyIncome(company_id, GSCompanyEconomy.CURRENT_QUARTER);
                 this.current_progress = economy;
@@ -117,7 +117,7 @@ class PlayerGoal {
                 // Count towns served by company
                 local company_id = GSCompany.ResolveCompanyID(GSCompany.COMPANY_SELF);
                 local town_list = GSTownList();
- 0;
+                local served_towns = 0;
                 
                 foreach (town_id, _ in town_list) {
                     local station_list = GSStationList(GSStation.STATION_ANY);
@@ -133,7 +133,7 @@ class PlayerGoal {
                     
                     if (town_served) {
                         served_towns++;
-    }
+                    }
                 }
                 
                 this.current_progress = served_towns;

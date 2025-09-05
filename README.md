@@ -126,7 +126,7 @@ This project includes a GitHub workflow that automatically:
 3. Attaches the packaged zip file to the release for easy downloading
 4. Increments the version number and creates a pull request back to the develop branch
 
-To use this feature, simply push your changes to the main branch, and the workflow will handle the release process and version management.
+To use this feature, simply push your changes to the main branch, and the workflow will handle the version increment, release process, and branch management.
 
 **Note:** For the automated PR creation to work, you need to add a `PAT_TOKEN` secret to your GitHub repository with a Personal Access Token that has permissions to create pull requests.
 
@@ -199,7 +199,7 @@ When changes from develop are merged to the main branch, the GitHub workflow wil
 
 ### Versioning
 
-Version management is largely automated in this project:
+Version management is fully automated in this project:
 
 1. When changes are pushed to the main branch, the GitHub workflow creates a release with the current version from `src/version.nut`
 2. After the release is created, the workflow automatically increments the version number in `src/version.nut` and creates a pull request to the develop branch
