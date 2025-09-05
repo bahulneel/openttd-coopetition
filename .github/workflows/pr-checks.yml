@@ -1,0 +1,47 @@
+name: PR Validation Checks
+
+# Trigger on pull requests to main branch
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+# Define permissions
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  # Run all validation checks
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run all checks
+        run: npm run check
+
+      - name: Check Summary
+        run: |
+          echo "## ✅ All Checks Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Completed Validations:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ GameScript Linting (.nut files)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Workspace Linting (tools and utilities)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ YAML Validation (campaign files)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Documentation Validation (markdown files)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Workspace Tests (all workspaces)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**This PR is ready for review and merge!** 🚀" >> $GITHUB_STEP_SUMMARY
