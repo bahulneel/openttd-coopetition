@@ -51,7 +51,8 @@
           👁️ Preview
         </Button>
 
-        <Button :disabled="!isValid || saving" class="openttd-button bg-openttd-green text-white" @click="saveCampaign">
+        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+          @click="saveCampaign">
           {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
         </Button>
       </div>
@@ -69,46 +70,69 @@
         </CardHeader>
         <CardContent>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <Label for="campaign-id">Campaign ID *</Label>
-              <Input id="campaign-id" v-model="formData.id" placeholder="campaign_unique_id" :disabled="!isNew"
-                pattern="[a-zA-Z0-9_-]+" />
-              <p class="text-xs text-muted-foreground">Unique identifier for this campaign</p>
-            </div>
+            <FormField v-slot="{ componentField }" name="id">
+              <FormItem>
+                <FormLabel>Campaign ID *</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" placeholder="campaign_unique_id" :disabled="!isNew" />
+                </FormControl>
+                <FormDescription>Unique identifier for this campaign</FormDescription>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="title">Title</Label>
-              <Input id="title" v-model="formData.meta?.title" placeholder="Campaign Title" />
-              <p class="text-xs text-muted-foreground">Display name for the campaign</p>
-            </div>
+            <FormField v-slot="{ componentField }" name="meta.title">
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" placeholder="Campaign Title" />
+                </FormControl>
+                <FormDescription>Display name for the campaign</FormDescription>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="difficulty">Difficulty</Label>
-              <Select v-model="formData.meta?.difficulty">
-                <SelectTrigger id="difficulty" class="openttd-button">
-                  <SelectValue placeholder="Select difficulty" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="easy">🟢 Easy</SelectItem>
-                  <SelectItem value="medium">🟡 Medium</SelectItem>
-                  <SelectItem value="hard">🟠 Hard</SelectItem>
-                  <SelectItem value="expert">🔴 Expert</SelectItem>
-                  <SelectItem value="legendary">🟣 Legendary</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField v-slot="{ componentField }" name="meta.difficulty">
+              <FormItem>
+                <FormLabel>Difficulty</FormLabel>
+                <Select v-bind="componentField">
+                  <FormControl>
+                    <SelectTrigger class="openttd-button">
+                      <SelectValue placeholder="Select difficulty" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="easy">🟢 Easy</SelectItem>
+                    <SelectItem value="medium">🟡 Medium</SelectItem>
+                    <SelectItem value="hard">🟠 Hard</SelectItem>
+                    <SelectItem value="expert">🔴 Expert</SelectItem>
+                    <SelectItem value="legendary">🟣 Legendary</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="estimated-time">Estimated Time</Label>
-              <Input id="estimated-time" v-model="formData.meta?.estimated_time" placeholder="2-4 hours" />
-              <p class="text-xs text-muted-foreground">How long this campaign typically takes</p>
-            </div>
+            <FormField v-slot="{ componentField }" name="meta.estimated_time">
+              <FormItem>
+                <FormLabel>Estimated Time</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" placeholder="2-4 hours" />
+                </FormControl>
+                <FormDescription>How long this campaign typically takes</FormDescription>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2 md:col-span-2">
-              <Label for="description">Description</Label>
-              <Textarea id="description" v-model="formData.meta?.description"
-                placeholder="Describe what this campaign involves..." rows="3" />
-            </div>
+            <FormField v-slot="{ componentField }" name="meta.description" class="md:col-span-2">
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea v-bind="componentField" placeholder="Describe what this campaign involves..." rows="3" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
             <div class="space-y-2 md:col-span-2">
               <Label for="tags">Tags</Label>
@@ -147,29 +171,45 @@
         </CardHeader>
         <CardContent>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="space-y-2">
-              <Label for="min-players">Min Players</Label>
-              <Input id="min-players" v-model.number="formData.constraints?.players?.min" type="number" min="1" max="8"
-                placeholder="1" />
-            </div>
+            <FormField v-slot="{ componentField }" name="constraints.players.min">
+              <FormItem>
+                <FormLabel>Min Players</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" type="number" min="1" max="8" placeholder="1" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="max-players">Max Players</Label>
-              <Input id="max-players" v-model.number="formData.constraints?.players?.max" type="number" min="1" max="8"
-                placeholder="8" />
-            </div>
+            <FormField v-slot="{ componentField }" name="constraints.players.max">
+              <FormItem>
+                <FormLabel>Max Players</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" type="number" min="1" max="8" placeholder="8" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="start-year">Start Year</Label>
-              <Input id="start-year" v-model.number="formData.constraints?.date?.min" type="number" min="1920"
-                max="2100" placeholder="1950" />
-            </div>
+            <FormField v-slot="{ componentField }" name="constraints.date.min">
+              <FormItem>
+                <FormLabel>Start Year</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" type="number" min="1920" max="2100" placeholder="1950" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="end-year">End Year</Label>
-              <Input id="end-year" v-model.number="formData.constraints?.date?.max" type="number" min="1920" max="2100"
-                placeholder="2050" />
-            </div>
+            <FormField v-slot="{ componentField }" name="constraints.date.max">
+              <FormItem>
+                <FormLabel>End Year</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" type="number" min="1920" max="2100" placeholder="2050" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
           </div>
         </CardContent>
       </Card>
@@ -209,33 +249,52 @@
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="space-y-2">
-                  <Label :for="`scenario-id-${index}`">Scenario ID *</Label>
-                  <Input :id="`scenario-id-${index}`" v-model="scenario.include" placeholder="scenario_id"
-                    :list="`scenarios-${index}`" />
-                  <datalist :id="`scenarios-${index}`">
-                    <option v-for="s in availableScenarios" :key="s.id" :value="s.id">
-                      {{ s.meta?.title || s.id }}
-                    </option>
-                  </datalist>
-                </div>
+                <FormField :name="`scenarios.${index}.include`">
+                  <FormItem>
+                    <FormLabel>Scenario ID *</FormLabel>
+                    <FormControl>
+                      <Input v-model="scenario.include" placeholder="scenario_id" :list="`scenarios-${index}`" />
+                    </FormControl>
+                    <datalist :id="`scenarios-${index}`">
+                      <option v-for="s in availableScenarios" :key="s.id" :value="s.id">
+                        {{ s.meta?.title || s.id }}
+                      </option>
+                    </datalist>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
 
-                <div class="space-y-2">
-                  <Label :for="`scenario-order-${index}`">Order</Label>
-                  <Input :id="`scenario-order-${index}`" v-model.number="scenario.order" type="number" min="1"
-                    placeholder="1" />
-                </div>
+                <FormField :name="`scenarios.${index}.order`">
+                  <FormItem>
+                    <FormLabel>Order</FormLabel>
+                    <FormControl>
+                      <Input v-model.number="scenario.order" type="number" min="1" placeholder="1" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
 
-                <div class="space-y-2">
-                  <Label :for="`scenario-required-${index}`">Required</Label>
-                  <Toggle :id="`scenario-required-${index}`" v-model="scenario.required" class="openttd-button" />
-                </div>
+                <FormField :name="`scenarios.${index}.required`">
+                  <FormItem>
+                    <FormLabel>Required</FormLabel>
+                    <FormControl>
+                      <Toggle v-model="scenario.required" class="openttd-button" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
               </div>
 
               <div v-if="scenario.comment !== undefined" class="space-y-2 mt-4">
-                <Label :for="`scenario-comment-${index}`">Comment</Label>
-                <Input :id="`scenario-comment-${index}`" v-model="scenario.comment"
-                  placeholder="Optional comment about this scenario" />
+                <FormField :name="`scenarios.${index}.comment`">
+                  <FormItem>
+                    <FormLabel>Comment</FormLabel>
+                    <FormControl>
+                      <Input v-model="scenario.comment" placeholder="Optional comment about this scenario" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
               </div>
             </div>
           </div>
@@ -252,29 +311,45 @@
         </CardHeader>
         <CardContent>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="space-y-2">
-              <Label for="cash-reward">Cash Reward</Label>
-              <Input id="cash-reward" v-model.number="formData.rewards?.completion?.cash" type="number" min="0"
-                placeholder="1000000" />
-            </div>
+            <FormField v-slot="{ componentField }" name="rewards.completion.cash">
+              <FormItem>
+                <FormLabel>Cash Reward</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" type="number" min="0" placeholder="1000000" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="score-points">Score Points</Label>
-              <Input id="score-points" v-model.number="formData.rewards?.completion?.score" type="number" min="0"
-                placeholder="100" />
-            </div>
+            <FormField v-slot="{ componentField }" name="rewards.completion.score">
+              <FormItem>
+                <FormLabel>Score Points</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" type="number" min="0" placeholder="100" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="reputation">Reputation</Label>
-              <Input id="reputation" v-model.number="formData.rewards?.completion?.reputation" type="number" min="0"
-                placeholder="25" />
-            </div>
+            <FormField v-slot="{ componentField }" name="rewards.completion.reputation">
+              <FormItem>
+                <FormLabel>Reputation</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" type="number" min="0" placeholder="25" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="space-y-2">
-              <Label for="achievement">Achievement</Label>
-              <Input id="achievement" v-model="formData.rewards?.completion?.achievement"
-                placeholder="achievement_id" />
-            </div>
+            <FormField v-slot="{ componentField }" name="rewards.completion.achievement">
+              <FormItem>
+                <FormLabel>Achievement</FormLabel>
+                <FormControl>
+                  <Input v-bind="componentField" placeholder="achievement_id" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
           </div>
         </CardContent>
       </Card>
@@ -293,43 +368,67 @@
             <div>
               <h4 class="font-medium mb-4">Game Settings</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="space-y-2">
-                  <Label for="economy">Economy</Label>
-                  <Select v-model="formData.settings?.economy">
-                    <SelectTrigger id="economy" class="openttd-button">
-                      <SelectValue placeholder="Select economy" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="realistic">🏦 Realistic</SelectItem>
-                      <SelectItem value="balanced">⚖️ Balanced</SelectItem>
-                      <SelectItem value="arcade">🎮 Arcade</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <FormField v-slot="{ componentField }" name="settings.economy">
+                  <FormItem>
+                    <FormLabel>Economy</FormLabel>
+                    <Select v-bind="componentField">
+                      <FormControl>
+                        <SelectTrigger class="openttd-button">
+                          <SelectValue placeholder="Select economy" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="realistic">🏦 Realistic</SelectItem>
+                        <SelectItem value="balanced">⚖️ Balanced</SelectItem>
+                        <SelectItem value="arcade">🎮 Arcade</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
 
-                <div class="space-y-2">
-                  <Label for="disasters">Disasters</Label>
-                  <Toggle id="disasters" v-model="formData.settings?.disasters" class="openttd-button" />
-                </div>
+                <FormField v-slot="{ componentField }" name="settings.disasters">
+                  <FormItem>
+                    <FormLabel>Disasters</FormLabel>
+                    <FormControl>
+                      <Toggle v-bind="componentField" class="openttd-button" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
 
-                <div class="space-y-2">
-                  <Label for="breakdowns">Breakdowns</Label>
-                  <Toggle id="breakdowns" v-model="formData.settings?.breakdowns" class="openttd-button" />
-                </div>
+                <FormField v-slot="{ componentField }" name="settings.breakdowns">
+                  <FormItem>
+                    <FormLabel>Breakdowns</FormLabel>
+                    <FormControl>
+                      <Toggle v-bind="componentField" class="openttd-button" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
 
-                <div class="space-y-2">
-                  <Label for="inflation">Inflation</Label>
-                  <Toggle id="inflation" v-model="formData.settings?.inflation" class="openttd-button" />
-                </div>
+                <FormField v-slot="{ componentField }" name="settings.inflation">
+                  <FormItem>
+                    <FormLabel>Inflation</FormLabel>
+                    <FormControl>
+                      <Toggle v-bind="componentField" class="openttd-button" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
               </div>
             </div>
 
             <!-- Comment -->
-            <div class="space-y-2">
-              <Label for="developer-comment">Developer Comment</Label>
-              <Textarea id="developer-comment" v-model="formData.comment"
-                placeholder="Internal notes about this campaign..." rows="3" />
-            </div>
+            <FormField v-slot="{ componentField }" name="comment">
+              <FormItem>
+                <FormLabel>Developer Comment</FormLabel>
+                <FormControl>
+                  <Textarea v-bind="componentField" placeholder="Internal notes about this campaign..." rows="3" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
           </div>
         </CardContent>
       </Card>
@@ -344,9 +443,9 @@
               {{ isNew ? '✨ Unsaved campaign' : (hasChanges ? '📝 Unsaved changes' : '✅ All changes saved') }}
             </div>
 
-            <div v-if="validationErrors.length > 0" class="flex items-center space-x-2">
+            <div v-if="customValidationErrors.length > 0" class="flex items-center space-x-2">
               <span class="text-destructive">⚠️</span>
-              <span class="text-sm text-destructive">{{ validationErrors.length }} validation error(s)</span>
+              <span class="text-sm text-destructive">{{ customValidationErrors.length }} validation error(s)</span>
             </div>
           </div>
 
@@ -355,7 +454,7 @@
               🔄 Reset
             </Button>
 
-            <Button type="submit" :disabled="!isValid || saving" class="openttd-button bg-openttd-green text-white"
+            <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
               @click="saveCampaign">
               {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
             </Button>
@@ -368,6 +467,8 @@
 
 <script setup lang="ts">
 import type { Campaign } from '~/types/campaign'
+import { useForm } from 'vee-validate'
+import { campaignSchema } from '~/utils/schemas'
 
 const route = useRoute()
 const router = useRouter()
@@ -383,8 +484,13 @@ const {
   loadAll
 } = useCampaignStore()
 
+// Form setup
+const form = useForm({
+  validationSchema: campaignSchema,
+  initialValues: createEmptyCampaign()
+})
+
 // Reactive data
-const formData = ref<Campaign>(createEmptyCampaign())
 const originalData = ref<Campaign | undefined>(undefined)
 const saving = ref(false)
 const newTag = ref('')
@@ -393,6 +499,9 @@ const newTag = ref('')
 const campaignId = computed(() => route.params.id as string)
 const isNew = computed(() => campaignId.value === 'new')
 
+// Form values and validation
+const { values: formData, errors, meta } = form
+
 // Load data on mount
 onMounted(async () => {
   if (campaigns.value.length === 0 || availableScenarios.value.length === 0) {
@@ -400,12 +509,12 @@ onMounted(async () => {
   }
 
   if (isNew.value) {
-    formData.value = createEmptyCampaign()
+    form.setValues(createEmptyCampaign())
     originalData.value = undefined
   } else {
     const campaign = getCampaign(campaignId.value)
     if (campaign) {
-      formData.value = JSON.parse(JSON.stringify(campaign)) // Deep clone
+      form.setValues(JSON.parse(JSON.stringify(campaign))) // Deep clone
       originalData.value = campaign
     } else {
       error.value = 'Campaign not found'
@@ -413,22 +522,19 @@ onMounted(async () => {
   }
 })
 
-// Validation
-const validationErrors = computed(() => {
+// Custom validation for cross-field validation
+const customValidationErrors = computed(() => {
   const errors: string[] = []
+  const values = formData
 
-  if (!formData.value.id?.trim()) {
-    errors.push('Campaign ID is required')
-  }
-
-  if (formData.value.constraints?.players?.min && formData.value.constraints?.players?.max) {
-    if (formData.value.constraints?.players?.min > formData.value.constraints?.players?.max) {
+  if (values.constraints?.players?.min && values.constraints?.players?.max) {
+    if (values.constraints.players.min > values.constraints.players.max) {
       errors.push('Minimum players cannot be greater than maximum players')
     }
   }
 
-  if (formData.value.constraints?.date?.min && formData.value.constraints?.date?.max) {
-    if (formData.value.constraints.date.min > formData.value.constraints.date.max) {
+  if (values.constraints?.date?.min && values.constraints?.date?.max) {
+    if (values.constraints.date.min > values.constraints.date.max) {
       errors.push('Start year cannot be later than end year')
     }
   }
@@ -436,12 +542,10 @@ const validationErrors = computed(() => {
   return errors
 })
 
-const isValid = computed(() => validationErrors.value.length === 0)
-
 const hasChanges = computed(() => {
   if (isNew.value) return true
   if (!originalData.value) return false
-  return JSON.stringify(formData.value) !== JSON.stringify(originalData.value)
+  return meta.value.dirty || JSON.stringify(formData) !== JSON.stringify(originalData.value)
 })
 
 // Options
@@ -462,57 +566,57 @@ const _economyOptions = [
 // Methods
 const addTag = () => {
   const tag = newTag.value.trim()
-  if (tag && !formData.value.meta?.tags?.includes(tag)) {
-    if (!formData.value.meta) formData.value.meta = {}
-    if (!formData.value.meta.tags) formData.value.meta.tags = []
-    formData.value.meta.tags.push(tag)
+  if (tag && !formData.meta?.tags?.includes(tag)) {
+    const currentTags = formData.meta?.tags || []
+    form.setFieldValue('meta.tags', [...currentTags, tag])
     newTag.value = ''
   }
 }
 
 const removeTag = (index: number) => {
-  if (formData.value.meta?.tags) {
-    formData.value.meta.tags.splice(index, 1)
-  }
+  const currentTags = formData.meta?.tags || []
+  const newTags = currentTags.filter((_: string, i: number) => i !== index)
+  form.setFieldValue('meta.tags', newTags)
 }
 
 const addScenario = () => {
-  if (!formData.value.scenarios) formData.value.scenarios = []
-  formData.value.scenarios.push({
+  const currentScenarios = formData.scenarios || []
+  const newScenario = {
     include: '',
-    order: formData.value.scenarios.length + 1,
+    order: currentScenarios.length + 1,
     required: true
-  })
+  }
+  form.setFieldValue('scenarios', [...currentScenarios, newScenario])
 }
 
 const removeScenario = (index: number) => {
-  if (formData.value.scenarios) {
-    formData.value.scenarios.splice(index, 1)
-    // Reorder remaining scenarios
-    formData.value.scenarios.forEach((scenario, idx) => {
-      scenario.order = idx + 1
-    })
-  }
+  const currentScenarios = formData.scenarios || []
+  const newScenarios = currentScenarios.filter((_: any, i: number) => i !== index)
+  // Reorder remaining scenarios
+  newScenarios.forEach((scenario: any, idx: number) => {
+    scenario.order = idx + 1
+  })
+  form.setFieldValue('scenarios', newScenarios)
 }
 
-const saveCampaign = async () => {
-  if (!isValid.value) return
+const saveCampaign = form.handleSubmit(async (values) => {
+  if (customValidationErrors.value.length > 0) return
 
   saving.value = true
   try {
-    await saveCampaignStore(formData.value)
+    await saveCampaignStore(values)
 
     const toast = useToast()
     toast.add({
       title: isNew.value ? '✨ Campaign Created' : '💾 Campaign Saved',
-      description: `Campaign "${formData.value.meta?.title || formData.value.id}" has been saved.`,
+      description: `Campaign "${values.meta?.title || values.id}" has been saved.`,
       color: 'green'
     })
 
     if (isNew.value) {
-      router.push(`/campaigns/${formData.value.id}`)
+      router.push(`/campaigns/${values.id}`)
     } else {
-      originalData.value = JSON.parse(JSON.stringify(formData.value))
+      originalData.value = JSON.parse(JSON.stringify(values))
     }
   } catch (error) {
     console.error('Failed to save campaign:', error)
@@ -525,13 +629,13 @@ const saveCampaign = async () => {
   } finally {
     saving.value = false
   }
-}
+})
 
 const resetForm = () => {
   if (isNew.value) {
-    formData.value = createEmptyCampaign()
+    form.setValues(createEmptyCampaign())
   } else if (originalData.value) {
-    formData.value = JSON.parse(JSON.stringify(originalData.value))
+    form.setValues(JSON.parse(JSON.stringify(originalData.value)))
   }
 }
 
@@ -569,18 +673,6 @@ const previewCampaign = () => {
   })
 }
 
-// Initialize reactive objects if they don't exist
-watchEffect(() => {
-  if (!formData.value.meta) formData.value.meta = {}
-  if (!formData.value.meta.tags) formData.value.meta.tags = []
-  if (!formData.value.constraints) formData.value.constraints = {}
-  if (!formData.value.constraints.players) formData.value.constraints.players = {}
-  if (!formData.value.constraints.date) formData.value.constraints.date = {}
-  if (!formData.value.scenarios) formData.value.scenarios = []
-  if (!formData.value.rewards) formData.value.rewards = {}
-  if (!formData.value.rewards.completion) formData.value.rewards.completion = {}
-  if (!formData.value.settings) formData.value.settings = {}
-})
 
 // Page meta
 definePageMeta({

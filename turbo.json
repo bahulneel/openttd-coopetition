@@ -26,6 +26,9 @@
       "outputs": []
     },
     "start": {
+      "dependsOn": [
+        "dev:prepare"
+      ],
       "cache": false,
       "persistent": true
     },

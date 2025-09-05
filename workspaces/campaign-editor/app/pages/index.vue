@@ -103,7 +103,7 @@
                 @click="editCampaign(campaign.id)">
                 <div class="flex items-center space-x-3">
                   <div class="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Icon name="heroicons:folder" class="h-5 w-5 text-primary" />
+                    <Folder class="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <p class="font-medium">{{ campaign.meta?.title || campaign.id }}</p>
@@ -170,6 +170,7 @@
 
 <script setup lang="ts">
 import type { Campaign, Goal, Scenario } from '~/types/campaign'
+import { Folder } from '~/utils/icons'
 
 
 const { $campaignStore: _$campaignStore } = useNuxtApp()

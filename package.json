@@ -31,7 +31,7 @@
     "check": "npm run lint:all && npm run validate:all && npm run test",
     "test:check": "npm run check",
     "prebuild": "npm run test",
-    "dev": "turbo run start",
+    "dev": "turbo run dev",
     "dev:prepare": "turbo run dev:prepare",
     "docker:build": "docker build -t coopetition/campaign-editor workspaces/campaign-editor",
     "docker:run": "docker run -p 3000:3000 coopetition/campaign-editor",
