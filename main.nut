@@ -7,6 +7,8 @@ import("util.superlib", "SuperLib", 40);
 require("version.nut");
 require("constants.nut");
 require("goal.nut");
+require("constraints.nut");
+require("loader.nut");
 require("player.nut");
 require("dashboard.nut");
 require("campaign.nut");
@@ -58,7 +60,10 @@ class Coopetition extends GSController {
             this.dashboard.UpdateStoryBook(this.shared_goals, this.player_goals, true);
         }
         
-        // Initialize campaign scheduler
+        // Load compiled authoring data (if present) and register runtime goals
+        this.LoadCompiledAuthoring();
+
+        // Initialize campaign scheduler (legacy or data-driven)
         this.campaign = Campaign();
         
     // Send onboarding news to existing companies (for games that start with default company)
@@ -135,6 +140,48 @@ this.SendReminderNews();
                 }
             }
 
+    }
+
+    function LoadCompiledAuthoring() {
+        // Attempt to require compiled index; if missing, skip silently
+        try {
+            require("coopetition/build/index.nut");
+        } catch (e) {
+            GSLog.Info("No compiled authoring index found; running with built-in defaults");
+            return;
+        }
+        if (!("CoopetitionIndex" in ::)) {
+            GSLog.Warning("Compiled index did not expose CoopetitionIndex; skipping");
+            return;
+        }
+        local index = ::CoopetitionIndex;
+
+        // Load goals immediately as shared goals if constraints allow and type != player
+        if ("goals" in index) {
+            foreach (entry in index.goals) {
+                try {
+                    local path = "coopetition/build/" + entry.file;
+                    require(path);
+                    local var_name = "Goal_" + entry.id;
+                    if (!(var_name in ::)) continue;
+                    local goal_def = ::[var_name];
+                    if (!ConstraintEvaluator.Evaluate("constraints" in goal_def ? goal_def.constraints : null)) continue;
+
+                    // Map objective to SharedGoal instance (currently supported types)
+                    if (goal_def.type == "scenario") {
+                        local shared_goal = CoopetitionLoader.MapObjectiveToSharedGoal(goal_def);
+                        if (shared_goal != null) {
+                            shared_goal.result <- ("result" in goal_def) ? goal_def.result : null;
+                            this.shared_goals.append(shared_goal);
+                            CoopetitionLoader.TryCreateGSGoal(shared_goal, goal_def);
+                            GSLog.Info("Registered shared goal from compiled authoring: " + goal_def.id);
+                        }
+                    }
+                } catch (ex) {
+                    GSLog.Warning("Failed to load goal " + entry.id + ": " + ex);
+                }
+            }
+        }
     }
     
     function HandleEvent(event) {
@@ -263,15 +310,11 @@ foreach (company_id, goals in this.player_goals) {
     }
 
     function GiveSharedGoalReward(goal) {
-        local reward = GSController.GetSetting("shared_goal_reward");
-        
-        // Distribute reward based on contribution
+        local total_cash = ("result" in goal && goal.result != null && ("cash" in goal.result)) ? goal.result.cash : GSController.GetSetting("shared_goal_reward");
         foreach (company_id, contribution in goal.contributions) {
-            local company_reward = (contribution * reward) / goal.target;
-            GSCompany.ChangeBankBalance(company_id, company_reward, GSCompany.EXPENSES_OTHER, 0);
-    
-            GSLog.Info("Company " + GSCompany.GetName(company_id) + 
-                " received " + company_reward + " for shared goal contribution");
+            local company_cash = (goal.target > 0) ? ((contribution * total_cash) / goal.target) : 0;
+            if (company_cash != 0) GSCompany.ChangeBankBalance(company_id, company_cash, GSCompany.EXPENSES_OTHER, 0);
+            GSLog.Info("Company " + GSCompany.GetName(company_id) + " received cash=" + company_cash + " for shared goal result");
         }
     }
     

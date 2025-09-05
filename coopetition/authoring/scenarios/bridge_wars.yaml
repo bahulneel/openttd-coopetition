@@ -1,0 +1,14 @@
+meta:
+  title: "Bridge Wars"
+  description: "Who can link the two valleys most profitably?"
+
+defaults:
+  shared:
+    track: true
+    stations: true
+  result:
+    score: 5
+
+goals:
+  - include: goal.build_bridge.yaml
+  - include: goal.freight_race.yaml

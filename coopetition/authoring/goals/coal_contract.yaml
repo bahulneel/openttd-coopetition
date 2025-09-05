@@ -1,0 +1,21 @@
+id: coal_contract
+type: company
+objective:
+  type: cargo_delivered
+  cargo: coal
+  amount: 50000
+constraints:
+  players:
+    min: 2
+  date:
+    before: 1970
+shared:
+  track: true
+  stations: false
+result:
+  cash: 200000
+  score: 15
+  reputation: -5
+meta:
+  title: "Coal Contract"
+  description: "Deliver coal to the Riverside Power Plant before 1970."
