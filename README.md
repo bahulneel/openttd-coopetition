@@ -11,6 +11,25 @@ The Coopetition mod blends cooperation and competition in multiplayer games by:
 - **Dynamic Tracking**: Keeps both types of goals visible and measurable
 - **Flexible**: Adapts to any map size, number of players, and session duration
 
+## Project Structure
+
+```
+├── src/                    # Main game script files
+│   └── *.nut              # Core game script files
+├── campaigns/              # Campaign packs for distribution
+│   └── quickstart/         # Example campaign pack
+│       ├── manifest.yaml   # Pack metadata and dependencies
+│       ├── goals/          # Goal definitions
+│       ├── scenarios/      # Scenario definitions
+│       └── *.yaml          # Campaign files
+├── tools/                 # Development tools and utilities
+├── docs/                  # Documentation and ADRs
+├── .github/               # GitHub workflows and templates
+└── package.json           # Node.js project configuration
+```
+
+The main game script files are located in the `src/` directory, while campaign packs are organized in the `campaigns/` directory for easy distribution. Each campaign pack contains its own manifest and can be distributed independently.
+
 ## Features
 
 ### Shared Goal Management
@@ -102,11 +121,10 @@ This will create a versioned zip file in the `dist` directory that can be shared
 
 This project includes a GitHub workflow that automatically:
 
-1. Increments the version number in `version.nut` when code is pushed to the main branch
-2. Creates a release branch with the new version
-3. Builds and packages the mod with the new version number
-4. Creates a new GitHub release with the versioned zip file
-5. Creates a pull request to merge the release branch back to the develop branch
+1. Builds and packages the mod when code is pushed to the main branch
+2. Creates a new GitHub release with the version number from `src/version.nut`
+3. Attaches the packaged zip file to the release for easy downloading
+4. Increments the version number and creates a pull request back to the develop branch
 
 To use this feature, simply push your changes to the main branch, and the workflow will handle the version increment, release process, and branch management.
 
@@ -173,30 +191,58 @@ When your changes are merged to the develop branch, they'll be included in the n
 
 When changes from develop are merged to the main branch, the GitHub workflow will automatically:
 
-1. Increment the version number in `version.nut`
-2. Create a release branch with the new version
-3. Build and package the mod with the new version
-4. Create a new GitHub release with the versioned zip file
-5. Create a pull request to merge the release branch back to the develop branch
+1. Build and package the mod
+2. Create a new release with the version number from `src/version.nut`
+3. Make the packaged zip file available for download
+4. Increment the version number in `src/version.nut`
+5. Create a pull request back to the develop branch with the incremented version
 
 ### Versioning
 
 Version management is fully automated in this project:
 
-1. When changes are pushed to the main branch, the GitHub workflow automatically increments the version number in `version.nut`
-2. The workflow creates a release branch with the new version
-3. The release is built and published with the new version number
-4. A pull request is created to merge the release branch (with the incremented version) back to the develop branch
-5. When the PR is merged, the develop branch will have the incremented version ready for the next development cycle
+1. When changes are pushed to the main branch, the GitHub workflow creates a release with the current version from `src/version.nut`
+2. After the release is created, the workflow automatically increments the version number in `src/version.nut` and creates a pull request to the develop branch
+3. When the PR is merged, the develop branch will have the incremented version ready for the next release
 
 For manual version updates (if needed):
 
-1. Modify the `COOPETITION_VERSION` value in `version.nut`
+1. Modify the `COOPETITION_VERSION` value in `src/version.nut`
 2. Commit and push the change to the appropriate branch
+
+### Campaign Packs
+
+Campaign packs are organized in the `campaigns/` directory and can be distributed independently. Each pack contains:
+
+- **`manifest.yaml`**: Pack metadata, dependencies, and installation instructions
+- **`goals/`**: Goal definitions for the campaign
+- **`scenarios/`**: Scenario definitions that reference goals
+- **`*.yaml`**: Campaign files that define the overall structure
+
+#### Creating a New Campaign Pack
+
+1. Create a new directory in `campaigns/` with your pack name
+2. Add a `manifest.yaml` file with pack metadata
+3. Create `goals/` and `scenarios/` subdirectories as needed
+4. Add your YAML definition files
+5. Test with `npm run compile` to ensure everything builds correctly
+
+#### Example Campaign Pack Structure
+
+```
+campaigns/my-campaign/
+├── manifest.yaml
+├── goals/
+│   ├── coal_delivery.yaml
+│   └── passenger_route.yaml
+├── scenarios/
+│   └── industrial_hub.yaml
+└── main_campaign.yaml
+```
 
 ### Building
 
-No building is required. The script can be run directly by OpenTTD.
+No building is required for the main script. Campaign packs are compiled using `npm run compile` which processes all campaign packs and generates the necessary `.nut` files for OpenTTD.
 
 ### Contributing
 

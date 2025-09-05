@@ -11,31 +11,31 @@ class Coopetition extends GSInfo {
     function GetDate()        { return "2023-06-01"; }
     function CreateInstance() { return "Coopetition"; }
     function GetShortName()   { return "COOP"; }
-    function GetAPIVersion()  { return "1.11"; }
+    function GetAPIVersion()  { return "14"; }
     function GetURL()         { return "https://github.com/bahulneel/openttd-coopetition"; }
-    
+
     function GetSettings() {
         AddSetting({
-            name = "log_level", 
-            description = "Debug log level", 
-            easy_value = 1, 
-            medium_value = 1, 
-            hard_value = 1, 
-            custom_value = 1, 
-            flags = CONFIG_INGAME, 
-            min_value = 0, 
+            name = "log_level",
+            description = "Debug log level",
+            easy_value = 1,
+            medium_value = 1,
+            hard_value = 1,
+            custom_value = 1,
+            flags = CONFIG_INGAME,
+            min_value = 0,
             max_value = 3
         });
-        
+
         AddSetting({
-            name = "shared_goal_reward", 
-            description = "Cash reward for completing shared goals", 
-            easy_value = 100000, 
-            medium_value = 50000, 
-            hard_value = 25000, 
-            custom_value = 50000, 
-            flags = CONFIG_INGAME, 
-            min_value = 0, 
+            name = "shared_goal_reward",
+            description = "Cash reward for completing shared goals",
+            easy_value = 100000,
+            medium_value = 50000,
+            hard_value = 25000,
+            custom_value = 50000,
+            flags = CONFIG_INGAME,
+            min_value = 0,
             max_value = 1000000,
             step_size = 10000
         });
@@ -132,14 +132,14 @@ class Coopetition extends GSInfo {
         AddSetting({
             name = "ui_reminder_days",
             description = "Days between reminder news per company",
-            easy_value = 14,
-            medium_value = 14,
-            hard_value = 28,
-            custom_value = 14,
+            easy_value = 30,
+            medium_value = 45,
+            hard_value = 60,
+            custom_value = 30,
             flags = CONFIG_INGAME,
-            min_value = 1,
-            max_value = 112,
-            step_size = 1
+            min_value = 7,
+            max_value = 365,
+            step_size = 7
         });
     }
 }

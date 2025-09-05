@@ -7,11 +7,11 @@
 mkdir -p dist
 
 # Get version from version.nut
-VERSION=$(grep -o 'COOPETITION_VERSION = [0-9]\+' version.nut | grep -o '[0-9]\+')
+VERSION=$(grep -o 'COOPETITION_VERSION = [0-9]\+' src/version.nut | grep -o '[0-9]\+')
 
 # Create zip file
 zip -r "dist/coopetition-v${VERSION}.zip" \
-    *.nut \
+    src/*.nut \
     LICENSE \
     README.md \
     -x package.sh
