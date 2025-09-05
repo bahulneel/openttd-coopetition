@@ -1,0 +1,17 @@
+id: network_push
+type: scenario
+objective:
+  type: network_length
+  amount: 200
+constraints:
+  players:
+    min: 1
+shared:
+  track: true
+  stations: true
+result:
+  cash: 100000
+  score: 10
+meta:
+  title: "Build the Backbone"
+  description: "Expand total network length to 200 tiles."

@@ -1,0 +1,6 @@
+meta:
+  title: "Coopetition Quickstart"
+  description: "A compact two-goal cooperative warmup."
+
+scenarios:
+  - include: bridge_wars.yaml

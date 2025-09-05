@@ -243,6 +243,12 @@ class SharedGoal {
         data.start_date <- this.start_date;
         data.end_date <- this.end_date;
         data.reward_given <- this.reward_given;
+        // Persist unified result object if present
+        if ("result" in this && this.result != null) {
+            data.result <- this.result;
+        } else {
+            data.result <- null;
+        }
         data.tier_thresholds <- this.tier_thresholds;
 
         // Save type-specific properties
@@ -268,6 +274,8 @@ class SharedGoal {
         goal.start_date = data.start_date;
         goal.end_date = data.end_date;
         goal.reward_given = data.reward_given;
+        // Restore result object if present
+        goal.result <- ("result" in data) ? data.result : null;
         goal.tier_thresholds = data.tier_thresholds;
 
         // Load type-specific properties

@@ -26,17 +26,22 @@ class Campaign {
         this.current_week = 1;
         this.current_year = GSDate.GetYear(GSDate.GetCurrentDate());
         this.current_month = GSDate.GetMonth(GSDate.GetCurrentDate());
-        this.total_weeks = 4; // Default 4-week campaign
+        this.total_weeks = 0; // legacy disabled by default
         this.week_start_date = GSDate.GetCurrentDate();
         this.year_start_date = GSDate.GetCurrentDate();
         this.month_start_date = GSDate.GetCurrentDate();
         this.auto_progression = true;
         this.year_to_date_page_id = null;
         this.campaign_completed_logged = false;
-        
-    // Initialize week goals
         this.week_goals = [];
-        this.InitializeDefaultCampaign();
+        // If no compiled index, initialize dummy guidance only
+        local compiled_present = false;
+        try { require("coopetition/build/index.nut"); compiled_present = ("CoopetitionIndex" in ::); } catch (e) { compiled_present = false; }
+        if (!compiled_present) {
+            this.InitializeDummyGuidance();
+        } else {
+            GSLog.Info("Compiled authoring present; legacy campaign disabled.");
+        }
     }
     
     /*
@@ -185,17 +190,23 @@ ms = {
 
     }
     
+    function InitializeDummyGuidance() {
+        this.total_weeks = 0;
+        this.week_goals = [];
+        GSLog.Info("No compiled campaigns found; dummy campaign active. Author or download a campaign.");
+    }
+    
     /*
      * Start a new week in the campaign
      */
 function StartNewWeek(shared_goals, player_goals) {
+        if (this.total_weeks <= 0) return false;
         if (this.current_week > this.total_weeks) {
-            // Campaign is complete
             if (!this.campaign_completed_logged) {
                 GSLog.Info("Campaign complete!");
                 this.campaign_completed_logged = true;
             }
-        return false;
+            return false;
         }
         
         // Clear existing goals
@@ -399,6 +410,7 @@ function StartNewWeek(shared_goals, player_goals) {
      */
     function CheckProgression(shared_goals, player_goals) {
         if (!this.auto_progression) return false;
+        if (this.total_weeks <= 0) return false;
         
         // Check if we need to handle year/month progression
         this.CheckYearMonthProgression(shared_goals, player_goals);
@@ -517,6 +529,18 @@ function StartNewWeek(shared_goals, player_goals) {
         local month_name = month_names[this.current_month - 1];
         GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "=== " + month_name + " ===");
         GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "");
+
+        // If no legacy weeks and no compiled campaigns, add guidance panel
+        local compiled_present = false;
+        try { require("coopetition/build/index.nut"); compiled_present = ("CoopetitionIndex" in ::); } catch (e) { compiled_present = false; }
+        if (this.total_weeks <= 0 && !compiled_present) {
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "NO CAMPAIGN FOUND");
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "Author or download a YAML campaign:");
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Place YAML in coopetition/authoring/ then run 'compile'.");
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Package coopetition/build/ with this Game Script.");
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, LIST_ITEM + " Restart the game to load compiled goals.");
+            GSStoryPage.NewElement(this.year_to_date_page_id, GSStoryPage.SPET_TEXT, 0, "");
+        }
     }
     
     function UpdateYearToDatePage(shared_goals, player_goals) {
