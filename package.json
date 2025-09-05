@@ -15,7 +15,7 @@
     "lint:workspaces": "npm run lint --workspaces",
     "lint:all": "npm run lint:nut && npm run lint:workspaces",
     "compile": "node workspaces/compile-authoring/compile-authoring.mjs",
-    "validate:yaml": "find campaigns -name '*.yaml' -exec echo 'Validating {}' \\; -exec yaml-lint {} \\;",
+    "validate:yaml": "find campaigns -name '*.yaml' -exec echo 'Validating {}' \\; -exec npx yaml-lint {} \\;",
     "validate:docs": "find docs -name '*.md' -exec echo 'Checking {}' \\;",
     "validate:all": "npm run validate:yaml && npm run validate:docs",
     "build:mod": "mkdir -p dist && zip -r dist/coopetition-v$(grep -o 'COOPETITION_VERSION = [0-9]\\+' src/version.nut | grep -o '[0-9]\\+').zip src/*.nut LICENSE README.md",
@@ -24,7 +24,8 @@
     "build:tools": "mkdir -p dist && zip -r dist/coopetition-tools-v$(grep -o 'COOPETITION_VERSION = [0-9]\\+' src/version.nut | grep -o '[0-9]\\+').zip workspaces/ package.json package-lock.json eslint.config.mjs",
     "build:all": "npm run build:mod && npm run build:content && npm run build:tools",
     "test:workspaces": "npm run test --workspaces",
-    "test": "npm run lint:all && npm run validate:all && npm run test:workspaces",
+    "check": "npm run lint:all && npm run validate:all && npm run test:workspaces",
+    "test": "npm run check",
     "prebuild": "npm run test",
     "dev:workspaces": "npm run start --workspaces",
     "dev:all": "npm run dev:workspaces"
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "eslint": "^9.34.0",
+    "markdown-link-check": "^3.13.7",
     "yaml-lint": "^1.7.0"
   }
 }

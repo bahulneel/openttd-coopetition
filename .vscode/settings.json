@@ -3,17 +3,27 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "files.associations": {
-    "*.nut": "plaintext"
-  },
   "eslint.enable": true,
   "eslint.useFlatConfig": true,
-  "eslint.validate": ["javascript", "javascriptreact", "plaintext"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "plaintext",
+    "squirrel"
+  ],
   "eslint.options": {
     "extensions": [".nut"]
   },
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "plaintext",
+    "squirrel"
+  ],
   "eslint.workingDirectories": [
-    "./"
+    {
+      "mode": "auto"
+    }
   ],
   "cSpell.words": [
     "Coopetition"
