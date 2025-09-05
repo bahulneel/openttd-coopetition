@@ -1,0 +1,57 @@
+# Nuxt ignore patterns for campaign editor
+
+# Build outputs
+dist/
+.output/
+
+# Dependencies  
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Temporary files
+.tmp/
+tmp/
+
+# ESLint cache
+.eslintcache
+
+# TypeScript cache  
+*.tsbuildinfo
+
+# Campaign editor specific ignores
+MIGRATION_COMPLETE.md
+SPA_MIGRATION_COMPLETE.md
+
+# Test files (if any)
+**/*.test.*
+**/*.spec.*
+__tests__/

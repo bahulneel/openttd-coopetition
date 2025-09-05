@@ -51,12 +51,26 @@ export default defineNuxtConfig({
   // Modules
   modules: [
     '@vueuse/nuxt',
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    '@nuxt/eslint'
   ],
 
   // Color mode configuration for dark/light theme toggle
   colorMode: {
     classSuffix: ''
+  },
+
+  // ESLint configuration
+  eslint: {
+    checker: true,
+    config: {
+      stylistic: {
+        indent: 2,
+        quotes: 'single',
+        semi: false,
+        commaDangle: 'never'
+      }
+    }
   },
 
   // Build configuration
