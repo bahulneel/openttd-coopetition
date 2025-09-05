@@ -1,0 +1,72 @@
+{
+  "name": "@coopetition/campaign-editor",
+  "version": "1.0.0",
+  "description": "Campaign authoring tool for OpenTTD Coopetition with Nuxt 4, Tailwind 4, and shadcn-vue",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "openttd",
+    "gamescript",
+    "campaign",
+    "authoring",
+    "editor",
+    "nuxt",
+    "vue",
+    "tailwind"
+  ],
+  "author": "Coopetition Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bahulneel/openttd-coopetition.git",
+    "directory": "workspaces/campaign-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/bahulneel/openttd-coopetition/issues"
+  },
+  "homepage": "https://github.com/bahulneel/openttd-coopetition#readme",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint . --ext .js,.ts,.vue",
+    "lint:fix": "eslint . --ext .js,.ts,.vue --fix",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.7.22",
+    "@nuxt/ui": "^2.18.4",
+    "@vueuse/core": "^11.1.0",
+    "@vueuse/nuxt": "^11.1.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "lucide-vue-next": "^0.447.0",
+    "nuxt": "^3.13.0",
+    "radix-vue": "^1.9.6",
+    "tailwind-merge": "^2.5.2",
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^1.5.2",
+    "@nuxt/eslint-config": "^0.5.7",
+    "@nuxt/typescript": "^2.8.1",
+    "@tailwindcss/forms": "^0.5.9",
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^22.7.4",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.34.0",
+    "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
+    "sass": "^1.79.4",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2"
+  }
+}
