@@ -421,13 +421,9 @@ jobs:
           cache: 'npm'
 
       - name: Build Campaign Editor for GitHub Pages
-        working-directory: workspaces/campaign-editor
-        env:
-          NUXT_SPA_MODE: true
-          NUXT_BASE_URL: /openttd-coopetition/
         run: |
           npm ci
-          npm run generate
+          npm run github:pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
