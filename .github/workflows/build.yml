@@ -23,18 +23,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # First job: Get current version and increment it
+  # First job: Create release branch and increment version
   increment-version:
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     outputs:
       current_version: ${{ steps.get_current_version.outputs.version }}
       new_version: ${{ steps.increment_version.outputs.new_version }}
+      is_version_bump_only: ${{ steps.check_version_bump.outputs.is_version_bump_only }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Check if only version bump
+        id: check_version_bump
+        run: |
+          # Get the list of changed files in this push
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          echo "Changed files: $CHANGED_FILES"
+          
+          # Check if only src/version.nut was changed
+          if [ "$CHANGED_FILES" = "src/version.nut" ]; then
+            echo "is_version_bump_only=true" >> $GITHUB_OUTPUT
+            echo "Only version.nut was changed - likely a version bump merge"
+          else
+            echo "is_version_bump_only=false" >> $GITHUB_OUTPUT
+            echo "Multiple files changed - proceeding with normal workflow"
+          fi
 
       - name: Get current version
         id: get_current_version
@@ -51,27 +68,52 @@ jobs:
       - name: Increment version
         id: increment_version
         run: |
-          # Calculate new version
-          NEW_VERSION=$((${{ steps.get_current_version.outputs.version }} + 1))
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "Incrementing version from ${{ steps.get_current_version.outputs.version }} to $NEW_VERSION"
+          if [ "${{ steps.check_version_bump.outputs.is_version_bump_only }}" = "true" ]; then
+            # Skip increment if only version.nut was changed (likely a merge from develop)
+            echo "new_version=${{ steps.get_current_version.outputs.version }}" >> $GITHUB_OUTPUT
+            echo "Skipping version increment - only version.nut was changed (likely a merge from develop)"
+          else
+            # Calculate new version
+            NEW_VERSION=$((${{ steps.get_current_version.outputs.version }} + 1))
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "Incrementing version from ${{ steps.get_current_version.outputs.version }} to $NEW_VERSION"
+          fi
       
       - name: Setup Git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
       
+      - name: Create release branch from develop
+        run: |
+          # Switch to develop branch first
+          git checkout develop
+          git pull origin develop
+          
+          # Create a new branch for the version increment from develop
+          BRANCH_NAME="release-v${{ steps.increment_version.outputs.new_version }}"
+          git checkout -b $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          
+          # If this is just a version bump merge, we don't need to create a new release
+          if [ "${{ steps.check_version_bump.outputs.is_version_bump_only }}" = "true" ]; then
+            echo "SKIP_RELEASE=true" >> $GITHUB_ENV
+            echo "Skipping release creation - only version bump detected"
+          else
+            echo "SKIP_RELEASE=false" >> $GITHUB_ENV
+            echo "Proceeding with normal release workflow"
+          fi
+      
       - name: Update version.nut in src/version.nut
+        if: steps.check_version_bump.outputs.is_version_bump_only != 'true'
         run: |
           # Update version.nut with new version
           sed -i "s/COOPETITION_VERSION <- ${{ steps.get_current_version.outputs.version }}/COOPETITION_VERSION <- ${{ steps.increment_version.outputs.new_version }}/" src/version.nut
           cat src/version.nut
       
-      - name: Create branch for version increment
+      - name: Commit and push version increment
+        if: steps.check_version_bump.outputs.is_version_bump_only != 'true'
         run: |
-          # Create a new branch for the version increment
-          BRANCH_NAME="release-v${{ steps.increment_version.outputs.new_version }}"
-          git checkout -b $BRANCH_NAME
           git add src/version.nut
           git commit -m "Increment version to v${{ steps.increment_version.outputs.new_version }}"
           git push origin $BRANCH_NAME
@@ -79,13 +121,19 @@ jobs:
       - name: Version Summary
         run: |
           echo "## Version Increment" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Incremented version from ${{ steps.get_current_version.outputs.version }} to ${{ steps.increment_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "🔀 Created branch release-v${{ steps.increment_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_version_bump.outputs.is_version_bump_only }}" = "true" ]; then
+            echo "⏭️ Skipped version increment - only version bump detected (likely merge from develop)" >> $GITHUB_STEP_SUMMARY
+            echo "📋 Current version: ${{ steps.get_current_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Incremented version from ${{ steps.get_current_version.outputs.version }} to ${{ steps.increment_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+            echo "🔀 Created branch release-v${{ steps.increment_version.outputs.new_version }} from develop" >> $GITHUB_STEP_SUMMARY
+          fi
 
   # Quality Gates: Lint and validate all components
   quality-gates:
     needs: increment-version
     runs-on: ubuntu-22.04
+    if: needs.increment-version.outputs.is_version_bump_only != 'true'
     strategy:
       matrix:
         component: [mod, content, tools, docs]
@@ -138,6 +186,7 @@ jobs:
   build-components:
     needs: [increment-version, quality-gates]
     runs-on: ubuntu-22.04
+    if: needs.increment-version.outputs.is_version_bump_only != 'true'
     strategy:
       matrix:
         component: [mod, content, tools]
@@ -218,6 +267,7 @@ jobs:
   integration:
     needs: [increment-version, build-components]
     runs-on: ubuntu-22.04
+    if: needs.increment-version.outputs.is_version_bump_only != 'true'
     steps:
       - name: Checkout release branch
         uses: actions/checkout@v5
@@ -291,11 +341,13 @@ jobs:
   create-pr:
     needs: [increment-version, integration]
     runs-on: ubuntu-22.04
+    if: needs.increment-version.outputs.is_version_bump_only != 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: release-v${{ needs.increment-version.outputs.new_version }}
       
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
