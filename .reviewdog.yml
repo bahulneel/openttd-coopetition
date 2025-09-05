@@ -1,0 +1,34 @@
+runner:
+  # GameScript .nut files
+  nut-lint:
+    cmd: npm run lint:nut
+    errorformat:
+      - "%f:%l:%c %m"
+    level: error
+
+  # Workspace files
+  workspace-lint:
+    cmd: npm run lint:workspaces
+    errorformat:
+      - "%f:%l:%c %m"
+    level: error
+
+  # YAML validation
+  yaml-validate:
+    cmd: find campaigns -name "*.yaml" -exec yaml-lint {} \;
+    errorformat:
+      - "%f:%l:%c %m"
+    level: error
+
+  # Markdown link checking
+  markdown-links:
+    cmd: find docs -name "*.md" -exec markdown-link-check {} \;
+    errorformat:
+      - "%f:%l %m"
+    level: warning
+
+# Global settings
+reviewdog:
+  reporter: github-pr-review
+  fail_on_error: false
+  filter_mode: nofilter

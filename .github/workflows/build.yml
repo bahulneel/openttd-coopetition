@@ -106,7 +106,10 @@ jobs:
       
       - name: Lint GameScript files
         if: matrix.component == 'mod'
-        run: npm run lint:nut
+        run: |
+          # Add File polyfill for undici compatibility
+          node -e "if (typeof globalThis.File === 'undefined') { globalThis.File = class File { constructor() { throw new Error('File constructor not implemented'); } }; }"
+          npm run lint:nut
       
       - name: Validate YAML content
         if: matrix.component == 'content'

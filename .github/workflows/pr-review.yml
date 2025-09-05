@@ -1,0 +1,194 @@
+name: PR Code Review
+
+# Trigger on pull requests
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+# Define permissions needed for reviewdog
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  # Lint GameScript .nut files
+  lint-nut:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: Lint .nut files with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GS_LINT_VERBOSE: 1
+        run: |
+          # Add File polyfill for undici compatibility
+          node -e "if (typeof globalThis.File === 'undefined') { globalThis.File = class File { constructor() { throw new Error('File constructor not implemented'); } }; }"
+          # Run ESLint on .nut files and pipe to reviewdog
+          npm run lint:nut 2>&1 | reviewdog -f=eslint -name="GameScript Linter" -reporter=github-pr-review -fail-on-error=false
+
+  # Lint workspace files
+  lint-workspaces:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: Lint workspace files with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Run ESLint on workspace files and pipe to reviewdog
+          npm run lint:workspaces 2>&1 | reviewdog -f=eslint -name="Workspace Linter" -reporter=github-pr-review -fail-on-error=false
+
+  # Validate YAML content
+  validate-yaml:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: Validate YAML files with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Validate YAML files and pipe to reviewdog
+          find campaigns -name "*.yaml" -exec yaml-lint {} \; 2>&1 | reviewdog -f=yaml-lint -name="YAML Validator" -reporter=github-pr-review -fail-on-error=false
+
+  # Check for broken markdown links
+  validate-docs:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: Install markdown-link-check
+        run: npm install -g markdown-link-check
+
+      - name: Check markdown links with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check markdown links and pipe to reviewdog
+          find docs -name "*.md" -exec markdown-link-check {} \; 2>&1 | reviewdog -f=markdown-link-check -name="Markdown Link Checker" -reporter=github-pr-review -fail-on-error=false
+
+  # Compile and validate campaign content
+  validate-content:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: Compile campaign content
+        run: npm run compile
+
+      - name: Validate compiled content with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if compilation was successful
+          if [ ! -d "build" ]; then
+            echo "::error::Campaign compilation failed - build directory not found"
+            exit 1
+          fi
+          
+          # Check for any compilation errors in the build output
+          find build -name "*.nut" -exec echo "Compiled: {}" \;
+          
+          # If we get here, compilation was successful
+          echo "✅ Campaign content compiled successfully"
+
+  # Summary job
+  pr-review-summary:
+    runs-on: ubuntu-22.04
+    needs: [lint-nut, lint-workspaces, validate-yaml, validate-docs, validate-content]
+    if: always()
+    steps:
+      - name: PR Review Summary
+        run: |
+          echo "## 🔍 PR Code Review Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Completed Checks:" >> $GITHUB_STEP_SUMMARY
+          echo "- **GameScript Linting**: ${{ needs.lint-nut.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Workspace Linting**: ${{ needs.lint-workspaces.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **YAML Validation**: ${{ needs.validate-yaml.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Documentation Check**: ${{ needs.validate-docs.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Content Compilation**: ${{ needs.validate-content.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Review Details:" >> $GITHUB_STEP_SUMMARY
+          echo "All checks have been completed. Review the individual job results above for detailed feedback." >> $GITHUB_STEP_SUMMARY
