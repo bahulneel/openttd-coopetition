@@ -105,7 +105,7 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Validate YAML files and pipe to reviewdog
-          find campaigns -name "*.yaml" -exec npx yaml-lint {} \; 2>&1 | reviewdog -efm="%f:%l:%c %m" -name="YAML Validator" -reporter=github-pr-review -fail-on-error=false
+          npm run validate:yaml 2>&1 | reviewdog -efm="%f:%l:%c %m" -name="YAML Validator" -reporter=github-pr-review -fail-on-error=false
 
   # Check for broken markdown links
   validate-docs:
