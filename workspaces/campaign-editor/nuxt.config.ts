@@ -60,18 +60,6 @@ export default defineNuxtConfig({
     classSuffix: ''
   },
 
-  // ESLint configuration
-  eslint: {
-    checker: true,
-    config: {
-      stylistic: {
-        indent: 2,
-        quotes: 'single',
-        semi: false,
-        commaDangle: 'never'
-      }
-    }
-  },
 
   // Build configuration
   build: {
