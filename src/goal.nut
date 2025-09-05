@@ -156,7 +156,6 @@ class SharedGoal {
 
                 this.current_progress = total_length;
                 break;
-
             case SharedGoalType.VEHICLE_COUNT:
                 // Count vehicles of specific type across all companies
                 if (this.vehicle_type != null) {
@@ -320,13 +319,11 @@ class SharedGoal {
 
     static function CreateStationRatingGoal(station_id, target) {
         local description = "Maintain station at a rating of " + target + "%";
-
         local goal = SharedGoal(SharedGoalType.STATION_RATING, description, target);
         goal.station_id = station_id;
 
         return goal;
     }
-
     static function CreateNetworkLengthGoal(target) {
         local description = "Build a combined network of " + target + " tiles";
 
@@ -334,7 +331,6 @@ class SharedGoal {
 
         return goal;
     }
-
     static function CreateVehicleCountGoal(vehicle_type, target) {
         local type_name = "";
         switch (vehicle_type) {
