@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   },
 
   // SSR enabled by default, can be disabled for static generation
-  ssr: true,
+  ssr: process.env.NUXT_SPA_MODE !== 'true',
   
   // Configure for GitHub Pages deployment
   nitro: {

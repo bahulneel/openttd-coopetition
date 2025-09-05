@@ -37,7 +37,7 @@
     "docker:build": "docker build -t coopetition/campaign-editor workspaces/campaign-editor",
     "docker:run": "docker run -p 3000:3000 coopetition/campaign-editor",
     "docker:dev": "docker-compose -f workspaces/campaign-editor/docker-compose.yml --profile dev up",
-    "github:pages": "cd workspaces/campaign-editor && NUXT_APP_BASE_URL=/openttd-coopetition/ npx nuxt build --preset github_pages"
+    "github:pages": "cd workspaces/campaign-editor && NUXT_SPA_MODE=true NUXT_BASE_URL=/openttd-coopetition/ npx nuxt generate"
   },
   "dependencies": {
     "cheerio": "^1.1.2",
