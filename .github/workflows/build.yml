@@ -98,7 +98,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
       
       - name: Install dependencies
@@ -106,10 +106,7 @@ jobs:
       
       - name: Lint GameScript files
         if: matrix.component == 'mod'
-        run: |
-          # Add File polyfill for undici compatibility
-          node -e "if (typeof globalThis.File === 'undefined') { globalThis.File = class File { constructor() { throw new Error('File constructor not implemented'); } }; }"
-          npm run lint:nut
+        run: npm run lint:nut
       
       - name: Validate YAML content
         if: matrix.component == 'content'
@@ -153,7 +150,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
       
       - name: Install dependencies
