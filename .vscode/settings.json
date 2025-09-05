@@ -1,34 +1,13 @@
 {
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "eslint.enable": true,
-  "eslint.useFlatConfig": true,
   "eslint.validate": [
     "javascript",
     "javascriptreact",
-    "plaintext",
+    "typescript",
+    "typescriptreact",
     "squirrel"
   ],
-  "eslint.options": {
-    "extensions": [".nut"]
-  },
-  "eslint.probe": [
-    "javascript",
-    "javascriptreact",
-    "plaintext",
-    "squirrel"
-  ],
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
-  "cSpell.words": [
-    "Coopetition"
-  ],
-  "githubPullRequests.ignoredPullRequestBranches": [
-    "develop"
-  ]
+  "eslint.workingDirectories": ["."],
+  "files.associations": {
+    "*.nut": "squirrel"
+  }
 }

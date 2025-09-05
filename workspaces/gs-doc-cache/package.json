@@ -5,7 +5,8 @@
   "main": "gs-doc-cache.mjs",
   "type": "module",
   "bin": {
-    "gs-doc-cache": "./gs-doc-cache.mjs"
+    "gs-doc-cache": "./gs-doc-cache.mjs",
+    "update-gs-cache": "./bin/update-cache.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -36,6 +37,7 @@
   },
   "files": [
     "gs-doc-cache.mjs",
+    "bin/",
     "README.md"
   ],
   "scripts": {
