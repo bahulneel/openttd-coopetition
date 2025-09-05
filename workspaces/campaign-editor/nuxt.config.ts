@@ -45,12 +45,26 @@ export default defineNuxtConfig({
   modules: [
     '@vueuse/nuxt',
     '@nuxtjs/color-mode',
-    '@nuxt/eslint'
+    '@nuxt/eslint',
+    'shadcn-nuxt'
   ],
 
   // Color mode configuration for dark/light theme toggle
   colorMode: {
     classSuffix: ''
+  },
+
+  // shadcn-vue configuration for auto-importing components
+  shadcn: {
+    /**
+     * Prefix for all the imported components
+     */
+    prefix: '',
+    /**
+     * Directory that the component lives in.
+     * @default "./components/ui"
+     */
+    componentDir: './app/components/ui'
   },
 
   // Build configuration

@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-bold text-foreground">
       🚂 Nuxt 4 + Tailwind 4 + shadcn-vue Test Page
     </h1>
-    
+
     <Card class="openttd-titlebar">
       <CardHeader>
         <CardTitle>OpenTTD Campaign Editor</CardTitle>
@@ -15,12 +15,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
             <Label>Campaign Name</Label>
-            <Input 
-              placeholder="Enter campaign name..."
-              class="openttd-button"
-            />
+            <Input placeholder="Enter campaign name..." class="openttd-button" />
           </div>
-          
+
           <div class="space-y-2">
             <Label>Difficulty</Label>
             <Select>
@@ -40,10 +37,7 @@
 
         <div class="space-y-2">
           <Label>Description</Label>
-          <Textarea 
-            placeholder="Describe your campaign..."
-            class="min-h-24"
-          />
+          <Textarea placeholder="Describe your campaign..." class="min-h-24" />
         </div>
 
         <div class="flex flex-wrap gap-2">
@@ -92,7 +86,7 @@
               ☀️ Light
             </Button>
             <Button size="sm" variant="outline" @click="$colorMode.preference = 'dark'">
-              🌙 Dark  
+              🌙 Dark
             </Button>
             <Button size="sm" variant="outline" @click="$colorMode.preference = 'system'">
               💻 System
@@ -159,14 +153,6 @@
 </template>
 
 <script setup lang="ts">
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 definePageMeta({
   title: 'Test - OpenTTD Campaign Editor'

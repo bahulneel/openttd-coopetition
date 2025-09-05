@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { parse as parseYAML } from 'yaml'
 import type { CampaignManifest } from '~/types/campaign'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   try {
     // Path to manifest file
     const manifestPath = join(process.cwd(), '../..', 'campaigns', 'quickstart', 'manifest.yaml')
@@ -15,10 +15,10 @@ export default defineEventHandler(async (event) => {
       return {
         manifest
       }
-    } catch (error) {
+    } catch {
       // Manifest file doesn't exist or is invalid
       return {
-        manifest: null
+        manifest: undefined
       }
     }
   } catch (error) {

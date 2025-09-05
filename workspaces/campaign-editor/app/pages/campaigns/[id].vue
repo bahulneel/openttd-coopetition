@@ -1,7 +1,7 @@
 <template>
   <div v-if="loading" class="flex justify-center py-12">
     <div class="text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
       <p class="text-muted-foreground">Loading campaign...</p>
     </div>
   </div>
@@ -11,23 +11,14 @@
       <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
       <AlertDescription class="text-destructive">
         {{ error }}
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          @click="error = null"
-          class="ml-2 text-destructive"
-        >
+        <Button variant="ghost" size="sm" class="ml-2 text-destructive" @click="error = undefined">
           ✕ Dismiss
         </Button>
       </AlertDescription>
     </Alert>
-    
+
     <div class="flex justify-center">
-      <Button
-        variant="outline"
-        @click="$router.back()"
-        class="openttd-button"
-      >
+      <Button variant="outline" class="openttd-button" @click="$router.back()">
         ← Go Back
       </Button>
     </div>
@@ -37,15 +28,10 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div class="flex items-center space-x-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          @click="$router.back()"
-          class="openttd-button"
-        >
+        <Button variant="ghost" size="sm" class="openttd-button" @click="$router.back()">
           ← Back
         </Button>
-        
+
         <div>
           <h1 class="text-2xl font-bold text-foreground">
             {{ isNew ? 'New Campaign' : (formData.meta?.title || formData.id) }}
@@ -55,37 +41,24 @@
           </p>
         </div>
       </div>
-      
+
       <div class="flex items-center space-x-2">
-        <Button
-          v-if="!isNew"
-          variant="outline"
-          @click="duplicateCampaign"
-          class="openttd-button"
-        >
+        <Button v-if="!isNew" variant="outline" class="openttd-button" @click="duplicateCampaign">
           📄 Duplicate
         </Button>
-        
-        <Button
-          variant="outline"
-          @click="previewCampaign"
-          class="openttd-button"
-        >
+
+        <Button variant="outline" class="openttd-button" @click="previewCampaign">
           👁️ Preview
         </Button>
-        
-        <Button
-          :disabled="!isValid || saving"
-          @click="saveCampaign"
-          class="openttd-button bg-openttd-green text-white"
-        >
+
+        <Button :disabled="!isValid || saving" class="openttd-button bg-openttd-green text-white" @click="saveCampaign">
           {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
         </Button>
       </div>
     </div>
 
     <!-- Form -->
-    <form @submit.prevent="saveCampaign" class="space-y-6">
+    <form class="space-y-6" @submit.prevent="saveCampaign">
       <!-- Basic Information -->
       <Card class="openttd-titlebar">
         <CardHeader>
@@ -98,29 +71,20 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
               <Label for="campaign-id">Campaign ID *</Label>
-              <Input
-                id="campaign-id"
-                v-model="formData.id"
-                placeholder="campaign_unique_id"
-                :disabled="!isNew"
-                pattern="[a-zA-Z0-9_-]+"
-              />
+              <Input id="campaign-id" v-model="formData.id" placeholder="campaign_unique_id" :disabled="!isNew"
+                pattern="[a-zA-Z0-9_-]+" />
               <p class="text-xs text-muted-foreground">Unique identifier for this campaign</p>
             </div>
 
             <div class="space-y-2">
               <Label for="title">Title</Label>
-              <Input
-                id="title"
-                v-model="formData.meta.title"
-                placeholder="Campaign Title"
-              />
+              <Input id="title" v-model="formData.meta?.title" placeholder="Campaign Title" />
               <p class="text-xs text-muted-foreground">Display name for the campaign</p>
             </div>
 
             <div class="space-y-2">
               <Label for="difficulty">Difficulty</Label>
-              <Select v-model="formData.meta.difficulty">
+              <Select v-model="formData.meta?.difficulty">
                 <SelectTrigger id="difficulty" class="openttd-button">
                   <SelectValue placeholder="Select difficulty" />
                 </SelectTrigger>
@@ -136,59 +100,34 @@
 
             <div class="space-y-2">
               <Label for="estimated-time">Estimated Time</Label>
-              <Input
-                id="estimated-time"
-                v-model="formData.meta.estimated_time"
-                placeholder="2-4 hours"
-              />
+              <Input id="estimated-time" v-model="formData.meta?.estimated_time" placeholder="2-4 hours" />
               <p class="text-xs text-muted-foreground">How long this campaign typically takes</p>
             </div>
 
             <div class="space-y-2 md:col-span-2">
               <Label for="description">Description</Label>
-              <Textarea
-                id="description"
-                v-model="formData.meta.description"
-                placeholder="Describe what this campaign involves..."
-                rows="3"
-              />
+              <Textarea id="description" v-model="formData.meta?.description"
+                placeholder="Describe what this campaign involves..." rows="3" />
             </div>
 
             <div class="space-y-2 md:col-span-2">
               <Label for="tags">Tags</Label>
               <div class="space-y-2">
                 <div class="flex flex-wrap gap-2">
-                  <Badge
-                    v-for="(tag, index) in formData.meta?.tags || []"
-                    :key="index"
-                    variant="secondary"
-                    class="flex items-center space-x-1"
-                  >
+                  <Badge v-for="(tag, index) in formData.meta?.tags || []" :key="index" variant="secondary"
+                    class="flex items-center space-x-1">
                     <span>{{ tag }}</span>
-                    <button
-                      type="button"
-                      @click="removeTag(index)"
-                      class="ml-1 text-muted-foreground hover:text-foreground text-sm"
-                    >
+                    <button type="button" class="ml-1 text-muted-foreground hover:text-foreground text-sm"
+                      @click="removeTag(index)">
                       ✕
                     </button>
                   </Badge>
                 </div>
-                
+
                 <div class="flex space-x-2">
-                  <Input
-                    v-model="newTag"
-                    placeholder="Add tag..."
-                    @keyup.enter="addTag"
-                    class="flex-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    @click="addTag"
-                    :disabled="!newTag.trim()"
-                    class="openttd-button"
-                  >
+                  <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
+                  <Button type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
+                    @click="addTag">
                     ➕ Add
                   </Button>
                 </div>
@@ -210,50 +149,26 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="space-y-2">
               <Label for="min-players">Min Players</Label>
-              <Input
-                id="min-players"
-                v-model.number="formData.constraints.players.min"
-                type="number"
-                min="1"
-                max="8"
-                placeholder="1"
-              />
+              <Input id="min-players" v-model.number="formData.constraints?.players?.min" type="number" min="1" max="8"
+                placeholder="1" />
             </div>
 
             <div class="space-y-2">
               <Label for="max-players">Max Players</Label>
-              <Input
-                id="max-players"
-                v-model.number="formData.constraints.players.max"
-                type="number"
-                min="1"
-                max="8"
-                placeholder="8"
-              />
+              <Input id="max-players" v-model.number="formData.constraints?.players?.max" type="number" min="1" max="8"
+                placeholder="8" />
             </div>
 
             <div class="space-y-2">
               <Label for="start-year">Start Year</Label>
-              <Input
-                id="start-year"
-                v-model.number="formData.constraints.date.min"
-                type="number"
-                min="1920"
-                max="2100"
-                placeholder="1950"
-              />
+              <Input id="start-year" v-model.number="formData.constraints?.date?.min" type="number" min="1920"
+                max="2100" placeholder="1950" />
             </div>
 
             <div class="space-y-2">
               <Label for="end-year">End Year</Label>
-              <Input
-                id="end-year"
-                v-model.number="formData.constraints.date.max"
-                type="number"
-                min="1920"
-                max="2100"
-                placeholder="2050"
-              />
+              <Input id="end-year" v-model.number="formData.constraints?.date?.max" type="number" min="1920" max="2100"
+                placeholder="2050" />
             </div>
           </div>
         </CardContent>
@@ -267,94 +182,61 @@
               <span class="text-lg">🗺️</span>
               <CardTitle class="text-lg font-semibold">Scenarios</CardTitle>
             </div>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              @click="addScenario"
-              class="openttd-button"
-            >
+
+            <Button variant="outline" size="sm" class="openttd-button" @click="addScenario">
               ➕ Add Scenario
             </Button>
           </div>
         </CardHeader>
         <CardContent>
 
-          <div v-if="formData.scenarios.length === 0" class="text-center py-8 text-muted-foreground">
+          <div v-if="formData.scenarios?.length === 0" class="text-center py-8 text-muted-foreground">
             <div class="text-4xl mb-2">🗺️</div>
             <p>No scenarios added yet</p>
-            <Button
-              variant="outline"
-              size="sm"
-              class="mt-4 openttd-button"
-              @click="addScenario"
-            >
+            <Button variant="outline" size="sm" class="mt-4 openttd-button" @click="addScenario">
               ➕ Add First Scenario
             </Button>
           </div>
 
-        <div v-else class="space-y-4">
-          <div
-            v-for="(scenario, index) in formData.scenarios"
-            :key="index"
-            class="scenario-item"
-          >
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="font-medium">Scenario {{ index + 1 }}</h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                @click="removeScenario(index)"
-                class="h-8 w-8 p-0 text-destructive"
-              >
-                🗑️
-              </Button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="space-y-2">
-                <Label :for="`scenario-id-${index}`">Scenario ID *</Label>
-                <Input
-                  :id="`scenario-id-${index}`"
-                  v-model="scenario.include"
-                  placeholder="scenario_id"
-                  :list="`scenarios-${index}`"
-                />
-                <datalist :id="`scenarios-${index}`">
-                  <option v-for="s in availableScenarios" :key="s.id" :value="s.id">
-                    {{ s.meta?.title || s.id }}
-                  </option>
-                </datalist>
+          <div v-else class="space-y-4">
+            <div v-for="(scenario, index) in formData.scenarios" :key="index"
+              class="bg-secondary/50 rounded-md p-4 border border-border">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="font-medium">Scenario {{ index + 1 }}</h4>
+                <Button variant="ghost" size="sm" class="h-8 w-8 p-0 text-destructive" @click="removeScenario(index)">
+                  🗑️
+                </Button>
               </div>
 
-              <div class="space-y-2">
-                <Label :for="`scenario-order-${index}`">Order</Label>
-                <Input
-                  :id="`scenario-order-${index}`"
-                  v-model.number="scenario.order"
-                  type="number"
-                  min="1"
-                  placeholder="1"
-                />
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                  <Label :for="`scenario-id-${index}`">Scenario ID *</Label>
+                  <Input :id="`scenario-id-${index}`" v-model="scenario.include" placeholder="scenario_id"
+                    :list="`scenarios-${index}`" />
+                  <datalist :id="`scenarios-${index}`">
+                    <option v-for="s in availableScenarios" :key="s.id" :value="s.id">
+                      {{ s.meta?.title || s.id }}
+                    </option>
+                  </datalist>
+                </div>
+
+                <div class="space-y-2">
+                  <Label :for="`scenario-order-${index}`">Order</Label>
+                  <Input :id="`scenario-order-${index}`" v-model.number="scenario.order" type="number" min="1"
+                    placeholder="1" />
+                </div>
+
+                <div class="space-y-2">
+                  <Label :for="`scenario-required-${index}`">Required</Label>
+                  <Toggle :id="`scenario-required-${index}`" v-model="scenario.required" class="openttd-button" />
+                </div>
               </div>
 
-              <div class="space-y-2">
-                <Label :for="`scenario-required-${index}`">Required</Label>
-                <Toggle
-                  :id="`scenario-required-${index}`"
-                  v-model="scenario.required"
-                  class="openttd-button"
-                />
+              <div v-if="scenario.comment !== undefined" class="space-y-2 mt-4">
+                <Label :for="`scenario-comment-${index}`">Comment</Label>
+                <Input :id="`scenario-comment-${index}`" v-model="scenario.comment"
+                  placeholder="Optional comment about this scenario" />
               </div>
-            </div>
-
-            <div v-if="scenario.comment !== undefined" class="space-y-2 mt-4">
-              <Label :for="`scenario-comment-${index}`">Comment</Label>
-              <Input
-                :id="`scenario-comment-${index}`"
-                v-model="scenario.comment"
-                placeholder="Optional comment about this scenario"
-              />
             </div>
           </div>
         </CardContent>
@@ -372,44 +254,26 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="space-y-2">
               <Label for="cash-reward">Cash Reward</Label>
-              <Input
-                id="cash-reward"
-                v-model.number="formData.rewards.completion.cash"
-                type="number"
-                min="0"
-                placeholder="1000000"
-              />
+              <Input id="cash-reward" v-model.number="formData.rewards?.completion?.cash" type="number" min="0"
+                placeholder="1000000" />
             </div>
 
             <div class="space-y-2">
               <Label for="score-points">Score Points</Label>
-              <Input
-                id="score-points"
-                v-model.number="formData.rewards.completion.score"
-                type="number"
-                min="0"
-                placeholder="100"
-              />
+              <Input id="score-points" v-model.number="formData.rewards?.completion?.score" type="number" min="0"
+                placeholder="100" />
             </div>
 
             <div class="space-y-2">
               <Label for="reputation">Reputation</Label>
-              <Input
-                id="reputation"
-                v-model.number="formData.rewards.completion.reputation"
-                type="number"
-                min="0"
-                placeholder="25"
-              />
+              <Input id="reputation" v-model.number="formData.rewards?.completion?.reputation" type="number" min="0"
+                placeholder="25" />
             </div>
 
             <div class="space-y-2">
               <Label for="achievement">Achievement</Label>
-              <Input
-                id="achievement"
-                v-model="formData.rewards.completion.achievement"
-                placeholder="achievement_id"
-              />
+              <Input id="achievement" v-model="formData.rewards?.completion?.achievement"
+                placeholder="achievement_id" />
             </div>
           </div>
         </CardContent>
@@ -431,7 +295,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="space-y-2">
                   <Label for="economy">Economy</Label>
-                  <Select v-model="formData.settings.economy">
+                  <Select v-model="formData.settings?.economy">
                     <SelectTrigger id="economy" class="openttd-button">
                       <SelectValue placeholder="Select economy" />
                     </SelectTrigger>
@@ -445,29 +309,17 @@
 
                 <div class="space-y-2">
                   <Label for="disasters">Disasters</Label>
-                  <Toggle
-                    id="disasters"
-                    v-model="formData.settings.disasters"
-                    class="openttd-button"
-                  />
+                  <Toggle id="disasters" v-model="formData.settings?.disasters" class="openttd-button" />
                 </div>
 
                 <div class="space-y-2">
                   <Label for="breakdowns">Breakdowns</Label>
-                  <Toggle
-                    id="breakdowns"
-                    v-model="formData.settings.breakdowns"
-                    class="openttd-button"
-                  />
+                  <Toggle id="breakdowns" v-model="formData.settings?.breakdowns" class="openttd-button" />
                 </div>
 
                 <div class="space-y-2">
                   <Label for="inflation">Inflation</Label>
-                  <Toggle
-                    id="inflation"
-                    v-model="formData.settings.inflation"
-                    class="openttd-button"
-                  />
+                  <Toggle id="inflation" v-model="formData.settings?.inflation" class="openttd-button" />
                 </div>
               </div>
             </div>
@@ -475,12 +327,8 @@
             <!-- Comment -->
             <div class="space-y-2">
               <Label for="developer-comment">Developer Comment</Label>
-              <Textarea
-                id="developer-comment"
-                v-model="formData.comment"
-                placeholder="Internal notes about this campaign..."
-                rows="3"
-              />
+              <Textarea id="developer-comment" v-model="formData.comment"
+                placeholder="Internal notes about this campaign..." rows="3" />
             </div>
           </div>
         </CardContent>
@@ -495,7 +343,7 @@
             <div class="text-sm text-muted-foreground">
               {{ isNew ? '✨ Unsaved campaign' : (hasChanges ? '📝 Unsaved changes' : '✅ All changes saved') }}
             </div>
-            
+
             <div v-if="validationErrors.length > 0" class="flex items-center space-x-2">
               <span class="text-destructive">⚠️</span>
               <span class="text-sm text-destructive">{{ validationErrors.length }} validation error(s)</span>
@@ -503,21 +351,12 @@
           </div>
 
           <div class="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              @click="resetForm"
-              :disabled="!hasChanges"
-              class="openttd-button"
-            >
+            <Button variant="outline" :disabled="!hasChanges" class="openttd-button" @click="resetForm">
               🔄 Reset
             </Button>
-            
-            <Button
-              type="submit"
-              :disabled="!isValid || saving"
-              @click="saveCampaign"
-              class="openttd-button bg-openttd-green text-white"
-            >
+
+            <Button type="submit" :disabled="!isValid || saving" class="openttd-button bg-openttd-green text-white"
+              @click="saveCampaign">
               {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
             </Button>
           </div>
@@ -529,25 +368,16 @@
 
 <script setup lang="ts">
 import type { Campaign } from '~/types/campaign'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Toggle } from '@/components/ui/toggle'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 const route = useRoute()
 const router = useRouter()
-const { 
-  campaigns, 
+const {
+  campaigns,
   scenarios: availableScenarios,
-  loading, 
-  error, 
-  getCampaign, 
-  saveCampaign: saveCampaignStore, 
+  loading,
+  error,
+  getCampaign,
+  saveCampaign: saveCampaignStore,
   createEmptyCampaign,
   duplicateCampaign: duplicateCampaignStore,
   loadAll
@@ -555,7 +385,7 @@ const {
 
 // Reactive data
 const formData = ref<Campaign>(createEmptyCampaign())
-const originalData = ref<Campaign | null>(null)
+const originalData = ref<Campaign | undefined>(undefined)
 const saving = ref(false)
 const newTag = ref('')
 
@@ -571,7 +401,7 @@ onMounted(async () => {
 
   if (isNew.value) {
     formData.value = createEmptyCampaign()
-    originalData.value = null
+    originalData.value = undefined
   } else {
     const campaign = getCampaign(campaignId.value)
     if (campaign) {
@@ -586,23 +416,23 @@ onMounted(async () => {
 // Validation
 const validationErrors = computed(() => {
   const errors: string[] = []
-  
+
   if (!formData.value.id?.trim()) {
     errors.push('Campaign ID is required')
   }
-  
+
   if (formData.value.constraints?.players?.min && formData.value.constraints?.players?.max) {
-    if (formData.value.constraints.players.min > formData.value.constraints.players.max) {
+    if (formData.value.constraints?.players?.min > formData.value.constraints?.players?.max) {
       errors.push('Minimum players cannot be greater than maximum players')
     }
   }
-  
+
   if (formData.value.constraints?.date?.min && formData.value.constraints?.date?.max) {
     if (formData.value.constraints.date.min > formData.value.constraints.date.max) {
       errors.push('Start year cannot be later than end year')
     }
   }
-  
+
   return errors
 })
 
@@ -615,7 +445,7 @@ const hasChanges = computed(() => {
 })
 
 // Options
-const difficultyOptions = [
+const _difficultyOptions = [
   { value: 'easy', label: 'Easy' },
   { value: 'medium', label: 'Medium' },
   { value: 'hard', label: 'Hard' },
@@ -623,7 +453,7 @@ const difficultyOptions = [
   { value: 'legendary', label: 'Legendary' }
 ]
 
-const economyOptions = [
+const _economyOptions = [
   { value: 'realistic', label: 'Realistic' },
   { value: 'balanced', label: 'Balanced' },
   { value: 'arcade', label: 'Arcade' }
@@ -671,7 +501,7 @@ const saveCampaign = async () => {
   saving.value = true
   try {
     await saveCampaignStore(formData.value)
-    
+
     const toast = useToast()
     toast.add({
       title: isNew.value ? '✨ Campaign Created' : '💾 Campaign Saved',
@@ -684,7 +514,8 @@ const saveCampaign = async () => {
     } else {
       originalData.value = JSON.parse(JSON.stringify(formData.value))
     }
-  } catch (err) {
+  } catch (error) {
+    console.error('Failed to save campaign:', error)
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -706,18 +537,19 @@ const resetForm = () => {
 
 const duplicateCampaign = async () => {
   if (isNew.value) return
-  
+
   try {
     const duplicate = await duplicateCampaignStore(campaignId.value)
     router.push(`/campaigns/${duplicate.id}`)
-    
+
     const toast = useToast()
     toast.add({
       title: '📄 Campaign Duplicated',
       description: `Campaign "${duplicate.meta?.title || duplicate.id}" has been created.`,
       color: 'green'
     })
-  } catch (err) {
+  } catch (error) {
+    console.error('Failed to duplicate campaign:', error)
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -755,9 +587,3 @@ definePageMeta({
   title: 'Edit Campaign'
 })
 </script>
-
-<style scoped>
-.scenario-item {
-  @apply bg-secondary/50 rounded-md p-4 border border-border;
-}
-</style>

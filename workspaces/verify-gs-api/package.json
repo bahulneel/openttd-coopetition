@@ -42,6 +42,7 @@
   "scripts": {
     "test": "echo \"No tests specified\" && exit 0",
     "lint": "eslint verify-gs-api.mjs",
+    "lint:fix": "eslint verify-gs-api.mjs --fix",
     "build": "echo \"No build step required\" && exit 0",
     "start": "node verify-gs-api.mjs"
   }

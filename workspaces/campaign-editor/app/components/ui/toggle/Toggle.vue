@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<ToggleProps & {
   variant: "default",
   size: "default",
   disabled: false,
+  class: undefined,
 })
 
 const emits = defineEmits<ToggleEmits>()
@@ -25,11 +26,8 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 
 <template>
   <Toggle
-    v-slot="slotProps"
-    data-slot="toggle"
-    v-bind="forwarded"
-    :class="cn(toggleVariants({ variant, size }), props.class)"
-  >
+v-slot="slotProps" data-slot="toggle" v-bind="forwarded"
+    :class="cn(toggleVariants({ variant, size }), props.class)">
     <slot v-bind="slotProps" />
   </Toggle>
 </template>

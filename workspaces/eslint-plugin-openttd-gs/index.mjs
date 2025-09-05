@@ -133,7 +133,7 @@ export const processors = {
         // Lazy load cached data for this class
         const methods = getCachedClassMethods(cls);
         if (!methods) {
-          const objectType = getObjectTypeInfo(text, lineNumber);
+          const _objectType = getObjectTypeInfo(text, lineNumber);
           out.push({
             ruleId: 'openttd-gs/api-docs',
             message: generateEnhancedErrorMessage(cls, method, arity, 'class_not_found'),
@@ -146,7 +146,7 @@ export const processors = {
 
         // Check if method exists
         if (!methods.has(method)) {
-          const objectType = getObjectTypeInfo(text, lineNumber);
+          const _objectType = getObjectTypeInfo(text, lineNumber);
           out.push({
             ruleId: 'openttd-gs/api-docs',
             message: generateEnhancedErrorMessage(cls, method, arity, 'method_not_found'),

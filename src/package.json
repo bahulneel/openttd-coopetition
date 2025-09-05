@@ -1,24 +1,24 @@
 {
-  "name": "@coopetition/shared",
+  "name": "@coopetition/gamescript",
   "version": "1.0.0",
-  "description": "Shared utilities and types for Coopetition tools",
-  "main": "index.mjs",
+  "description": "OpenTTD Coopetition GameScript source files",
   "type": "module",
+  "private": true,
   "engines": {
     "node": ">=18"
   },
   "keywords": [
     "openttd",
     "gamescript",
-    "utilities",
-    "shared"
+    "squirrel",
+    "coopetition"
   ],
   "author": "Coopetition Team",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/bahulneel/openttd-coopetition.git",
-    "directory": "workspaces/shared"
+    "directory": "src"
   },
   "bugs": {
     "url": "https://github.com/bahulneel/openttd-coopetition/issues"
@@ -29,13 +29,13 @@
     "eslint": "^9.34.0"
   },
   "files": [
-    "index.mjs",
+    "*.nut",
     "README.md"
   ],
   "scripts": {
     "test": "echo \"No tests specified\" && exit 0",
-    "lint": "eslint index.mjs",
-    "lint:fix": "eslint index.mjs --fix",
+    "lint": "GS_LINT_VERBOSE=1 eslint \"*.nut\"",
+    "lint:fix": "eslint \"*.nut\" --fix",
     "build": "echo \"No build step required\" && exit 0"
   }
 }

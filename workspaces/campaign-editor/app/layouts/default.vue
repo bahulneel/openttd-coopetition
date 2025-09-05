@@ -7,7 +7,8 @@
           <!-- Logo/Title -->
           <div class="flex items-center space-x-4">
             <NuxtLink to="/" class="flex items-center space-x-3">
-              <div class="h-10 w-10 bg-openttd-brown rounded border-2 border-border flex items-center justify-center openttd-button">
+              <div
+                class="h-10 w-10 bg-openttd-brown rounded border-2 border-border flex items-center justify-center openttd-button">
                 <span class="text-foreground font-bold text-lg">🚂</span>
               </div>
               <div class="flex flex-col">
@@ -39,16 +40,19 @@
           <!-- Actions -->
           <div class="flex items-center space-x-3">
             <!-- SPA Mode indicator -->
-            <div v-if="spaMode" class="text-xs bg-openttd-light-blue/20 text-openttd-blue px-3 py-1 rounded border-2 border-openttd-blue/30">
+            <div v-if="spaMode"
+              class="text-xs bg-openttd-light-blue/20 text-openttd-blue px-3 py-1 rounded border-2 border-openttd-blue/30">
               Browser Mode
             </div>
-            
+
             <!-- Dark mode toggle with shadcn-vue and Nuxt Color Mode -->
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
                 <Button variant="outline" size="sm" class="openttd-button">
-                  <Icon icon="radix-icons:moon" class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <Icon icon="radix-icons:sun" class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <Icon icon="radix-icons:moon"
+                    class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Icon icon="radix-icons:sun"
+                    class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                   <span class="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -64,7 +68,7 @@
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             <!-- Import/Export -->
             <DropdownMenu>
               <DropdownMenuTrigger as-child>
@@ -79,7 +83,7 @@
                 <DropdownMenuItem @click="exportAll">
                   📥 Export All
                 </DropdownMenuItem>
-                <DropdownMenuItem @click="resetAll" class="text-destructive">
+                <DropdownMenuItem class="text-destructive" @click="resetAll">
                   🗑️ Reset All
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -108,12 +112,8 @@
             </span>
           </div>
           <div class="flex items-center space-x-4 text-sm text-foreground/80">
-            <a
-              href="https://github.com/bahulneel/openttd-coopetition"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:text-foreground transition-colors underline"
-            >
+            <a href="https://github.com/bahulneel/openttd-coopetition" target="_blank" rel="noopener noreferrer"
+              class="hover:text-foreground transition-colors underline">
               📂 GitHub
             </a>
             <span>•</span>
@@ -127,9 +127,6 @@
 
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Toaster } from '@/components/ui/sonner'
 
 const colorMode = useColorMode()
 const { public: { spaMode } } = useRuntimeConfig()

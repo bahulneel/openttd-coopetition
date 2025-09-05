@@ -42,13 +42,13 @@ export class LocalFileSystemAdapter implements FileSystemAdapter {
     }
   }
 
-  async loadManifest(): Promise<CampaignManifest | null> {
+  async loadManifest(): Promise<CampaignManifest | undefined> {
     try {
       const response = await $fetch<{ manifest: CampaignManifest }>('/api/manifest')
-      return response.manifest || null
+      return response.manifest || undefined
     } catch (error) {
       console.warn('Failed to load manifest from API:', error)
-      return null
+      return undefined
     }
   }
 
@@ -112,7 +112,7 @@ export class SPAFileSystemAdapter implements FileSystemAdapter {
   private campaigns: Campaign[] = []
   private goals: Goal[] = []
   private scenarios: Scenario[] = []
-  private manifest: CampaignManifest | null = null
+  private manifest: CampaignManifest | undefined = undefined
 
   constructor() {
     // Load from localStorage if available
@@ -131,8 +131,8 @@ export class SPAFileSystemAdapter implements FileSystemAdapter {
     return [...this.scenarios]
   }
 
-  async loadManifest(): Promise<CampaignManifest | null> {
-    return this.manifest ? { ...this.manifest } : null
+  async loadManifest(): Promise<CampaignManifest | undefined> {
+    return this.manifest ? { ...this.manifest } : undefined
   }
 
   async saveCampaign(campaign: Campaign): Promise<void> {
@@ -235,7 +235,7 @@ export class SPAFileSystemAdapter implements FileSystemAdapter {
     this.campaigns = []
     this.goals = []
     this.scenarios = []
-    this.manifest = null
+    this.manifest = undefined
 
     // Import files
     for (const [fileName, zipEntry] of Object.entries(contents.files)) {
@@ -271,12 +271,9 @@ export class SPAFileSystemAdapter implements FileSystemAdapter {
     saveAs(blob, filename)
   }
 
-  private toYAML(obj: any): string {
+  private toYAML<T extends object>(obj: T): string {
     // Remove editor-specific properties before export
-    const cleanObj = { ...obj }
-    delete cleanObj.lastModified
-    delete cleanObj.modified
-    delete cleanObj.filePath
+    const { lastModified: _, modified: __, filePath: ___, ...cleanObj } = { ...obj } as T & { lastModified?: number, modified?: boolean, filePath?: string }
     
     return stringifyYAML(cleanObj, {
       indent: 2,

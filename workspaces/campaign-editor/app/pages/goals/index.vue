@@ -10,21 +10,13 @@
           Manage individual goals that can be used in scenarios
         </p>
       </div>
-      
+
       <div class="flex items-center space-x-2">
-        <Button
-          @click="createGoal"
-          class="openttd-button bg-openttd-green text-white"
-        >
+        <Button class="openttd-button bg-openttd-green text-white" @click="createGoal">
           ➕ New Goal
         </Button>
-        
-        <Button
-          variant="outline"
-          :disabled="loading"
-          @click="refreshGoals"
-          class="openttd-button"
-        >
+
+        <Button variant="outline" :disabled="loading" class="openttd-button" @click="refreshGoals">
           {{ loading ? '🔄' : '↻' }} Refresh
         </Button>
       </div>
@@ -43,18 +35,10 @@
             or by editing YAML files directly.
           </p>
           <div class="flex justify-center space-x-2">
-            <Button
-              variant="outline"
-              @click="navigateTo('/campaigns')"
-              class="openttd-button"
-            >
+            <Button variant="outline" class="openttd-button" @click="navigateTo('/campaigns')">
               📝 Edit Campaigns
             </Button>
-            <Button
-              variant="outline"
-              @click="navigateTo('/')"
-              class="openttd-button"
-            >
+            <Button variant="outline" class="openttd-button" @click="navigateTo('/')">
               ← Back to Dashboard
             </Button>
           </div>
@@ -78,9 +62,6 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 
 const { goals, loading, loadGoals } = useCampaignStore()
 

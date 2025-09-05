@@ -39,7 +39,6 @@ export function fileExists(filePath) {
  */
 export async function ensureDir(dirPath) {
   const fs = require('node:fs');
-  const path = require('node:path');
 
   try {
     await fs.promises.mkdir(dirPath, { recursive: true });

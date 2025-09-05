@@ -47,8 +47,8 @@ async function getMethodsForClass(cls) {
         m.set(name, new Set(arities));
       }
       if (m.size > 0) return m;
-    } catch (_e) {
-      if (VERBOSE) console.log(`[cache-miss] ${cls}`);
+    } catch (e) {
+      if (VERBOSE) console.error(`[cache-miss] ${cls}`, e);
     }
   }
   const url = `${DOCS_BASE}/${page}`;

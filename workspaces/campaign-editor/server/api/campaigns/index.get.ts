@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { parse as parseYAML } from 'yaml'
 import type { Campaign } from '~/types/campaign'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   try {
     // Path to campaigns directory - adjust based on your structure
     const campaignsPath = join(process.cwd(), '../..', 'campaigns', 'quickstart')

@@ -10,21 +10,13 @@
           Manage scenarios that combine goals into cohesive experiences
         </p>
       </div>
-      
+
       <div class="flex items-center space-x-2">
-        <Button
-          @click="createScenario"
-          class="openttd-button bg-openttd-purple text-white"
-        >
+        <Button class="openttd-button bg-openttd-purple text-white" @click="createScenario">
           ➕ New Scenario
         </Button>
-        
-        <Button
-          variant="outline"
-          :disabled="loading"
-          @click="refreshScenarios"
-          class="openttd-button"
-        >
+
+        <Button variant="outline" :disabled="loading" class="openttd-button" @click="refreshScenarios">
           {{ loading ? '🔄' : '↻' }} Refresh
         </Button>
       </div>
@@ -43,18 +35,10 @@
             or by editing YAML files directly.
           </p>
           <div class="flex justify-center space-x-2">
-            <Button
-              variant="outline"
-              @click="navigateTo('/campaigns')"
-              class="openttd-button"
-            >
+            <Button variant="outline" class="openttd-button" @click="navigateTo('/campaigns')">
               📝 Edit Campaigns
             </Button>
-            <Button
-              variant="outline"
-              @click="navigateTo('/')"
-              class="openttd-button"
-            >
+            <Button variant="outline" class="openttd-button" @click="navigateTo('/')">
               ← Back to Dashboard
             </Button>
           </div>
@@ -78,9 +62,6 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 
 const { scenarios, loading, loadScenarios } = useCampaignStore()
 

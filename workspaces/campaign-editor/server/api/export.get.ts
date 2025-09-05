@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
         const content = await readFile(join(goalsPath, file), 'utf-8')
         goalsFolder?.file(file, content)
       }
-    } catch (error) {
+    } catch {
       console.warn('No goals folder found or accessible')
     }
     
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
         const content = await readFile(join(scenariosPath, file), 'utf-8')
         scenariosFolder?.file(file, content)
       }
-    } catch (error) {
+    } catch {
       console.warn('No scenarios folder found or accessible')
     }
     
@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
     try {
       const manifestContent = await readFile(join(basePath, 'manifest.yaml'), 'utf-8')
       zip.file('manifest.yaml', manifestContent)
-    } catch (error) {
+    } catch {
       console.warn('No manifest file found')
     }
     

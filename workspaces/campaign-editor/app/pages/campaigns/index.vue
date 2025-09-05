@@ -10,21 +10,13 @@
           Manage and edit your OpenTTD Coopetition campaigns
         </p>
       </div>
-      
+
       <div class="flex items-center space-x-2">
-        <Button
-          @click="createCampaign"
-          class="openttd-button bg-openttd-green text-white"
-        >
+        <Button class="openttd-button bg-openttd-green text-white" @click="createCampaign">
           ➕ New Campaign
         </Button>
-        
-        <Button
-          variant="outline"
-          :disabled="loading"
-          @click="refreshCampaigns"
-          class="openttd-button"
-        >
+
+        <Button variant="outline" :disabled="loading" class="openttd-button" @click="refreshCampaigns">
           {{ loading ? '🔄' : '↻' }} Refresh
         </Button>
       </div>
@@ -35,13 +27,9 @@
       <CardContent class="pt-6">
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
-            <Input
-              v-model="searchQuery"
-              placeholder="🔍 Search campaigns..."
-              class="w-full"
-            />
+            <Input v-model="searchQuery" placeholder="🔍 Search campaigns..." class="w-full" />
           </div>
-          
+
           <div class="flex items-center space-x-2">
             <Select v-model="difficultyFilter">
               <SelectTrigger class="w-48 openttd-button">
@@ -56,7 +44,7 @@
                 <SelectItem value="legendary">🟣 Legendary</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select v-model="sortBy">
               <SelectTrigger class="w-48 openttd-button">
                 <SelectValue placeholder="Sort by..." />
@@ -76,7 +64,7 @@
     <!-- Loading State -->
     <div v-if="loading && campaigns.length === 0" class="flex justify-center py-12">
       <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
         <p class="text-muted-foreground">Loading campaigns...</p>
       </div>
     </div>
@@ -86,12 +74,8 @@
       <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
       <AlertDescription class="text-destructive">
         {{ error }}
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          @click="error = null"
-          class="ml-2 text-destructive hover:text-destructive-foreground"
-        >
+        <Button variant="ghost" size="sm" class="ml-2 text-destructive hover:text-destructive-foreground"
+          @click="error = undefined">
           ✕ Dismiss
         </Button>
       </AlertDescription>
@@ -108,11 +92,7 @@
           <p class="text-muted-foreground mb-6">
             {{ searchQuery ? 'Try adjusting your search or filters' : 'Create your first campaign to get started' }}
           </p>
-          <Button
-            v-if="!searchQuery"
-            @click="createCampaign"
-            class="openttd-button bg-openttd-green text-white"
-          >
+          <Button v-if="!searchQuery" class="openttd-button bg-openttd-green text-white" @click="createCampaign">
             ➕ Create Campaign
           </Button>
         </div>
@@ -121,12 +101,9 @@
 
     <!-- Campaigns Grid -->
     <div v-if="!loading && filteredCampaigns.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card
-        v-for="campaign in filteredCampaigns"
-        :key="campaign.id"
+      <Card v-for="campaign in filteredCampaigns" :key="campaign.id"
         class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
-        @click="editCampaign(campaign.id)"
-      >
+        @click="editCampaign(campaign.id)">
         <CardContent class="space-y-4 p-6">
           <!-- Header -->
           <div class="flex items-start justify-between">
@@ -138,14 +115,10 @@
                 ID: {{ campaign.id }}
               </p>
             </div>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger as-child @click.stop>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  class="h-8 w-8 p-0"
-                >
+                <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
                   ⋮
                 </Button>
               </DropdownMenuTrigger>
@@ -154,12 +127,9 @@
                   ✏️ Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem @click="handleDuplicate(campaign.id)">
-                  📄 Duplicate  
+                  📄 Duplicate
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  @click="handleDelete(campaign.id)"
-                  class="text-destructive focus:text-destructive"
-                >
+                <DropdownMenuItem class="text-destructive focus:text-destructive" @click="handleDelete(campaign.id)">
                   🗑️ Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -179,10 +149,7 @@
             </div>
             <div>
               <span class="text-muted-foreground">Difficulty:</span>
-              <Badge
-                :class="getDifficultyClasses(campaign.meta?.difficulty)"
-                class="ml-1 text-xs"
-              >
+              <Badge :class="getDifficultyClasses(campaign.meta?.difficulty)" class="ml-1 text-xs">
                 {{ campaign.meta?.difficulty || 'Unknown' }}
               </Badge>
             </div>
@@ -190,19 +157,10 @@
 
           <!-- Tags -->
           <div v-if="campaign.meta?.tags && campaign.meta.tags.length > 0" class="flex flex-wrap gap-1">
-            <Badge
-              v-for="tag in campaign.meta.tags.slice(0, 3)"
-              :key="tag"
-              variant="secondary"
-              class="text-xs"
-            >
+            <Badge v-for="tag in campaign.meta.tags.slice(0, 3)" :key="tag" variant="secondary" class="text-xs">
               {{ tag }}
             </Badge>
-            <Badge
-              v-if="campaign.meta.tags.length > 3"
-              variant="secondary"
-              class="text-xs text-muted-foreground"
-            >
+            <Badge v-if="campaign.meta.tags.length > 3" variant="secondary" class="text-xs text-muted-foreground">
               +{{ campaign.meta.tags.length - 3 }}
             </Badge>
           </div>
@@ -213,7 +171,7 @@
               {{ campaign.modified ? 'Modified' : 'Saved' }}
               {{ formatDate(campaign.lastModified) }}
             </div>
-            
+
             <div class="flex items-center space-x-1">
               <span v-if="campaign.modified" class="text-orange-500">✏️</span>
               <span class="text-muted-foreground">→</span>
@@ -226,29 +184,18 @@
     <!-- Pagination -->
     <div v-if="totalPages > 1" class="flex justify-center">
       <div class="flex items-center space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="currentPage === 1"
-          @click="currentPage--"
-          class="openttd-button"
-        >
+        <Button variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button" @click="currentPage--">
           ← Previous
         </Button>
-        
+
         <div class="flex items-center space-x-1">
           <span class="text-sm text-muted-foreground">
             Page {{ currentPage }} of {{ totalPages }}
           </span>
         </div>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="currentPage === totalPages"
-          @click="currentPage++"
-          class="openttd-button"
-        >
+
+        <Button variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
+          @click="currentPage++">
           Next →
         </Button>
       </div>
@@ -257,13 +204,6 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 const {
   campaigns,
@@ -273,7 +213,7 @@ const {
   deleteCampaign,
   duplicateCampaign,
   searchCampaigns,
-  spaMode
+  spaMode: _spaMode
 } = useCampaignStore()
 
 // Reactive data
@@ -291,7 +231,7 @@ onMounted(async () => {
 })
 
 // Options
-const difficultyOptions = [
+const _difficultyOptions = [
   { value: '', label: 'All Difficulties' },
   { value: 'easy', label: 'Easy' },
   { value: 'medium', label: 'Medium' },
@@ -300,7 +240,7 @@ const difficultyOptions = [
   { value: 'legendary', label: 'Legendary' }
 ]
 
-const sortOptions = [
+const _sortOptions = [
   { value: 'lastModified', label: 'Last Modified' },
   { value: 'title', label: 'Title' },
   { value: 'id', label: 'ID' },
@@ -328,11 +268,12 @@ const filteredCampaigns = computed(() => {
         return (a.meta?.title || a.id).localeCompare(b.meta?.title || b.id)
       case 'id':
         return a.id.localeCompare(b.id)
-      case 'difficulty':
+      case 'difficulty': {
         const difficulties = ['easy', 'medium', 'hard', 'expert', 'legendary']
         const aDiff = difficulties.indexOf(a.meta?.difficulty || 'medium')
         const bDiff = difficulties.indexOf(b.meta?.difficulty || 'medium')
         return aDiff - bDiff
+      }
       case 'lastModified':
       default:
         return (b.lastModified || 0) - (a.lastModified || 0)
@@ -346,20 +287,20 @@ const filteredCampaigns = computed(() => {
 
 const totalPages = computed(() => {
   let totalCount = campaigns.value.length
-  
+
   if (searchQuery.value) {
     totalCount = searchCampaigns(searchQuery.value).length
   }
-  
+
   if (difficultyFilter.value) {
     totalCount = campaigns.value.filter(c => c.meta?.difficulty === difficultyFilter.value).length
   }
-  
+
   return Math.ceil(totalCount / pageSize)
 })
 
 // Methods
-function getDifficultyColor(difficulty: string | undefined) {
+function _getDifficultyColor(difficulty: string | undefined) {
   switch (difficulty?.toLowerCase()) {
     case 'easy': return 'green'
     case 'medium': return 'yellow'
@@ -372,33 +313,33 @@ function getDifficultyColor(difficulty: string | undefined) {
 
 function formatDate(timestamp: number | undefined) {
   if (!timestamp) return 'Unknown'
-  
+
   const date = new Date(timestamp)
   const now = new Date()
   const diff = now.getTime() - date.getTime()
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  
+
   if (days === 0) return 'Today'
   if (days === 1) return 'Yesterday'
   if (days < 7) return `${days} days ago`
-  
+
   return date.toLocaleDateString()
 }
 
 // Helper function for difficulty classes
 function getDifficultyClasses(difficulty: string | undefined) {
   switch (difficulty?.toLowerCase()) {
-    case 'easy': 
+    case 'easy':
       return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium': 
+    case 'medium':
       return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard': 
+    case 'hard':
       return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert': 
+    case 'expert':
       return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary': 
+    case 'legendary':
       return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default: 
+    default:
       return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
   }
 }
@@ -427,6 +368,7 @@ async function handleDuplicate(id: string) {
       color: 'green'
     })
   } catch (error) {
+    console.error('Failed to duplicate campaign:', error)
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -444,7 +386,7 @@ async function handleDelete(id: string) {
   const confirmed = confirm(
     `Are you sure you want to delete "${campaign.meta?.title || campaign.id}"? This action cannot be undone.`
   )
-  
+
   if (!confirmed) return
 
   try {
@@ -456,6 +398,7 @@ async function handleDelete(id: string) {
       color: 'green'
     })
   } catch (error) {
+    console.error('Failed to delete campaign:', error)
     const toast = useToast()
     toast.add({
       title: '❌ Error',

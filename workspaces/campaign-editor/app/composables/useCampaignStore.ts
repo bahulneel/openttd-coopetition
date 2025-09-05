@@ -15,10 +15,10 @@ const store = reactive<CampaignStore>({
   scenarios: [],
   manifest: undefined,
   loading: false,
-  error: null
+  error: undefined
 })
 
-let fileSystem: FileSystemAdapter | null = null
+let fileSystem: FileSystemAdapter | undefined = undefined
 
 export const useCampaignStore = () => {
   const { public: { spaMode } } = useRuntimeConfig()
@@ -33,7 +33,7 @@ export const useCampaignStore = () => {
     store.loading = loading
   }
 
-  const setError = (error: string | null) => {
+  const setError = (error: string | undefined) => {
     store.error = error
   }
 
@@ -42,7 +42,7 @@ export const useCampaignStore = () => {
     if (!fileSystem) return
 
     setLoading(true)
-    setError(null)
+    setError(undefined)
 
     try {
       const [campaigns, goals, scenarios, manifest] = await Promise.all([
@@ -68,7 +68,7 @@ export const useCampaignStore = () => {
     if (!fileSystem) return
 
     setLoading(true)
-    setError(null)
+    setError(undefined)
 
     try {
       store.campaigns = await fileSystem.loadCampaigns()
@@ -84,7 +84,7 @@ export const useCampaignStore = () => {
     if (!fileSystem) return
 
     setLoading(true)
-    setError(null)
+    setError(undefined)
 
     try {
       store.goals = await fileSystem.loadGoals()
@@ -100,7 +100,7 @@ export const useCampaignStore = () => {
     if (!fileSystem) return
 
     setLoading(true)
-    setError(null)
+    setError(undefined)
 
     try {
       store.scenarios = await fileSystem.loadScenarios()
@@ -116,7 +116,7 @@ export const useCampaignStore = () => {
   const saveCampaign = async (campaign: Campaign) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
-    setError(null)
+    setError(undefined)
     try {
       await fileSystem.saveCampaign(campaign)
       
@@ -137,7 +137,7 @@ export const useCampaignStore = () => {
   const deleteCampaign = async (id: string) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
-    setError(null)
+    setError(undefined)
     try {
       await fileSystem.deleteCampaign(id)
       store.campaigns = store.campaigns.filter(c => c.id !== id)
@@ -175,7 +175,7 @@ export const useCampaignStore = () => {
   const saveGoal = async (goal: Goal) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
-    setError(null)
+    setError(undefined)
     try {
       await fileSystem.saveGoal(goal)
       
@@ -195,7 +195,7 @@ export const useCampaignStore = () => {
   const deleteGoal = async (id: string) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
-    setError(null)
+    setError(undefined)
     try {
       await fileSystem.deleteGoal(id)
       store.goals = store.goals.filter(g => g.id !== id)
@@ -231,7 +231,7 @@ export const useCampaignStore = () => {
   const saveScenario = async (scenario: Scenario) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
-    setError(null)
+    setError(undefined)
     try {
       await fileSystem.saveScenario(scenario)
       
@@ -251,7 +251,7 @@ export const useCampaignStore = () => {
   const deleteScenario = async (id: string) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
-    setError(null)
+    setError(undefined)
     try {
       await fileSystem.deleteScenario(id)
       store.scenarios = store.scenarios.filter(s => s.id !== id)
@@ -287,7 +287,7 @@ export const useCampaignStore = () => {
   const saveManifest = async (manifest: CampaignManifest) => {
     if (!fileSystem) throw new Error('File system not initialized')
 
-    setError(null)
+    setError(undefined)
     try {
       await fileSystem.saveManifest(manifest)
       store.manifest = manifest
@@ -318,6 +318,7 @@ export const useCampaignStore = () => {
     if (spaMode && 'importFromZip' in fileSystem) {
       setLoading(true)
       try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic method call on optional interface property
         await (fileSystem as any).importFromZip(file)
         await loadAll() // Reload all data
       } catch (error) {
@@ -334,6 +335,7 @@ export const useCampaignStore = () => {
 
   const downloadExport = async (filename = 'campaigns.zip') => {
     if (spaMode && fileSystem && 'downloadExport' in fileSystem) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic method call on optional interface property
       await (fileSystem as any).downloadExport(filename)
     } else {
       const blob = await exportAll()

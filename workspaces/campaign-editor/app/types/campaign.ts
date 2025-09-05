@@ -291,7 +291,7 @@ export interface CampaignStore {
   scenarios: Scenario[]
   manifest?: CampaignManifest
   loading: boolean
-  error: string | null
+  error: string | undefined
 }
 
 // File system operations
@@ -299,7 +299,7 @@ export interface FileSystemAdapter {
   loadCampaigns(): Promise<Campaign[]>
   loadGoals(): Promise<Goal[]>
   loadScenarios(): Promise<Scenario[]>
-  loadManifest(): Promise<CampaignManifest | null>
+  loadManifest(): Promise<CampaignManifest | undefined>
   saveCampaign(campaign: Campaign): Promise<void>
   saveGoal(goal: Goal): Promise<void>
   saveScenario(scenario: Scenario): Promise<void>
@@ -308,6 +308,8 @@ export interface FileSystemAdapter {
   deleteGoal(id: string): Promise<void>
   deleteScenario(id: string): Promise<void>
   exportAll(): Promise<Blob>
+  importFromZip?(file: File): Promise<void>
+  downloadExport?(filename?: string): Promise<void>
 }
 
 // Editor configuration
