@@ -39,7 +39,8 @@ We will modify the workflow to:
 
 2. **Updated `create-pr` job**:
    - Added `ref` parameter to checkout the release branch
-   - Fixed action parameter from `head` to `branch` (correct parameter for `peter-evans/create-pull-request`)
+   - Replaced `peter-evans/create-pull-request` action with GitHub CLI (`gh pr create`)
+   - This creates a PR from the existing release branch to develop without trying to modify the branch
 
 3. **Added conditional execution**:
    - All subsequent jobs (quality-gates, build-components, integration, create-pr) now skip execution when only a version bump is detected
@@ -68,6 +69,10 @@ main push → detect changes →
 ### Alternative 3: Use different PR creation action
 - **Rejected**: Current action works fine with correct parameters
 - **Reason**: No need to introduce additional dependencies
+
+### Alternative 4: Use GitHub CLI instead of peter-evans/create-pull-request
+- **Accepted**: GitHub CLI is more straightforward for creating PRs from existing branches
+- **Reason**: The peter-evans action is designed to make changes and create PRs, but we already have the changes on the release branch
 
 ## References
 - [GitHub Actions Workflow File](.github/workflows/build.yml)

@@ -350,14 +350,12 @@ jobs:
           ref: release-v${{ needs.increment-version.outputs.new_version }}
       
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: develop
-          branch: release-v${{ needs.increment-version.outputs.new_version }}
-          title: "Release v${{ needs.increment-version.outputs.new_version }}"
-          body: |
-            This PR merges the release v${{ needs.increment-version.outputs.new_version }} back to the develop branch.
+        run: |
+          gh pr create \
+            --base develop \
+            --head release-v${{ needs.increment-version.outputs.new_version }} \
+            --title "Release v${{ needs.increment-version.outputs.new_version }}" \
+            --body "This PR merges the release v${{ needs.increment-version.outputs.new_version }} back to the develop branch.
             
             ## Changes
             - Incremented version number from ${{ needs.increment-version.outputs.current_version }} to ${{ needs.increment-version.outputs.new_version }}
@@ -370,11 +368,13 @@ jobs:
             - ✅ Documentation (ADRs and guides)
             
             ## Available Packages
-            - `coopetition-v${{ needs.increment-version.outputs.new_version }}.zip`: Core GameScript mod
-            - `coopetition-content-v${{ needs.increment-version.outputs.new_version }}.zip`: Campaign content only
-            - `coopetition-tools-v${{ needs.increment-version.outputs.new_version }}.zip`: Development tools
-            - `coopetition-complete-v${{ needs.increment-version.outputs.new_version }}.zip`: Everything combined
-          labels: version-bump, automated-pr, monorepo-release
+            - \`coopetition-v${{ needs.increment-version.outputs.new_version }}.zip\`: Core GameScript mod
+            - \`coopetition-content-v${{ needs.increment-version.outputs.new_version }}.zip\`: Campaign content only
+            - \`coopetition-tools-v${{ needs.increment-version.outputs.new_version }}.zip\`: Development tools
+            - \`coopetition-complete-v${{ needs.increment-version.outputs.new_version }}.zip\`: Everything combined" \
+            --label "version-bump,automated-pr,monorepo-release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: PR Summary
         run: |
