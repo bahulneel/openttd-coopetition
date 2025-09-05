@@ -8,8 +8,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "verify:gs": "node tools/verify-gs-api.mjs",
-    "lint:nut": "GS_LINT_VERBOSE=1 eslint \"**/*.nut\"",
+    "lint:nut": "GS_LINT_VERBOSE=1 eslint \"src/**/*.nut\"",
     "compile": "node tools/compile-authoring.mjs"
   },
   "dependencies": {

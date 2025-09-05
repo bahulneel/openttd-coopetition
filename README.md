@@ -11,6 +11,20 @@ The Coopetition mod blends cooperation and competition in multiplayer games by:
 - **Dynamic Tracking**: Keeps both types of goals visible and measurable
 - **Flexible**: Adapts to any map size, number of players, and session duration
 
+## Project Structure
+
+```
+├── src/                    # Main game script files
+│   ├── *.nut              # Core game script files
+│   └── authoring/         # Authoring content and campaigns
+├── tools/                 # Development tools and utilities
+├── docs/                  # Documentation and ADRs
+├── .github/               # GitHub workflows and templates
+└── package.json           # Node.js project configuration
+```
+
+The main game script files are located in the `src/` directory, while development tools, documentation, and configuration files remain at the root level for easy access.
+
 ## Features
 
 ### Shared Goal Management
@@ -103,7 +117,7 @@ This will create a versioned zip file in the `dist` directory that can be shared
 This project includes a GitHub workflow that automatically:
 
 1. Builds and packages the mod when code is pushed to the main branch
-2. Creates a new GitHub release with the version number from `version.nut`
+2. Creates a new GitHub release with the version number from `src/version.nut`
 3. Attaches the packaged zip file to the release for easy downloading
 4. Increments the version number and creates a pull request back to the develop branch
 
@@ -173,22 +187,22 @@ When your changes are merged to the develop branch, they'll be included in the n
 When changes from develop are merged to the main branch, the GitHub workflow will automatically:
 
 1. Build and package the mod
-2. Create a new release with the version number from `version.nut`
+2. Create a new release with the version number from `src/version.nut`
 3. Make the packaged zip file available for download
-4. Increment the version number in `version.nut`
+4. Increment the version number in `src/version.nut`
 5. Create a pull request back to the develop branch with the incremented version
 
 ### Versioning
 
 Version management is largely automated in this project:
 
-1. When changes are pushed to the main branch, the GitHub workflow creates a release with the current version from `version.nut`
-2. After the release is created, the workflow automatically increments the version number in `version.nut` and creates a pull request to the develop branch
+1. When changes are pushed to the main branch, the GitHub workflow creates a release with the current version from `src/version.nut`
+2. After the release is created, the workflow automatically increments the version number in `src/version.nut` and creates a pull request to the develop branch
 3. When the PR is merged, the develop branch will have the incremented version ready for the next release
 
 For manual version updates (if needed):
 
-1. Modify the `COOPETITION_VERSION` value in `version.nut`
+1. Modify the `COOPETITION_VERSION` value in `src/version.nut`
 2. Commit and push the change to the appropriate branch
 
 ### Building
