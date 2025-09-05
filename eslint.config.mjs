@@ -1,4 +1,4 @@
-import plugin from './tools/eslint-plugin-openttd-gs/index.mjs';
+import plugin from './workspaces/eslint-plugin-openttd-gs/index.mjs';
 
 export default [
   {
