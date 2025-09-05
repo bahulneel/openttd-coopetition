@@ -129,14 +129,11 @@ jobs:
             echo "🔀 Created branch release-v${{ steps.increment_version.outputs.new_version }} from develop" >> $GITHUB_STEP_SUMMARY
           fi
 
-  # Quality Gates: Lint and validate all components
-  quality-gates:
+  # Lint all code (GameScript and workspaces)
+  lint-all:
     needs: increment-version
     runs-on: ubuntu-22.04
     if: needs.increment-version.outputs.is_version_bump_only != 'true'
-    strategy:
-      matrix:
-        component: [mod, content, tools, docs]
     steps:
       - name: Checkout release branch
         uses: actions/checkout@v5
@@ -152,24 +149,40 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Lint GameScript files
-        if: matrix.component == 'mod'
-        run: npm run lint:nut
+      - name: Lint all code
+        run: npm run lint
+      
+      - name: Lint Summary
+        run: |
+          echo "## Lint All Code" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All code linting passed (GameScript + workspaces)" >> $GITHUB_STEP_SUMMARY
+
+  # Quality Gates: Validate content and documentation
+  quality-gates:
+    needs: [increment-version, lint-all]
+    runs-on: ubuntu-22.04
+    if: needs.increment-version.outputs.is_version_bump_only != 'true'
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v5
+        with:
+          ref: release-v${{ needs.increment-version.outputs.new_version }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
       
       - name: Validate YAML content
-        if: matrix.component == 'content'
         run: |
           echo "Validating YAML content..."
           find campaigns -name "*.yaml" -exec echo "Validating {}" \; -exec yaml-lint {} \;
       
-      - name: Lint workspace files
-        if: matrix.component == 'tools'
-        run: |
-          echo "Linting workspace files..."
-          npm run lint:workspaces
-      
       - name: Validate documentation
-        if: matrix.component == 'docs'
         run: |
           echo "Validating documentation..."
           # Check for broken markdown links
@@ -179,12 +192,13 @@ jobs:
       
       - name: Quality Gate Summary
         run: |
-          echo "## Quality Gate: ${{ matrix.component }}" >> $GITHUB_STEP_SUMMARY
-          echo "✅ ${{ matrix.component }} validation passed" >> $GITHUB_STEP_SUMMARY
+          echo "## Quality Gates" >> $GITHUB_STEP_SUMMARY
+          echo "✅ YAML content validation passed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Documentation validation passed" >> $GITHUB_STEP_SUMMARY
 
   # Build components in parallel
   build-components:
-    needs: [increment-version, quality-gates]
+    needs: [increment-version, lint-all, quality-gates]
     runs-on: ubuntu-22.04
     if: needs.increment-version.outputs.is_version_bump_only != 'true'
     strategy:
@@ -405,9 +419,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Build Campaign Editor for GitHub Pages
         working-directory: workspaces/campaign-editor
