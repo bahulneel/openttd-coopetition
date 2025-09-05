@@ -51,7 +51,13 @@ export default defineNuxtConfig({
   // Modules
   modules: [
     '@vueuse/nuxt',
+    '@nuxtjs/color-mode'
   ],
+
+  // Color mode configuration for dark/light theme toggle
+  colorMode: {
+    classSuffix: ''
+  },
 
   // Build configuration
   build: {

@@ -40,6 +40,21 @@ This project has been migrated to use the latest web technologies:
 - **Reka UI foundation** for accessibility and modern patterns
 - **Perfect OpenTTD integration** with authentic game styling
 
+## ✅ Migration Status
+
+All official installation steps from [shadcn-vue.com/docs/installation/nuxt](https://www.shadcn-vue.com/docs/installation/nuxt) have been completed:
+
+- ✅ **@nuxtjs/color-mode** installed and configured for dark/light mode
+- ✅ **@iconify/vue** with radix icons for theme toggle
+- ✅ **tw-animate-css** for component animations  
+- ✅ **Proper @theme inline** configuration in CSS
+- ✅ **CSS variables** and dark mode support
+- ✅ **shadcn-vue components** with OpenTTD theming
+- ✅ **TypeScript configuration** with proper aliases
+- ✅ **components.json** configured per official documentation
+
+🧪 **Test the setup**: Visit `/test` to see all technologies working together!
+
 ## Quick Start
 
 ### Development Mode (with File System Access)

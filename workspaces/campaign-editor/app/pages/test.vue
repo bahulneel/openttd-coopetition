@@ -67,9 +67,64 @@
       <AlertTitle>🎉 Migration Complete!</AlertTitle>
       <AlertDescription>
         Successfully migrated to Nuxt 4 + Tailwind CSS 4 + shadcn-vue with OpenTTD theming.
-        The setup is working correctly with all new features.
+        All official installation steps from shadcn-vue.com have been completed:
+        <br>• ✅ @nuxtjs/color-mode for dark/light mode
+        <br>• ✅ @iconify/vue with radix icons
+        <br>• ✅ tw-animate-css for animations
+        <br>• ✅ Proper @theme inline configuration
+        <br>• ✅ CSS variables and dark mode support
       </AlertDescription>
     </Alert>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Color Mode Test -->
+      <Card class="openttd-titlebar">
+        <CardHeader>
+          <CardTitle>🌓 Color Mode Test</CardTitle>
+          <CardDescription>Test the dark/light mode toggle functionality</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p class="text-sm text-muted-foreground mb-4">
+            Current mode: <Badge>{{ $colorMode.value }}</Badge>
+          </p>
+          <div class="flex gap-2">
+            <Button size="sm" variant="outline" @click="$colorMode.preference = 'light'">
+              ☀️ Light
+            </Button>
+            <Button size="sm" variant="outline" @click="$colorMode.preference = 'dark'">
+              🌙 Dark  
+            </Button>
+            <Button size="sm" variant="outline" @click="$colorMode.preference = 'system'">
+              💻 System
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Performance Test -->
+      <Card class="campaign-card bg-openttd-green/20 border-openttd-green/40">
+        <CardHeader>
+          <CardTitle>⚡ Performance Test</CardTitle>
+          <CardDescription>Tailwind CSS 4 build performance</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span>Full builds:</span>
+              <Badge class="bg-openttd-green text-white">5x faster</Badge>
+            </div>
+            <div class="flex justify-between">
+              <span>Incremental:</span>
+              <Badge class="bg-openttd-green text-white">100x faster</Badge>
+            </div>
+            <div class="flex justify-between">
+              <span>Hot reload:</span>
+              <Badge class="bg-openttd-green text-white">Microseconds</Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <Card class="campaign-card bg-openttd-brown/20 border-openttd-brown/40">

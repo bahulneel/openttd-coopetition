@@ -43,20 +43,47 @@
               Browser Mode
             </div>
             
-            <!-- Dark mode toggle -->
-            <button
-              class="openttd-button text-sm"
-              @click="toggleColorMode"
-            >
-              {{ colorMode.value === 'dark' ? '☀️' : '🌙' }}
-            </button>
+            <!-- Dark mode toggle with shadcn-vue and Nuxt Color Mode -->
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="sm" class="openttd-button">
+                  <Icon icon="radix-icons:moon" class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Icon icon="radix-icons:sun" class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span class="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem @click="colorMode.preference = 'light'">
+                  ☀️ Light
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="colorMode.preference = 'dark'">
+                  🌙 Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="colorMode.preference = 'system'">
+                  💻 System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             <!-- Import/Export -->
-            <UDropdown :items="menuItems">
-              <button class="openttd-button text-sm">
-                ⚙️ Tools
-              </button>
-            </UDropdown>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" size="sm" class="openttd-button">
+                  ⚙️ Tools
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem @click="importCampaign">
+                  📤 Import Campaign
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="exportAll">
+                  📥 Export All
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="resetAll" class="text-destructive">
+                  🗑️ Reset All
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -96,35 +123,27 @@
 </template>
 
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+
 const colorMode = useColorMode()
 const { public: { spaMode } } = useRuntimeConfig()
 const version = '1.0.0'
 
-const toggleColorMode = () => {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+// Menu functions
+const importCampaign = () => {
+  // TODO: Implement import functionality
+  console.log('Import campaign clicked')
 }
 
-const menuItems = [
-  [{
-    label: 'Import Campaign',
-    icon: 'i-heroicons-arrow-up-tray',
-    click: () => {
-      // TODO: Implement import functionality
-    }
-  }],
-  [{
-    label: 'Export All',
-    icon: 'i-heroicons-arrow-down-tray',
-    click: () => {
-      // TODO: Implement export functionality
-    }
-  }],
-  [{
-    label: 'Reset All',
-    icon: 'i-heroicons-trash',
-    click: () => {
-      // TODO: Implement reset functionality
-    }
-  }]
-]
+const exportAll = () => {
+  // TODO: Implement export functionality
+  console.log('Export all clicked')
+}
+
+const resetAll = () => {
+  // TODO: Implement reset functionality
+  console.log('Reset all clicked')
+}
 </script>
