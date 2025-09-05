@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,8 +42,6 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GS_LINT_VERBOSE: 1
         run: |
-          # Add File polyfill for undici compatibility
-          node -e "if (typeof globalThis.File === 'undefined') { globalThis.File = class File { constructor() { throw new Error('File constructor not implemented'); } }; }"
           # Run ESLint on .nut files and pipe to reviewdog
           npm run lint:nut 2>&1 | reviewdog -f=eslint -name="GameScript Linter" -reporter=github-pr-review -fail-on-error=false
 
@@ -59,7 +57,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -89,7 +87,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -140,7 +138,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies

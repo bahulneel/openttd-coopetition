@@ -31,7 +31,7 @@
     "dev:all": "npm run dev:workspaces"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "^1.1.2",
     "globby": "^14.0.1",
     "yaml": "^2.5.1"
   },
