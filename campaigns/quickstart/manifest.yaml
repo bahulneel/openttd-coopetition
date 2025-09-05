@@ -1,0 +1,27 @@
+name: "Coopetition Quickstart"
+version: "1.0.0"
+description: "A compact two-goal cooperative warmup pack for getting started with Coopetition."
+author: "Coopetition Team"
+tags: ["beginner", "quickstart", "tutorial"]
+
+# Campaign pack structure
+structure:
+  goals: "goals/"
+  scenarios: "scenarios/"
+  campaigns: "."
+
+# Main campaign file
+main_campaign: "century_of_rails.yaml"
+
+# Dependencies
+dependencies:
+  coopetition_version: ">=1.0.0"
+
+# Installation instructions
+install:
+  copy_to: "openttd/ai/coopetition/campaigns/quickstart/"
+  requires: ["coopetition.nut"]
+
+# Metadata
+created: "2024-01-01"
+updated: "2024-01-01"

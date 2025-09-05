@@ -1,0 +1,191 @@
+# Advanced campaign example with complex features
+id: advanced_mastery
+comment: |
+  This campaign demonstrates advanced features like branching paths,
+  conditional scenarios, and complex reward systems.
+
+scenarios:
+  - include: "industrial_hub_scenario"
+    order: 1
+    required: true
+    branch: "main"
+    comment: "Main path scenario"
+  - include: "transport_challenge_scenario"
+    order: 2
+    required: false
+    branch: "advanced"
+    condition:
+      type: "performance_threshold"
+      threshold: 0.9
+      target: "industrial_hub_scenario"
+    comment: "Advanced scenario unlocked by high performance"
+
+# Branching campaign structure
+branches:
+  main:
+    - "industrial_hub_scenario"
+    - "transport_challenge_scenario"
+  advanced:
+    - "transport_challenge_scenario"
+    - "mastery_final_scenario"
+  expert:
+    - "mastery_final_scenario"
+    - "legendary_challenge_scenario"
+  comment: "Different campaign paths based on player performance"
+
+# Complex progression system
+progression:
+  type: "branching"
+  unlock_requirements:
+    - scenario: "industrial_hub_scenario"
+      completion_threshold: 0.7
+      unlocks: "main_branch"
+    - scenario: "industrial_hub_scenario"
+      completion_threshold: 0.9
+      unlocks: "advanced_branch"
+    - scenario: "transport_challenge_scenario"
+      completion_threshold: 0.95
+      unlocks: "expert_branch"
+  comment: "Branching progression based on performance"
+
+# Advanced constraints with conditions
+constraints:
+  players:
+    min: 2
+    max: 8
+  date:
+    min: 1950
+    max: 2000
+  map_size:
+    min: 512
+    max: 1024
+  difficulty:
+    min: "medium"
+    max: "legendary"
+  conditional:
+    - condition:
+        type: "player_count"
+        operator: ">="
+        value: 4
+      constraint:
+        difficulty:
+          min: "hard"
+    - condition:
+        type: "map_size"
+        operator: ">="
+        value: 1024
+      constraint:
+        time_limit: 720
+  comment: "Complex constraints with conditional adjustments"
+
+# Advanced reward system
+rewards:
+  completion:
+    cash: 20000000
+    score: 2000
+    reputation: 200
+    unlock: "mastery_legend"
+    achievement: "advanced_mastery_complete"
+    bonus:
+      type: "multiplier"
+      amount: 1.5
+      target: "all_rewards"
+  partial:
+    cash: 10000000
+    score: 1000
+    reputation: 100
+    achievement: "advanced_mastery_partial"
+  conditional:
+    - condition:
+        type: "perfect_completion"
+        threshold: 1.0
+      reward:
+        cash: 50000000
+        score: 5000
+        reputation: 500
+        unlock: "legendary_master"
+        achievement: "perfect_mastery"
+    - condition:
+        type: "speed_completion"
+        threshold: 0.5
+      reward:
+        cash: 10000000
+        score: 1000
+        reputation: 100
+        unlock: "speed_master"
+  comment: "Complex reward system with conditional bonuses"
+
+# Advanced metadata
+meta:
+  title: "Advanced Mastery Campaign"
+  description: "Master all aspects of transport management in this complex campaign"
+  difficulty: "expert"
+  estimated_time: "12-16 hours"
+  tags: ["mastery", "advanced", "complex", "branching"]
+  requirements:
+    - "expert_planning"
+    - "multi_player_mastery"
+    - "efficiency_optimization"
+    - "complex_networks"
+  prerequisites:
+    - "century_of_rails"
+  comment: "Advanced campaign requiring completion of previous campaigns"
+
+# Campaign-specific advanced features
+features:
+  - "branching_progression"
+  - "conditional_scenarios"
+  - "dynamic_difficulty"
+  - "performance_tracking"
+  - "adaptive_rewards"
+  - "milestone_system"
+
+# Complex milestone system
+milestones:
+  - name: "Foundation Mastery"
+    description: "Complete the industrial hub scenario with 90%+ efficiency"
+    reward:
+      cash: 2000000
+      score: 200
+      unlock: "advanced_techniques"
+    condition:
+      type: "efficiency_threshold"
+      threshold: 0.9
+  - name: "Transport Excellence"
+    description: "Complete the transport challenge scenario"
+    reward:
+      cash: 5000000
+      score: 500
+      unlock: "expert_techniques"
+    condition:
+      type: "scenario_completion"
+      scenario: "transport_challenge_scenario"
+  - name: "Legendary Mastery"
+    description: "Complete all scenarios with perfect scores"
+    reward:
+      cash: 10000000
+      score: 1000
+      unlock: "legendary_techniques"
+      achievement: "legendary_master"
+    condition:
+      type: "perfect_completion"
+      threshold: 1.0
+
+# Advanced difficulty scaling
+difficulty_scaling:
+  enabled: true
+  base_difficulty: "expert"
+  scaling_factors:
+    - factor: "player_count"
+      adjustment: 0.15
+    - factor: "map_size"
+      adjustment: 0.1
+    - factor: "completion_time"
+      adjustment: -0.05
+    - factor: "efficiency_rating"
+      adjustment: 0.2
+  adaptive:
+    enabled: true
+    adjustment_rate: 0.1
+    max_adjustment: 0.5
+  comment: "Advanced difficulty scaling with adaptive adjustments"
