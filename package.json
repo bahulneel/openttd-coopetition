@@ -33,7 +33,6 @@
     "prebuild": "npm run test",
     "dev": "turbo run start",
     "dev:prepare": "turbo run dev:prepare",
-    "dev:all": "npm run dev",
     "docker:build": "docker build -t coopetition/campaign-editor workspaces/campaign-editor",
     "docker:run": "docker run -p 3000:3000 coopetition/campaign-editor",
     "docker:dev": "docker-compose -f workspaces/campaign-editor/docker-compose.yml --profile dev up"
