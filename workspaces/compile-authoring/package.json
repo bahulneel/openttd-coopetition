@@ -1,0 +1,48 @@
+{
+  "name": "@coopetition/compile-authoring",
+  "version": "1.0.0",
+  "description": "YAML to Squirrel compilation tool for OpenTTD Coopetition campaigns",
+  "main": "compile-authoring.mjs",
+  "type": "module",
+  "bin": {
+    "compile-authoring": "./compile-authoring.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "openttd",
+    "gamescript",
+    "squirrel",
+    "yaml",
+    "compilation",
+    "campaign"
+  ],
+  "author": "Coopetition Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bahulneel/openttd-coopetition.git",
+    "directory": "workspaces/compile-authoring"
+  },
+  "bugs": {
+    "url": "https://github.com/bahulneel/openttd-coopetition/issues"
+  },
+  "homepage": "https://github.com/bahulneel/openttd-coopetition#readme",
+  "dependencies": {
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.34.0"
+  },
+  "files": [
+    "compile-authoring.mjs",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "eslint compile-authoring.mjs",
+    "build": "echo \"No build step required\" && exit 0",
+    "start": "node compile-authoring.mjs"
+  }
+}
