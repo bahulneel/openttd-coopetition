@@ -42,6 +42,9 @@ async function fetchHtml(url) {
 
 // Initialize cache directory (no refresh by default)
 export async function initCache({ verbose = false } = {}) {
+  if (verbose) {
+    console.log('[cache-init] Initializing API documentation cache...');
+  }
   await fs.mkdir(CACHE_DIR, { recursive: true }).catch(() => { });
 }
 

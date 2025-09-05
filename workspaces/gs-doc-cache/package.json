@@ -44,6 +44,7 @@
   "scripts": {
     "test": "echo \"No tests specified\" && exit 0",
     "lint": "eslint gs-doc-cache.mjs",
+    "lint:fix": "eslint gs-doc-cache.mjs --fix",
     "build": "echo \"No build step required\" && exit 0",
     "start": "node gs-doc-cache.mjs"
   }
