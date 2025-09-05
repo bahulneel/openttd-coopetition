@@ -1,14 +1,14 @@
 runner:
   # GameScript .nut files
   nut-lint:
-    cmd: npm run lint:nut
+    cmd: npm run lint
     errorformat:
       - "%f:%l:%c %m"
     level: error
 
   # Workspace files
   workspace-lint:
-    cmd: npm run lint:workspaces
+    cmd: npm run lint
     errorformat:
       - "%f:%l:%c %m"
     level: error
