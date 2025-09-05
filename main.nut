@@ -319,11 +319,17 @@ foreach (company_id, goals in this.player_goals) {
     }
     
     function GivePlayerGoalReward(company_id, goal) {
-        local reward = goal.reward;
-GSCompany.ChangeBankBalance(company_id, reward, GSCompany.EXPENSES_OTHER, 0);
-        
-        GSLog.Info("Company " + GSCompany.GetName(company_id) + 
-        " received " + reward + " for completing personal goal");
+        // Unified result: apply cash if available; fallback to legacy reward
+        local cash = 0;
+        if (("result" in goal) && goal.result != null && ("cash" in goal.result)) {
+            cash = goal.result.cash;
+        } else if ("reward" in goal) {
+            cash = goal.reward;
+        }
+        if (cash != 0) {
+            GSCompany.ChangeBankBalance(company_id, cash, GSCompany.EXPENSES_OTHER, 0);
+        }
+        GSLog.Info("Company " + GSCompany.GetName(company_id) + " result applied (cash=" + cash + ") for completing personal goal");
     }
     
     function Save() {
