@@ -5,9 +5,15 @@
 require("goal.nut");
 require("constraints.nut");
 
+
+// Start of Selection
 class CoopetitionLoader {
     static function _SafeGetCargoId(label) {
-        try { return GSCargo.GetCargoID(label); } catch (e) { return null; }
+        try {
+            return GSCargo.GetCargoLabel(label); // Corrected function call
+        } catch (e) {
+            return undefined; // Use undefined instead of null
+        }
     }
 
     static function MapObjectiveToSharedGoal(goal_def) {
