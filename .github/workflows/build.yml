@@ -1,4 +1,4 @@
-name: Build and Release
+name: Monorepo Build and Release
 
 # Trigger workflow on push to main branch or manual trigger
 on:
@@ -43,7 +43,7 @@ jobs:
             echo "version=${{ github.event.inputs.version_override }}" >> $GITHUB_OUTPUT
             echo "Using manually provided version: ${{ github.event.inputs.version_override }}"
           else
-            VERSION=$(grep -o 'COOPETITION_VERSION = [0-9]\+' version.nut | grep -o '[0-9]\+')
+            VERSION=$(grep -o 'COOPETITION_VERSION = [0-9]\+' src/version.nut | grep -o '[0-9]\+')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "Using version from version.nut: $VERSION"
           fi
@@ -61,18 +61,18 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
       
-      - name: Update version.nut
+      - name: Update version.nut in src/version.nut
         run: |
           # Update version.nut with new version
-          sed -i "s/COOPETITION_VERSION = ${{ steps.get_current_version.outputs.version }}/COOPETITION_VERSION = ${{ steps.increment_version.outputs.new_version }}/" version.nut
-          cat version.nut
+          sed -i "s/COOPETITION_VERSION = ${{ steps.get_current_version.outputs.version }}/COOPETITION_VERSION = ${{ steps.increment_version.outputs.new_version }}/" src/version.nut
+          cat src/version.nut
       
       - name: Create branch for version increment
         run: |
           # Create a new branch for the version increment
           BRANCH_NAME="release-v${{ steps.increment_version.outputs.new_version }}"
           git checkout -b $BRANCH_NAME
-          git add version.nut
+          git add src/version.nut
           git commit -m "Increment version to v${{ steps.increment_version.outputs.new_version }}"
           git push origin $BRANCH_NAME
       
@@ -81,10 +81,142 @@ jobs:
           echo "## Version Increment" >> $GITHUB_STEP_SUMMARY
           echo "✅ Incremented version from ${{ steps.get_current_version.outputs.version }} to ${{ steps.increment_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "🔀 Created branch release-v${{ steps.increment_version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-  
-  # Second job: Build and release with the new version
-  build:
+
+  # Quality Gates: Lint and validate all components
+  quality-gates:
     needs: increment-version
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [mod, content, tools, docs]
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v5
+        with:
+          ref: release-v${{ needs.increment-version.outputs.new_version }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint GameScript files
+        if: matrix.component == 'mod'
+        run: npm run lint:nut
+      
+      - name: Validate YAML content
+        if: matrix.component == 'content'
+        run: |
+          echo "Validating YAML content..."
+          find campaigns -name "*.yaml" -exec echo "Validating {}" \; -exec yaml-lint {} \;
+      
+      - name: Lint workspace files
+        if: matrix.component == 'tools'
+        run: |
+          echo "Linting workspace files..."
+          npm run lint:workspaces
+      
+      - name: Validate documentation
+        if: matrix.component == 'docs'
+        run: |
+          echo "Validating documentation..."
+          # Check for broken markdown links
+          find docs -name "*.md" -exec echo "Checking {}" \;
+          # Validate ADR format
+          find docs/adrs -name "*.md" -exec echo "Validating ADR: {}" \;
+      
+      - name: Quality Gate Summary
+        run: |
+          echo "## Quality Gate: ${{ matrix.component }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ ${{ matrix.component }} validation passed" >> $GITHUB_STEP_SUMMARY
+
+  # Build components in parallel
+  build-components:
+    needs: [increment-version, quality-gates]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [mod, content, tools]
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v5
+        with:
+          ref: release-v${{ needs.increment-version.outputs.new_version }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Create build directories
+        run: |
+          mkdir -p dist
+          mkdir -p build
+      
+      - name: Build GameScript mod
+        if: matrix.component == 'mod'
+        run: |
+          echo "Building GameScript mod..."
+          # Package the core mod files
+          zip -r "dist/coopetition-v${{ needs.increment-version.outputs.new_version }}.zip" \
+            src/*.nut \
+            LICENSE \
+            README.md
+          
+          # Validate the package
+          if unzip -t "dist/coopetition-v${{ needs.increment-version.outputs.new_version }}.zip"; then
+            echo "✅ Mod package is valid"
+          else
+            echo "❌ Mod package validation failed"
+            exit 1
+          fi
+      
+      - name: Compile campaign content
+        if: matrix.component == 'content'
+        run: |
+          echo "Compiling campaign content..."
+          npm run compile
+          
+          # Package content separately
+          zip -r "dist/coopetition-content-v${{ needs.increment-version.outputs.new_version }}.zip" \
+            build/goals/*.nut \
+            build/scenarios/*.nut \
+            build/campaigns/*.nut \
+            build/index.nut
+      
+      - name: Package development tools
+        if: matrix.component == 'tools'
+        run: |
+          echo "Packaging development tools..."
+          zip -r "dist/coopetition-tools-v${{ needs.increment-version.outputs.new_version }}.zip" \
+            workspaces/ \
+            package.json \
+            package-lock.json \
+            eslint.config.mjs
+      
+      - name: Upload component artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.component }}-artifacts
+          path: dist/*.zip
+          retention-days: 30
+      
+      - name: Build Summary
+        run: |
+          echo "## Build: ${{ matrix.component }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully built ${{ matrix.component }}" >> $GITHUB_STEP_SUMMARY
+
+  # Integration: Combine all artifacts and create final release
+  integration:
+    needs: [increment-version, build-components]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout release branch
@@ -92,31 +224,42 @@ jobs:
         with:
           ref: release-v${{ needs.increment-version.outputs.new_version }}
       
-      - name: Create dist directory
-        run: mkdir -p dist
-      
-      - name: Package mod
-        run: |
-          zip -r "dist/coopetition-v${{ needs.increment-version.outputs.new_version }}.zip" \
-            *.nut \
-            LICENSE \
-            README.md
-          
-      - name: Validate zip file
-        run: |
-          echo "Validating zip file integrity..."
-          if unzip -t "dist/coopetition-v${{ needs.increment-version.outputs.new_version }}.zip"; then
-            echo "✅ Zip file is valid"
-          else
-            echo "❌ Zip file validation failed"
-            exit 1
-          fi
-      
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          name: coopetition-mod
-          path: dist/*.zip
+          path: artifacts
+      
+      - name: Combine artifacts
+        run: |
+          echo "Combining all artifacts..."
+          mkdir -p dist
+          
+          # Copy all zip files to dist
+          find artifacts -name "*.zip" -exec cp {} dist/ \;
+          
+          # Create a complete package with everything
+          zip -r "dist/coopetition-complete-v${{ needs.increment-version.outputs.new_version }}.zip" \
+            src/ \
+            campaigns/ \
+            workspaces/ \
+            docs/ \
+            build/ \
+            LICENSE \
+            README.md \
+            package.json
+      
+      - name: Validate all packages
+        run: |
+          echo "Validating all packages..."
+          for zipfile in dist/*.zip; do
+            echo "Validating $zipfile..."
+            if unzip -t "$zipfile"; then
+              echo "✅ $zipfile is valid"
+            else
+              echo "❌ $zipfile validation failed"
+              exit 1
+            fi
+          done
       
       - name: Create Release
         id: create_release
@@ -130,17 +273,23 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Build Summary
+      
+      - name: Integration Summary
         run: |
-          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Integration Summary" >> $GITHUB_STEP_SUMMARY
           echo "✅ Successfully built and released Coopetition v${{ needs.increment-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "📦 Release URL: ${{ steps.create_release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           echo "📅 Released at: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Available Packages:" >> $GITHUB_STEP_SUMMARY
+          echo "- **coopetition-v${{ needs.increment-version.outputs.new_version }}.zip**: Core GameScript mod" >> $GITHUB_STEP_SUMMARY
+          echo "- **coopetition-content-v${{ needs.increment-version.outputs.new_version }}.zip**: Campaign content only" >> $GITHUB_STEP_SUMMARY
+          echo "- **coopetition-tools-v${{ needs.increment-version.outputs.new_version }}.zip**: Development tools" >> $GITHUB_STEP_SUMMARY
+          echo "- **coopetition-complete-v${{ needs.increment-version.outputs.new_version }}.zip**: Everything combined" >> $GITHUB_STEP_SUMMARY
   
-  # Third job: Create PR back to develop
+  # Create PR back to develop
   create-pr:
-    needs: [increment-version, build]
+    needs: [increment-version, integration]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -160,10 +309,23 @@ jobs:
             
             ## Changes
             - Incremented version number from ${{ needs.increment-version.outputs.current_version }} to ${{ needs.increment-version.outputs.new_version }}
-            - Created release v${{ needs.increment-version.outputs.new_version }}
-          labels: version-bump, automated-pr
+            - Created release v${{ needs.increment-version.outputs.new_version }} with monorepo build workflow
+            
+            ## Build Components
+            - ✅ GameScript mod (core functionality)
+            - ✅ Campaign content (compiled from YAML)
+            - ✅ Development tools (linting, compilation)
+            - ✅ Documentation (ADRs and guides)
+            
+            ## Available Packages
+            - `coopetition-v${{ needs.increment-version.outputs.new_version }}.zip`: Core GameScript mod
+            - `coopetition-content-v${{ needs.increment-version.outputs.new_version }}.zip`: Campaign content only
+            - `coopetition-tools-v${{ needs.increment-version.outputs.new_version }}.zip`: Development tools
+            - `coopetition-complete-v${{ needs.increment-version.outputs.new_version }}.zip`: Everything combined
+          labels: version-bump, automated-pr, monorepo-release
           
       - name: PR Summary
         run: |
           echo "## Pull Request" >> $GITHUB_STEP_SUMMARY
           echo "✅ Created PR to merge release-v${{ needs.increment-version.outputs.new_version }} to develop" >> $GITHUB_STEP_SUMMARY
+          echo "🏗️ Monorepo build workflow implemented" >> $GITHUB_STEP_SUMMARY

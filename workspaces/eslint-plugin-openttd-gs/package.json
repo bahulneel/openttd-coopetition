@@ -1,0 +1,44 @@
+{
+  "name": "@coopetition/eslint-plugin-openttd-gs",
+  "version": "1.0.0",
+  "description": "ESLint plugin for OpenTTD GameScript validation",
+  "main": "index.mjs",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "eslint",
+    "plugin",
+    "openttd",
+    "gamescript",
+    "squirrel",
+    "nut"
+  ],
+  "author": "Coopetition Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bahulneel/openttd-coopetition.git",
+    "directory": "workspaces/eslint-plugin-openttd-gs"
+  },
+  "bugs": {
+    "url": "https://github.com/bahulneel/openttd-coopetition/issues"
+  },
+  "homepage": "https://github.com/bahulneel/openttd-coopetition#readme",
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.34.0"
+  },
+  "files": [
+    "index.mjs",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "eslint index.mjs",
+    "build": "echo \"No build step required\" && exit 0"
+  }
+}

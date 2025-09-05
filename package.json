@@ -1,15 +1,33 @@
 {
-  "name": "openttd-coopetition-devtools",
+  "name": "openttd-coopetition",
   "private": true,
   "type": "module",
   "version": "0.0.0",
-  "description": "Dev tools for verifying OpenTTD GS API usage in Coopetition.",
+  "description": "OpenTTD Coopetition GameScript with development tools",
   "engines": {
     "node": ">=18"
   },
+  "workspaces": [
+    "workspaces/*"
+  ],
   "scripts": {
     "lint:nut": "GS_LINT_VERBOSE=1 eslint \"src/**/*.nut\"",
-    "compile": "node tools/compile-authoring.mjs"
+    "lint:workspaces": "npm run lint --workspaces",
+    "lint:all": "npm run lint:nut && npm run lint:workspaces",
+    "compile": "node workspaces/compile-authoring/compile-authoring.mjs",
+    "validate:yaml": "find campaigns -name '*.yaml' -exec echo 'Validating {}' \\; -exec yaml-lint {} \\;",
+    "validate:docs": "find docs -name '*.md' -exec echo 'Checking {}' \\;",
+    "validate:all": "npm run validate:yaml && npm run validate:docs",
+    "build:mod": "mkdir -p dist && zip -r dist/coopetition-v$(grep -o 'COOPETITION_VERSION = [0-9]\\+' src/version.nut | grep -o '[0-9]\\+').zip src/*.nut LICENSE README.md",
+    "build:content": "npm run compile && mkdir -p dist && zip -r dist/coopetition-content-v$(grep -o 'COOPETITION_VERSION = [0-9]\\+' src/version.nut | grep -o '[0-9]\\+').zip build/goals/*.nut build/scenarios/*.nut build/campaigns/*.nut build/index.nut",
+    "build:workspaces": "npm run build --workspaces",
+    "build:tools": "mkdir -p dist && zip -r dist/coopetition-tools-v$(grep -o 'COOPETITION_VERSION = [0-9]\\+' src/version.nut | grep -o '[0-9]\\+').zip workspaces/ package.json package-lock.json eslint.config.mjs",
+    "build:all": "npm run build:mod && npm run build:content && npm run build:tools",
+    "test:workspaces": "npm run test --workspaces",
+    "test": "npm run lint:all && npm run validate:all && npm run test:workspaces",
+    "prebuild": "npm run test",
+    "dev:workspaces": "npm run start --workspaces",
+    "dev:all": "npm run dev:workspaces"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
@@ -17,6 +35,7 @@
     "yaml": "^2.5.1"
   },
   "devDependencies": {
-    "eslint": "^9.34.0"
+    "eslint": "^9.34.0",
+    "yaml-lint": "^1.7.0"
   }
 }

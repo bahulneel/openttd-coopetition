@@ -1,0 +1,47 @@
+{
+  "name": "@coopetition/gs-doc-cache",
+  "version": "1.0.0",
+  "description": "OpenTTD GameScript API documentation caching tool",
+  "main": "gs-doc-cache.mjs",
+  "type": "module",
+  "bin": {
+    "gs-doc-cache": "./gs-doc-cache.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "openttd",
+    "gamescript",
+    "api",
+    "documentation",
+    "cache"
+  ],
+  "author": "Coopetition Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bahulneel/openttd-coopetition.git",
+    "directory": "workspaces/gs-doc-cache"
+  },
+  "bugs": {
+    "url": "https://github.com/bahulneel/openttd-coopetition/issues"
+  },
+  "homepage": "https://github.com/bahulneel/openttd-coopetition#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "eslint": "^9.34.0"
+  },
+  "files": [
+    "gs-doc-cache.mjs",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "eslint gs-doc-cache.mjs",
+    "build": "echo \"No build step required\" && exit 0",
+    "start": "node gs-doc-cache.mjs"
+  }
+}
