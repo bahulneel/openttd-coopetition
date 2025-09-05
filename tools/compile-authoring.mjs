@@ -130,7 +130,7 @@ async function compileScenarios() {
     if (Array.isArray(doc.goals)) {
       for (const g of doc.goals) {
         assert(g && g.include, 'goals[].include required', file);
-        const goalPath = path.join(AUTHOR, 'goals', g.include.replace(/^goal\./,'').replace(/\.nut$/,'').replace(/\.yaml$/,'') + '.yaml');
+        const goalPath = path.join(AUTHOR, 'goals', g.include.replace(/\.nut$/,'').replace(/\.yaml$/,'') + '.yaml');
         const goalDoc = yaml.parse(await fs.readFile(goalPath, 'utf8')) || {};
         validateGoal(goalDoc, goalPath);
         const merged = applyScenarioDefaults(goalDoc, defaults);

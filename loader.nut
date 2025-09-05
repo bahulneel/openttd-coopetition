@@ -24,6 +24,11 @@ class CoopetitionLoader {
                 if ("cargo" in obj) g.cargo_type = CoopetitionLoader._SafeGetCargoId(obj.cargo);
                 return g;
             }
+            case "network_length": {
+                local target = ("amount" in obj) ? obj.amount : 0;
+                local g = SharedGoal(SharedGoalType.NETWORK_LENGTH, title, target);
+                return g;
+            }
             case "town_population": {
                 local target2 = ("amount" in obj) ? obj.amount : 0;
                 local g2 = SharedGoal(SharedGoalType.TOWN_POPULATION, title, target2);

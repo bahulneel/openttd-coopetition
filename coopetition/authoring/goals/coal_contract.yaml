@@ -1,21 +1,17 @@
-id: coal_contract
-type: company
+id: network_push
+type: scenario
 objective:
-  type: cargo_delivered
-  cargo: coal
-  amount: 50000
+  type: network_length
+  amount: 200
 constraints:
   players:
-    min: 2
-  date:
-    before: 1970
+    min: 1
 shared:
   track: true
-  stations: false
+  stations: true
 result:
-  cash: 200000
-  score: 15
-  reputation: -5
+  cash: 100000
+  score: 10
 meta:
-  title: "Coal Contract"
-  description: "Deliver coal to the Riverside Power Plant before 1970."
+  title: "Build the Backbone"
+  description: "Expand total network length to 200 tiles."

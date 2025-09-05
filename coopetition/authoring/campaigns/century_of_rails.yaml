@@ -1,9 +1,6 @@
 meta:
-  title: "Century of Rails"
-  description: "From steam to maglev in four acts."
+  title: "Coopetition Quickstart"
+  description: "A compact two-goal cooperative warmup."
 
 scenarios:
-  - include: scenario.steam_age.yaml
-  - include: scenario.diesel_age.yaml
-  - include: scenario.jet_age.yaml
-  - include: scenario.future_age.yaml
+  - include: bridge_wars.yaml
