@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "eslint": "^9.34.0",
+    "markdown-link-check": "^3.13.7",
     "yaml-lint": "^1.7.0"
   }
 }

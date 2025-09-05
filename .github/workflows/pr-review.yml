@@ -105,7 +105,7 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Validate YAML files and pipe to reviewdog
-          find campaigns -name "*.yaml" -exec yaml-lint {} \; 2>&1 | reviewdog -f=yaml-lint -name="YAML Validator" -reporter=github-pr-review -fail-on-error=false
+          find campaigns -name "*.yaml" -exec npx yaml-lint {} \; 2>&1 | reviewdog -efm="%f:%l:%c %m" -name="YAML Validator" -reporter=github-pr-review -fail-on-error=false
 
   # Check for broken markdown links
   validate-docs:
@@ -121,15 +121,12 @@ jobs:
         with:
           reviewdog_version: latest
 
-      - name: Install markdown-link-check
-        run: npm install -g markdown-link-check
-
       - name: Check markdown links with reviewdog
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Check markdown links and pipe to reviewdog
-          find docs -name "*.md" -exec markdown-link-check {} \; 2>&1 | reviewdog -f=markdown-link-check -name="Markdown Link Checker" -reporter=github-pr-review -fail-on-error=false
+          find docs -name "*.md" -exec npx markdown-link-check {} \; 2>&1 | reviewdog -efm="%f:%l %m" -name="Markdown Link Checker" -reporter=github-pr-review -fail-on-error=false
 
   # Compile and validate campaign content
   validate-content:

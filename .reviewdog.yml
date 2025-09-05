@@ -15,14 +15,14 @@ runner:
 
   # YAML validation
   yaml-validate:
-    cmd: find campaigns -name "*.yaml" -exec yaml-lint {} \;
+    cmd: find campaigns -name "*.yaml" -exec npx yaml-lint {} \;
     errorformat:
       - "%f:%l:%c %m"
     level: error
 
   # Markdown link checking
   markdown-links:
-    cmd: find docs -name "*.md" -exec markdown-link-check {} \;
+    cmd: find docs -name "*.md" -exec npx markdown-link-check {} \;
     errorformat:
       - "%f:%l %m"
     level: warning
