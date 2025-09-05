@@ -15,15 +15,20 @@ The Coopetition mod blends cooperation and competition in multiplayer games by:
 
 ```
 ├── src/                    # Main game script files
-│   ├── *.nut              # Core game script files
-│   └── authoring/         # Authoring content and campaigns
+│   └── *.nut              # Core game script files
+├── campaigns/              # Campaign packs for distribution
+│   └── quickstart/         # Example campaign pack
+│       ├── manifest.yaml   # Pack metadata and dependencies
+│       ├── goals/          # Goal definitions
+│       ├── scenarios/      # Scenario definitions
+│       └── *.yaml          # Campaign files
 ├── tools/                 # Development tools and utilities
 ├── docs/                  # Documentation and ADRs
 ├── .github/               # GitHub workflows and templates
 └── package.json           # Node.js project configuration
 ```
 
-The main game script files are located in the `src/` directory, while development tools, documentation, and configuration files remain at the root level for easy access.
+The main game script files are located in the `src/` directory, while campaign packs are organized in the `campaigns/` directory for easy distribution. Each campaign pack contains its own manifest and can be distributed independently.
 
 ## Features
 
@@ -205,9 +210,39 @@ For manual version updates (if needed):
 1. Modify the `COOPETITION_VERSION` value in `src/version.nut`
 2. Commit and push the change to the appropriate branch
 
+### Campaign Packs
+
+Campaign packs are organized in the `campaigns/` directory and can be distributed independently. Each pack contains:
+
+- **`manifest.yaml`**: Pack metadata, dependencies, and installation instructions
+- **`goals/`**: Goal definitions for the campaign
+- **`scenarios/`**: Scenario definitions that reference goals
+- **`*.yaml`**: Campaign files that define the overall structure
+
+#### Creating a New Campaign Pack
+
+1. Create a new directory in `campaigns/` with your pack name
+2. Add a `manifest.yaml` file with pack metadata
+3. Create `goals/` and `scenarios/` subdirectories as needed
+4. Add your YAML definition files
+5. Test with `npm run compile` to ensure everything builds correctly
+
+#### Example Campaign Pack Structure
+
+```
+campaigns/my-campaign/
+├── manifest.yaml
+├── goals/
+│   ├── coal_delivery.yaml
+│   └── passenger_route.yaml
+├── scenarios/
+│   └── industrial_hub.yaml
+└── main_campaign.yaml
+```
+
 ### Building
 
-No building is required. The script can be run directly by OpenTTD.
+No building is required for the main script. Campaign packs are compiled using `npm run compile` which processes all campaign packs and generates the necessary `.nut` files for OpenTTD.
 
 ### Contributing
 
