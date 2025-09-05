@@ -63,7 +63,7 @@
         Successfully migrated to Nuxt 4 + Tailwind CSS 4 + shadcn-vue with OpenTTD theming.
         All official installation steps from shadcn-vue.com have been completed:
         <br>• ✅ @nuxtjs/color-mode for dark/light mode
-        <br>• ✅ @iconify/vue with radix icons
+        <br>• ✅ lucide-vue-next with comprehensive icon set
         <br>• ✅ tw-animate-css for animations
         <br>• ✅ Proper @theme inline configuration
         <br>• ✅ CSS variables and dark mode support
@@ -91,6 +91,42 @@
             <Button size="sm" variant="outline" @click="$colorMode.preference = 'system'">
               💻 System
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Icon Test -->
+      <Card class="openttd-titlebar">
+        <CardHeader>
+          <CardTitle>🎨 Icon Test</CardTitle>
+          <CardDescription>Testing lucide-vue-next icons</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div class="flex flex-wrap gap-4">
+            <div class="flex items-center space-x-2">
+              <Folder class="h-5 w-5 text-primary" />
+              <span>Folder</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <Moon class="h-5 w-5 text-primary" />
+              <span>Moon</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <Sun class="h-5 w-5 text-primary" />
+              <span>Sun</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <Plus class="h-5 w-5 text-primary" />
+              <span>Plus</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <Save class="h-5 w-5 text-primary" />
+              <span>Save</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <Settings class="h-5 w-5 text-primary" />
+              <span>Settings</span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -153,6 +189,7 @@
 </template>
 
 <script setup lang="ts">
+import { Folder, Moon, Sun, Plus, Save, Settings } from '~/utils/icons'
 
 definePageMeta({
   title: 'Test - OpenTTD Campaign Editor'
