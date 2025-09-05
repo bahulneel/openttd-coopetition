@@ -43,7 +43,7 @@ jobs:
             echo "version=${{ github.event.inputs.version_override }}" >> $GITHUB_OUTPUT
             echo "Using manually provided version: ${{ github.event.inputs.version_override }}"
           else
-            VERSION=$(grep -o 'COOPETITION_VERSION = [0-9]\+' src/version.nut | grep -o '[0-9]\+')
+            VERSION=$(grep -o 'COOPETITION_VERSION <- [0-9]\+' src/version.nut | grep -o '[0-9]\+')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "Using version from version.nut: $VERSION"
           fi
@@ -64,7 +64,7 @@ jobs:
       - name: Update version.nut in src/version.nut
         run: |
           # Update version.nut with new version
-          sed -i "s/COOPETITION_VERSION = ${{ steps.get_current_version.outputs.version }}/COOPETITION_VERSION = ${{ steps.increment_version.outputs.new_version }}/" src/version.nut
+          sed -i "s/COOPETITION_VERSION <- ${{ steps.get_current_version.outputs.version }}/COOPETITION_VERSION <- ${{ steps.increment_version.outputs.new_version }}/" src/version.nut
           cat src/version.nut
       
       - name: Create branch for version increment
