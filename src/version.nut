@@ -3,4 +3,4 @@
  * The script manages competitive cooperative gameplay in OpenTTD
  */
 
-COOPETITION_VERSION <- 2;
+COOPETITION_VERSION <- 3;
