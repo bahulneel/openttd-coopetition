@@ -34,16 +34,16 @@
 
         <div>
           <h1 class="text-2xl font-bold text-foreground">
-            {{ isNew ? 'New Campaign' : (formData.meta?.title || formData.id) }}
+            {{ formData.meta?.title || formData.id }}
           </h1>
           <p class="text-muted-foreground">
-            {{ isNew ? 'Create a new campaign' : 'Edit campaign details and configuration' }}
+            Edit campaign details and configuration
           </p>
         </div>
       </div>
 
       <div class="flex items-center space-x-2">
-        <Button v-if="!isNew" variant="outline" class="openttd-button" @click="duplicateCampaign">
+        <Button variant="outline" class="openttd-button" @click="duplicateCampaign">
           📄 Duplicate
         </Button>
 
@@ -51,10 +51,9 @@
           👁️ Preview
         </Button>
 
-        <Button
-:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
           @click="saveCampaign">
-          {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
+          {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
         </Button>
       </div>
     </div>
@@ -75,7 +74,7 @@
               <FormItem>
                 <FormLabel>Campaign ID *</FormLabel>
                 <FormControl>
-                  <Input v-bind="componentField" placeholder="campaign_unique_id" :disabled="!isNew" />
+                  <Input v-bind="componentField" placeholder="campaign_unique_id" disabled />
                 </FormControl>
                 <FormDescription>Unique identifier for this campaign</FormDescription>
                 <FormMessage />
@@ -110,6 +109,7 @@
                     <SelectItem value="legendary">🟣 Legendary</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormDescription>Difficulty level for this campaign</FormDescription>
                 <FormMessage />
               </FormItem>
             </FormField>
@@ -118,102 +118,55 @@
               <FormItem>
                 <FormLabel>Estimated Time</FormLabel>
                 <FormControl>
-                  <Input v-bind="componentField" placeholder="2-4 hours" />
+                  <Input v-bind="componentField" placeholder="e.g., 2-3 hours" />
                 </FormControl>
-                <FormDescription>How long this campaign typically takes</FormDescription>
+                <FormDescription>Expected time to complete</FormDescription>
                 <FormMessage />
               </FormItem>
             </FormField>
+          </div>
 
-            <FormField v-slot="{ componentField }" name="meta.description" class="md:col-span-2">
+          <div class="mt-6">
+            <FormField v-slot="{ componentField }" name="meta.description">
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea v-bind="componentField" placeholder="Describe what this campaign involves..." rows="3" />
+                  <Textarea v-bind="componentField" placeholder="Describe your campaign..." class="min-h-24" />
                 </FormControl>
+                <FormDescription>Detailed description of the campaign</FormDescription>
                 <FormMessage />
               </FormItem>
             </FormField>
-
-            <div class="space-y-2 md:col-span-2">
-              <Label for="tags">Tags</Label>
-              <div class="space-y-2">
-                <div class="flex flex-wrap gap-2">
-                  <Badge
-v-for="(tag, index) in formData.meta?.tags || []" :key="index" variant="secondary"
-                    class="flex items-center space-x-1">
-                    <span>{{ tag }}</span>
-                    <button
-type="button" class="ml-1 text-muted-foreground hover:text-foreground text-sm"
-                      @click="removeTag(index)">
-                      ✕
-                    </button>
-                  </Badge>
-                </div>
-
-                <div class="flex space-x-2">
-                  <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
-                  <Button
-type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
-                    @click="addTag">
-                    ➕ Add
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
 
-      <!-- Constraints -->
+      <!-- Tags -->
       <Card class="openttd-titlebar">
         <CardHeader>
           <div class="flex items-center space-x-2">
-            <span class="text-lg">⚙️</span>
-            <CardTitle class="text-lg font-semibold">Constraints</CardTitle>
+            <span class="text-lg">🏷️</span>
+            <CardTitle class="text-lg font-semibold">Tags</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <FormField v-slot="{ componentField }" name="constraints.players.min">
-              <FormItem>
-                <FormLabel>Min Players</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" type="number" min="1" max="8" placeholder="1" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+          <div class="space-y-4">
+            <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
+              <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
+                {{ tag }}
+                <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
+                  @click="removeTag(index)">
+                  ✕
+                </Button>
+              </Badge>
+            </div>
 
-            <FormField v-slot="{ componentField }" name="constraints.players.max">
-              <FormItem>
-                <FormLabel>Max Players</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" type="number" min="1" max="8" placeholder="8" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="constraints.date.min">
-              <FormItem>
-                <FormLabel>Start Year</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" type="number" min="1920" max="2100" placeholder="1950" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="constraints.date.max">
-              <FormItem>
-                <FormLabel>End Year</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" type="number" min="1920" max="2100" placeholder="2050" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+            <div class="flex space-x-2">
+              <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
+              <Button type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button" @click="addTag">
+                ➕ Add
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -226,406 +179,184 @@ type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button
               <span class="text-lg">🗺️</span>
               <CardTitle class="text-lg font-semibold">Scenarios</CardTitle>
             </div>
-
-            <Button variant="outline" size="sm" class="openttd-button" @click="addScenario">
+            <Button type="button" variant="outline" class="openttd-button" @click="addScenario">
               ➕ Add Scenario
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-
-          <div v-if="formData.scenarios?.length === 0" class="text-center py-8 text-muted-foreground">
-            <div class="text-4xl mb-2">🗺️</div>
-            <p>No scenarios added yet</p>
-            <Button variant="outline" size="sm" class="mt-4 openttd-button" @click="addScenario">
-              ➕ Add First Scenario
-            </Button>
-          </div>
-
-          <div v-else class="space-y-4">
-            <div
-v-for="(scenario, index) in formData.scenarios" :key="index"
-              class="bg-secondary/50 rounded-md p-4 border border-border">
+          <div v-if="formData.scenarios && formData.scenarios.length > 0" class="space-y-4">
+            <div v-for="(scenario, index) in formData.scenarios" :key="index"
+              class="p-4 border border-border rounded-lg">
               <div class="flex items-center justify-between mb-4">
-                <h4 class="font-medium">Scenario {{ index + 1 }}</h4>
-                <Button variant="ghost" size="sm" class="h-8 w-8 p-0 text-destructive" @click="removeScenario(index)">
-                  🗑️
+                <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
+                <Button type="button" variant="ghost" size="sm"
+                  class="text-destructive hover:text-destructive-foreground" @click="removeScenario(index)">
+                  🗑️ Remove
                 </Button>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField :name="`scenarios.${index}.include`">
+                <FormField v-slot="{ componentField }" :name="`scenarios.${index}.include`">
                   <FormItem>
-                    <FormLabel>Scenario ID *</FormLabel>
+                    <FormLabel>Include</FormLabel>
                     <FormControl>
-                      <Input v-model="scenario.include" placeholder="scenario_id" :list="`scenarios-${index}`" />
+                      <Input v-bind="componentField" placeholder="scenario_file.nut" />
                     </FormControl>
-                    <datalist :id="`scenarios-${index}`">
-                      <option v-for="s in availableScenarios" :key="s.id" :value="s.id">
-                        {{ s.meta?.title || s.id }}
-                      </option>
-                    </datalist>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField :name="`scenarios.${index}.order`">
+                <FormField v-slot="{ componentField }" :name="`scenarios.${index}.order`">
                   <FormItem>
                     <FormLabel>Order</FormLabel>
                     <FormControl>
-                      <Input v-model.number="scenario.order" type="number" min="1" placeholder="1" />
+                      <Input v-bind="componentField" type="number" :value="scenario.order"
+                        @input="updateScenarioOrder(index, $event)" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField :name="`scenarios.${index}.required`">
-                  <FormItem>
-                    <FormLabel>Required</FormLabel>
+                <FormField v-slot="{ componentField }" :name="`scenarios.${index}.required`">
+                  <FormItem class="flex items-center space-x-2">
                     <FormControl>
-                      <Toggle v-model="scenario.required" class="openttd-button" />
+                      <Toggle v-bind="componentField" :pressed="scenario.required" />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-              </div>
-
-              <div v-if="scenario.comment !== undefined" class="space-y-2 mt-4">
-                <FormField :name="`scenarios.${index}.comment`">
-                  <FormItem>
-                    <FormLabel>Comment</FormLabel>
-                    <FormControl>
-                      <Input v-model="scenario.comment" placeholder="Optional comment about this scenario" />
-                    </FormControl>
+                    <FormLabel class="text-sm">Required</FormLabel>
                     <FormMessage />
                   </FormItem>
                 </FormField>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <!-- Rewards -->
-      <Card class="openttd-titlebar">
-        <CardHeader>
-          <div class="flex items-center space-x-2">
-            <span class="text-lg">🎁</span>
-            <CardTitle class="text-lg font-semibold">Completion Rewards</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <FormField v-slot="{ componentField }" name="rewards.completion.cash">
-              <FormItem>
-                <FormLabel>Cash Reward</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" type="number" min="0" placeholder="1000000" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="rewards.completion.score">
-              <FormItem>
-                <FormLabel>Score Points</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" type="number" min="0" placeholder="100" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="rewards.completion.reputation">
-              <FormItem>
-                <FormLabel>Reputation</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" type="number" min="0" placeholder="25" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ componentField }" name="rewards.completion.achievement">
-              <FormItem>
-                <FormLabel>Achievement</FormLabel>
-                <FormControl>
-                  <Input v-bind="componentField" placeholder="achievement_id" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+          <div v-else class="text-center py-8 text-muted-foreground">
+            <p>No scenarios added yet. Click "Add Scenario" to get started.</p>
           </div>
         </CardContent>
       </Card>
 
-      <!-- Advanced Settings -->
-      <Card class="openttd-titlebar">
-        <CardHeader>
-          <div class="flex items-center space-x-2">
-            <span class="text-lg">⚙️</span>
-            <CardTitle class="text-lg font-semibold">Advanced Settings</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div class="space-y-6">
-            <!-- Game Settings -->
-            <div>
-              <h4 class="font-medium mb-4">Game Settings</h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <FormField v-slot="{ componentField }" name="settings.economy">
-                  <FormItem>
-                    <FormLabel>Economy</FormLabel>
-                    <Select v-bind="componentField">
-                      <FormControl>
-                        <SelectTrigger class="openttd-button">
-                          <SelectValue placeholder="Select economy" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="realistic">🏦 Realistic</SelectItem>
-                        <SelectItem value="balanced">⚖️ Balanced</SelectItem>
-                        <SelectItem value="arcade">🎮 Arcade</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-
-                <FormField v-slot="{ componentField }" name="settings.disasters">
-                  <FormItem>
-                    <FormLabel>Disasters</FormLabel>
-                    <FormControl>
-                      <Toggle v-bind="componentField" class="openttd-button" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-
-                <FormField v-slot="{ componentField }" name="settings.breakdowns">
-                  <FormItem>
-                    <FormLabel>Breakdowns</FormLabel>
-                    <FormControl>
-                      <Toggle v-bind="componentField" class="openttd-button" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-
-                <FormField v-slot="{ componentField }" name="settings.inflation">
-                  <FormItem>
-                    <FormLabel>Inflation</FormLabel>
-                    <FormControl>
-                      <Toggle v-bind="componentField" class="openttd-button" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-              </div>
-            </div>
-
-            <!-- Comment -->
-            <FormField v-slot="{ componentField }" name="comment">
-              <FormItem>
-                <FormLabel>Developer Comment</FormLabel>
-                <FormControl>
-                  <Textarea v-bind="componentField" placeholder="Internal notes about this campaign..." rows="3" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-          </div>
-        </CardContent>
-      </Card>
-    </form>
-
-    <!-- Action Bar (Sticky) -->
-    <Card class="sticky bottom-4 bg-card border-2 border-border shadow-lg">
-      <CardContent class="p-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div class="text-sm text-muted-foreground">
-              {{ isNew ? '✨ Unsaved campaign' : (hasChanges ? '📝 Unsaved changes' : '✅ All changes saved') }}
-            </div>
-
-            <div v-if="customValidationErrors.length > 0" class="flex items-center space-x-2">
-              <span class="text-destructive">⚠️</span>
-              <span class="text-sm text-destructive">{{ customValidationErrors.length }} validation error(s)</span>
-            </div>
+      <!-- Footer Actions -->
+      <div class="flex items-center justify-between pt-6 border-t border-border">
+        <div class="flex items-center space-x-4">
+          <div class="text-sm text-muted-foreground">
+            {{ hasChanges ? '📝 Unsaved changes' : '✅ All changes saved' }}
           </div>
 
-          <div class="flex items-center space-x-2">
-            <Button variant="outline" :disabled="!hasChanges" class="openttd-button" @click="resetForm">
-              🔄 Reset
-            </Button>
-
-            <Button
-type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
-              @click="saveCampaign">
-              {{ saving ? '💾 Saving...' : (isNew ? '✨ Create Campaign' : '💾 Save Changes') }}
-            </Button>
+          <div v-if="customValidationErrors.length > 0" class="flex items-center space-x-2">
+            <span class="text-destructive text-sm">⚠️ {{ customValidationErrors.length }} validation errors</span>
           </div>
         </div>
-      </CardContent>
-    </Card>
+
+        <div class="flex items-center space-x-2">
+          <Button type="button" variant="outline" class="openttd-button" @click="resetForm">
+            ↺ Reset
+          </Button>
+
+          <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+            @click="saveCampaign">
+            {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
+          </Button>
+        </div>
+      </div>
+    </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Campaign } from '~/types/campaign'
 import { useForm } from 'vee-validate'
-import { campaignSchema } from '~/utils/schemas'
 
+const campaignStore = useCampaignStore()
 const route = useRoute()
 const router = useRouter()
-const {
-  campaigns,
-  scenarios: availableScenarios,
-  loading,
-  error,
-  getCampaign,
-  saveCampaign: saveCampaignStore,
-  createEmptyCampaign,
-  duplicateCampaign: duplicateCampaignStore,
-  loadAll
-} = useCampaignStore()
+
+// Reactive data
+const loading = ref(false)
+const error = ref<string | undefined>(undefined)
+const saving = ref(false)
+const newTag = ref('')
 
 // Form setup
 const form = useForm({
   validationSchema: campaignSchema,
-  initialValues: createEmptyCampaign()
+  initialValues: {
+    id: '',
+    meta: {
+      title: '',
+      description: '',
+      difficulty: 'medium' as const,
+      tags: [],
+    },
+    scenarios: [],
+  }
 })
 
-// Reactive data
-const originalData = ref<Campaign | undefined>(undefined)
-const saving = ref(false)
-const newTag = ref('')
+const { values: formData, meta } = form
 
 // Computed
 const campaignId = computed(() => route.params.id as string)
-const isNew = computed(() => campaignId.value === 'new')
+const hasChanges = computed(() => meta.value.dirty)
 
-// Form values and validation
-const { values: formData, meta } = form
-
-// Load data on mount
-onMounted(async () => {
-  if (campaigns.length === 0 || availableScenarios.length === 0) {
-    await loadAll()
-  }
-
-  if (isNew.value) {
-    form.setValues(createEmptyCampaign())
-    originalData.value = undefined
-  } else {
-    const campaign = getCampaign(campaignId.value)
-    if (campaign) {
-      form.setValues(JSON.parse(JSON.stringify(campaign))) // Deep clone
-      originalData.value = campaign
-    } else {
-      // error.value = 'Campaign not found' // Error is readonly from store
-    }
-  }
-})
-
-// Custom validation for cross-field validation
+// Custom validation errors
 const customValidationErrors = computed(() => {
   const errors: string[] = []
-  const values = formData
-
-  if (values.constraints?.players?.min && values.constraints?.players?.max) {
-    if (values.constraints.players.min > values.constraints.players.max) {
-      errors.push('Minimum players cannot be greater than maximum players')
-    }
-  }
-
-  if (values.constraints?.date?.min && values.constraints?.date?.max) {
-    if (values.constraints.date.min > values.constraints.date.max) {
-      errors.push('Start year cannot be later than end year')
-    }
-  }
-
+  // Add custom validation logic here if needed
   return errors
 })
 
-const hasChanges = computed(() => {
-  if (isNew.value) return true
-  if (!originalData.value) return false
-  return meta.value.dirty || JSON.stringify(formData) !== JSON.stringify(originalData.value)
+// Load campaign on mount
+onMounted(async () => {
+  await loadCampaign()
 })
 
-// Options
-const _difficultyOptions = [
-  { value: 'easy', label: 'Easy' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'hard', label: 'Hard' },
-  { value: 'expert', label: 'Expert' },
-  { value: 'legendary', label: 'Legendary' }
-]
-
-const _economyOptions = [
-  { value: 'realistic', label: 'Realistic' },
-  { value: 'balanced', label: 'Balanced' },
-  { value: 'arcade', label: 'Arcade' }
-]
-
 // Methods
-const addTag = () => {
-  const tag = newTag.value.trim()
-  if (tag && !formData.meta?.tags?.includes(tag)) {
-    const currentTags = formData.meta?.tags || []
-    form.setFieldValue('meta.tags', [...currentTags, tag])
-    newTag.value = ''
+async function loadCampaign() {
+  loading.value = true
+  error.value = undefined
+
+  try {
+    const campaign = await campaignStore.getCampaign(campaignId.value)
+    if (campaign) {
+      // Transform Campaign type to form schema
+      form.setValues({
+        id: campaign.id,
+        meta: campaign.meta ? {
+          title: campaign.meta.title,
+          description: campaign.meta.description,
+          difficulty: campaign.meta.difficulty || 'medium',
+          tags: campaign.meta.tags || [],
+        } : undefined,
+        scenarios: campaign.scenarios || [],
+      })
+    } else {
+      error.value = 'Campaign not found'
+    }
+  } catch (err) {
+    error.value = 'Failed to load campaign'
+    console.error('Failed to load campaign:', err)
+  } finally {
+    loading.value = false
   }
-}
-
-const removeTag = (index: number) => {
-  const currentTags = formData.meta?.tags || []
-  const newTags = currentTags.filter((_: string, i: number) => i !== index)
-  form.setFieldValue('meta.tags', newTags)
-}
-
-const addScenario = () => {
-  const currentScenarios = formData.scenarios || []
-  const newScenario = {
-    include: '',
-    order: currentScenarios.length + 1,
-    required: true
-  }
-  form.setFieldValue('scenarios', [...currentScenarios, newScenario])
-}
-
-const removeScenario = (index: number) => {
-  const currentScenarios = formData.scenarios || []
-  const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
-  // Reorder remaining scenarios
-  newScenarios.forEach((scenario: { order: number }, idx: number) => {
-    scenario.order = idx + 1
-  })
-  form.setFieldValue('scenarios', newScenarios)
 }
 
 const saveCampaign = form.handleSubmit(async (values) => {
-  if (customValidationErrors.value.length > 0) return
-
   saving.value = true
+
   try {
-    await saveCampaignStore(values)
+    await campaignStore.saveCampaign(values)
 
     const toast = useToast()
     toast.add({
-      title: isNew.value ? '✨ Campaign Created' : '💾 Campaign Saved',
+      title: '💾 Campaign Saved',
       description: `Campaign "${values.meta?.title || values.id}" has been saved.`,
       color: 'green'
     })
 
-    if (isNew.value) {
-      router.push(`/campaigns/${values.id}`)
-    } else {
-      originalData.value = JSON.parse(JSON.stringify(values))
-    }
-  } catch (error) {
-    console.error('Failed to save campaign:', error)
+    // Reload the campaign to get updated data
+    await loadCampaign()
+  } catch (err) {
+    console.error('Failed to save campaign:', err)
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -637,29 +368,80 @@ const saveCampaign = form.handleSubmit(async (values) => {
   }
 })
 
-const resetForm = () => {
-  if (isNew.value) {
-    form.setValues(createEmptyCampaign())
-  } else if (originalData.value) {
-    form.setValues(JSON.parse(JSON.stringify(originalData.value)))
+function resetForm() {
+  loadCampaign()
+}
+
+function addTag() {
+  const tag = newTag.value.trim()
+  if (tag && !formData.meta?.tags?.includes(tag)) {
+    const currentTags = formData.meta?.tags || []
+    form.setFieldValue('meta.tags', [...currentTags, tag])
+    newTag.value = ''
   }
 }
 
-const duplicateCampaign = async () => {
-  if (isNew.value) return
+function removeTag(index: number) {
+  const currentTags = formData.meta?.tags || []
+  const newTags = currentTags.filter((_: string, i: number) => i !== index)
+  form.setFieldValue('meta.tags', newTags)
+}
 
+function addScenario() {
+  const currentScenarios = formData.scenarios || []
+  const newScenario = {
+    include: '',
+    order: currentScenarios.length + 1,
+    required: true
+  }
+  form.setFieldValue('scenarios', [...currentScenarios, newScenario])
+}
+
+function removeScenario(index: number) {
+  const currentScenarios = formData.scenarios || []
+  const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
+  // Reorder remaining scenarios
+  newScenarios.forEach((scenario: { order: number }, idx: number) => {
+    scenario.order = idx + 1
+  })
+  form.setFieldValue('scenarios', newScenarios)
+}
+
+function updateScenarioOrder(index: number, event: Event) {
+  const target = event.target as HTMLInputElement
+  const newOrder = parseInt(target.value) || 1
+  const currentScenarios = formData.scenarios || []
+  const updatedScenarios = [...currentScenarios]
+  const currentScenario = updatedScenarios[index]
+  if (currentScenario) {
+    updatedScenarios[index] = {
+      ...currentScenario,
+      order: newOrder,
+      include: currentScenario.include || '',
+      required: currentScenario.required ?? true
+    }
+  }
+  form.setFieldValue('scenarios', updatedScenarios)
+}
+
+function previewCampaign() {
+  // TODO: Implement preview functionality
+  console.log('Preview campaign:', formData)
+}
+
+async function duplicateCampaign() {
   try {
-    const duplicate = await duplicateCampaignStore(campaignId.value)
-    router.push(`/campaigns/${duplicate.id}`)
-
+    const duplicate = await campaignStore.duplicateCampaign(campaignId.value)
     const toast = useToast()
     toast.add({
       title: '📄 Campaign Duplicated',
       description: `Campaign "${duplicate.meta?.title || duplicate.id}" has been created.`,
       color: 'green'
     })
-  } catch (error) {
-    console.error('Failed to duplicate campaign:', error)
+    // Navigate to the duplicated campaign
+    router.push(`/campaigns/${duplicate.id}`)
+  } catch (err) {
+    console.error('Failed to duplicate campaign:', err)
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -668,20 +450,4 @@ const duplicateCampaign = async () => {
     })
   }
 }
-
-const previewCampaign = () => {
-  // TODO: Implement preview functionality
-  const toast = useToast()
-  toast.add({
-    title: '👁️ Preview',
-    description: 'Preview functionality coming soon',
-    color: 'blue'
-  })
-}
-
-
-// Page meta
-definePageMeta({
-  title: 'Edit Campaign'
-})
 </script>
