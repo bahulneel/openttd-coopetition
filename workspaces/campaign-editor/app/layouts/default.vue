@@ -94,6 +94,9 @@
       <slot />
     </main>
 
+    <!-- Toast notifications -->
+    <Toaster />
+
     <!-- Footer - OpenTTD Style -->
     <footer class="openttd-titlebar mt-16">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -126,6 +129,7 @@
 import { Icon } from '@iconify/vue'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Toaster } from '@/components/ui/sonner'
 
 const colorMode = useColorMode()
 const { public: { spaMode } } = useRuntimeConfig()

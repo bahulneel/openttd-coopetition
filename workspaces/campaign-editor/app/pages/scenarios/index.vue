@@ -12,66 +12,76 @@
       </div>
       
       <div class="flex items-center space-x-2">
-        <UButton
-          icon="i-heroicons-plus"
+        <Button
           @click="createScenario"
+          class="openttd-button bg-openttd-purple text-white"
         >
-          New Scenario
-        </UButton>
+          ➕ New Scenario
+        </Button>
         
-        <UButton
+        <Button
           variant="outline"
-          icon="i-heroicons-arrow-path"
-          :loading="loading"
+          :disabled="loading"
           @click="refreshScenarios"
+          class="openttd-button"
         >
-          Refresh
-        </UButton>
+          {{ loading ? '🔄' : '↻' }} Refresh
+        </Button>
       </div>
     </div>
 
     <!-- Coming Soon Notice -->
-    <UCard>
-      <div class="text-center py-12">
-        <Icon name="heroicons:map" class="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-        <h3 class="text-lg font-semibold text-foreground mb-2">
-          Scenarios Editor Coming Soon
-        </h3>
-        <p class="text-muted-foreground mb-6">
-          The scenarios editor is under development. For now, you can manage scenarios through the campaign editor
-          or by editing YAML files directly.
-        </p>
-        <div class="flex justify-center space-x-2">
-          <UButton
-            variant="outline"
-            @click="navigateTo('/campaigns')"
-          >
-            Edit Campaigns
-          </UButton>
-          <UButton
-            variant="outline"
-            @click="navigateTo('/')"
-          >
-            Back to Dashboard
-          </UButton>
+    <Card class="openttd-titlebar">
+      <CardContent class="pt-12 pb-12">
+        <div class="text-center">
+          <div class="text-6xl mb-4">🗺️</div>
+          <CardTitle class="text-lg font-semibold text-foreground mb-2">
+            Scenarios Editor Coming Soon
+          </CardTitle>
+          <p class="text-muted-foreground mb-6">
+            The scenarios editor is under development. For now, you can manage scenarios through the campaign editor
+            or by editing YAML files directly.
+          </p>
+          <div class="flex justify-center space-x-2">
+            <Button
+              variant="outline"
+              @click="navigateTo('/campaigns')"
+              class="openttd-button"
+            >
+              📝 Edit Campaigns
+            </Button>
+            <Button
+              variant="outline"
+              @click="navigateTo('/')"
+              class="openttd-button"
+            >
+              ← Back to Dashboard
+            </Button>
+          </div>
         </div>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
 
     <!-- Scenarios Count -->
-    <UCard v-if="scenarios.length > 0">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-lg font-semibold">Available Scenarios</h3>
-          <p class="text-muted-foreground">{{ scenarios.length }} scenarios currently defined</p>
+    <Card v-if="scenarios.length > 0" class="openttd-titlebar">
+      <CardContent class="pt-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <CardTitle class="text-lg font-semibold">Available Scenarios</CardTitle>
+            <p class="text-muted-foreground">{{ scenarios.length }} scenarios currently defined</p>
+          </div>
+          <Badge class="bg-openttd-purple text-white px-3 py-1 text-lg">{{ scenarios.length }}</Badge>
         </div>
-        <UBadge size="lg">{{ scenarios.length }}</UBadge>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+
 const { scenarios, loading, loadScenarios } = useCampaignStore()
 
 // Load scenarios on mount
@@ -86,7 +96,7 @@ function createScenario() {
   // TODO: Navigate to scenario creation page when implemented
   const toast = useToast()
   toast.add({
-    title: 'Coming Soon',
+    title: '🚧 Coming Soon',
     description: 'Scenario editor is under development',
     color: 'blue'
   })

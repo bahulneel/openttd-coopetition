@@ -12,23 +12,23 @@
       </div>
       
       <div class="flex items-center space-x-2">
-        <UButton
-          icon="i-heroicons-plus"
+        <Button
           size="sm"
           @click="createNewCampaign"
+          class="openttd-button bg-openttd-green text-white"
         >
-          New Campaign
-        </UButton>
+          ➕ New Campaign
+        </Button>
         
-        <UButton
+        <Button
           variant="outline"
-          icon="i-heroicons-arrow-path"
           size="sm"
-          :loading="refreshing"
+          :disabled="refreshing"
           @click="refreshData"
+          class="openttd-button"
         >
-          Refresh
-        </UButton>
+          {{ refreshing ? '🔄' : '↻' }} Refresh
+        </Button>
       </div>
     </div>
 
@@ -89,21 +89,21 @@
 
     <!-- Recent Activity / Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Recent Campaigns -->
+              <!-- Recent Campaigns -->
       <div class="lg:col-span-2">
-        <UCard>
-          <template #header>
+        <Card class="openttd-titlebar">
+          <CardHeader>
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-semibold">Recent Campaigns</h3>
+              <CardTitle class="text-lg font-semibold">Recent Campaigns</CardTitle>
               <NuxtLink to="/campaigns">
-                <UButton variant="ghost" size="sm">
-                  View All
-                </UButton>
+                <Button variant="ghost" size="sm" class="openttd-button">
+                  📂 View All
+                </Button>
               </NuxtLink>
             </div>
-          </template>
-
-          <div class="space-y-3">
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-3">
             <div
               v-for="campaign in recentCampaigns"
               :key="campaign.id"
@@ -123,85 +123,86 @@
                 </div>
               </div>
               <div class="flex items-center space-x-2">
-                <div 
-                  class="px-2 py-1 text-xs rounded border-2 font-medium"
+                <Badge 
                   :class="getDifficultyClasses(campaign.meta?.difficulty)"
                 >
                   {{ campaign.meta?.difficulty || 'Unknown' }}
-                </div>
+                </Badge>
                 <span class="text-muted-foreground">→</span>
               </div>
             </div>
 
             <div v-if="recentCampaigns.length === 0" class="text-center py-8 text-muted-foreground">
-              No campaigns found. Create your first campaign to get started!
+              <div class="text-lg mb-2">🚂</div>
+              <p>No campaigns found. Create your first campaign to get started!</p>
             </div>
-          </div>
-        </UCard>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <!-- Quick Actions -->
       <div>
-        <UCard>
-          <template #header>
-            <h3 class="text-lg font-semibold">Quick Actions</h3>
-          </template>
+        <Card class="openttd-titlebar">
+          <CardHeader>
+            <CardTitle class="text-lg font-semibold">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-3">
+              <Button
+                class="w-full justify-start openttd-button bg-openttd-green text-white"
+                variant="outline"
+                @click="createNewCampaign"
+              >
+                ➕ New Campaign
+              </Button>
 
-          <div class="space-y-3">
-            <UButton
-              block
-              variant="outline"
-              icon="i-heroicons-plus"
-              @click="createNewCampaign"
-            >
-              New Campaign
-            </UButton>
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="createNewGoal"
+              >
+                🎯 New Goal
+              </Button>
 
-            <UButton
-              block
-              variant="outline"
-              icon="i-heroicons-target"
-              @click="createNewGoal"
-            >
-              New Goal
-            </UButton>
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="createNewScenario"
+              >
+                🗺️ New Scenario
+              </Button>
 
-            <UButton
-              block
-              variant="outline"
-              icon="i-heroicons-map"
-              @click="createNewScenario"
-            >
-              New Scenario
-            </UButton>
+              <div class="border-t border-border my-3"></div>
 
-            <UDivider />
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="importData"
+              >
+                📤 Import Data
+              </Button>
 
-            <UButton
-              block
-              variant="outline"
-              icon="i-heroicons-arrow-up-tray"
-              @click="importData"
-            >
-              Import Data
-            </UButton>
-
-            <UButton
-              block
-              variant="outline"
-              icon="i-heroicons-arrow-down-tray"
-              @click="exportAll"
-            >
-              Export All
-            </UButton>
-          </div>
-        </UCard>
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="exportAll"
+              >
+                📥 Export All
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+
 const { $campaignStore } = useNuxtApp()
 
 // Reactive data

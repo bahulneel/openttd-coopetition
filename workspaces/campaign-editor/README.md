@@ -2,7 +2,7 @@
 
 A modern web-based authoring tool for creating and editing OpenTTD Coopetition campaigns, goals, and scenarios.
 
-**🆕 Recently Updated:** Migrated to Nuxt 4, Tailwind CSS 4, and shadcn-vue for the best modern development experience.
+**🆕 Fully Migrated:** Complete migration to Nuxt 4, Tailwind CSS 4, and shadcn-vue with authentic OpenTTD theming. All UI components have been migrated to shadcn-vue for maximum performance and customization control.
 
 ## Features
 

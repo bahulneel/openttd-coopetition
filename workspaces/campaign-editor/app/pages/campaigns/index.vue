@@ -12,52 +12,66 @@
       </div>
       
       <div class="flex items-center space-x-2">
-        <UButton
-          icon="i-heroicons-plus"
+        <Button
           @click="createCampaign"
+          class="openttd-button bg-openttd-green text-white"
         >
-          New Campaign
-        </UButton>
+          ➕ New Campaign
+        </Button>
         
-        <UButton
+        <Button
           variant="outline"
-          icon="i-heroicons-arrow-path"
-          :loading="loading"
+          :disabled="loading"
           @click="refreshCampaigns"
+          class="openttd-button"
         >
-          Refresh
-        </UButton>
+          {{ loading ? '🔄' : '↻' }} Refresh
+        </Button>
       </div>
     </div>
 
     <!-- Search and Filters -->
-    <UCard>
-      <div class="flex flex-col sm:flex-row gap-4">
-        <div class="flex-1">
-          <UInput
-            v-model="searchQuery"
-            icon="i-heroicons-magnifying-glass"
-            placeholder="Search campaigns..."
-            class="w-full"
-          />
-        </div>
-        
-        <div class="flex items-center space-x-2">
-          <USelect
-            v-model="difficultyFilter"
-            :options="difficultyOptions"
-            placeholder="All Difficulties"
-            class="w-48"
-          />
+    <Card class="openttd-titlebar">
+      <CardContent class="pt-6">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1">
+            <Input
+              v-model="searchQuery"
+              placeholder="🔍 Search campaigns..."
+              class="w-full"
+            />
+          </div>
           
-          <USelect
-            v-model="sortBy"
-            :options="sortOptions"
-            class="w-48"
-          />
+          <div class="flex items-center space-x-2">
+            <Select v-model="difficultyFilter">
+              <SelectTrigger class="w-48 openttd-button">
+                <SelectValue placeholder="All Difficulties" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Difficulties</SelectItem>
+                <SelectItem value="easy">🟢 Easy</SelectItem>
+                <SelectItem value="medium">🟡 Medium</SelectItem>
+                <SelectItem value="hard">🟠 Hard</SelectItem>
+                <SelectItem value="expert">🔴 Expert</SelectItem>
+                <SelectItem value="legendary">🟣 Legendary</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select v-model="sortBy">
+              <SelectTrigger class="w-48 openttd-button">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="lastModified">🕒 Last Modified</SelectItem>
+                <SelectItem value="title">📝 Title</SelectItem>
+                <SelectItem value="id">🏷️ ID</SelectItem>
+                <SelectItem value="difficulty">⚡ Difficulty</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </div>
-    </UCard>
+      </CardContent>
+    </Card>
 
     <!-- Loading State -->
     <div v-if="loading && campaigns.length === 0" class="flex justify-center py-12">
@@ -68,64 +82,88 @@
     </div>
 
     <!-- Error State -->
-    <UAlert
-      v-if="error"
-      icon="i-heroicons-exclamation-triangle"
-      color="red"
-      variant="solid"
-      :title="error"
-      :close-button="{ icon: 'i-heroicons-x-mark-20-solid', color: 'white', variant: 'link', padded: false }"
-      @close="error = null"
-    />
+    <Alert v-if="error" class="border-destructive bg-destructive/10">
+      <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
+      <AlertDescription class="text-destructive">
+        {{ error }}
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          @click="error = null"
+          class="ml-2 text-destructive hover:text-destructive-foreground"
+        >
+          ✕ Dismiss
+        </Button>
+      </AlertDescription>
+    </Alert>
 
     <!-- Empty State -->
-    <UCard v-if="!loading && filteredCampaigns.length === 0 && !error">
-      <div class="text-center py-12">
-        <Icon name="heroicons:folder" class="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-        <h3 class="text-lg font-semibold text-foreground mb-2">
-          {{ searchQuery ? 'No campaigns found' : 'No campaigns yet' }}
-        </h3>
-        <p class="text-muted-foreground mb-6">
-          {{ searchQuery ? 'Try adjusting your search or filters' : 'Create your first campaign to get started' }}
-        </p>
-        <UButton
-          v-if="!searchQuery"
-          icon="i-heroicons-plus"
-          @click="createCampaign"
-        >
-          Create Campaign
-        </UButton>
-      </div>
-    </UCard>
+    <Card v-if="!loading && filteredCampaigns.length === 0 && !error" class="openttd-titlebar">
+      <CardContent class="pt-12 pb-12">
+        <div class="text-center">
+          <div class="text-6xl mb-4">📁</div>
+          <CardTitle class="text-lg font-semibold text-foreground mb-2">
+            {{ searchQuery ? 'No campaigns found' : 'No campaigns yet' }}
+          </CardTitle>
+          <p class="text-muted-foreground mb-6">
+            {{ searchQuery ? 'Try adjusting your search or filters' : 'Create your first campaign to get started' }}
+          </p>
+          <Button
+            v-if="!searchQuery"
+            @click="createCampaign"
+            class="openttd-button bg-openttd-green text-white"
+          >
+            ➕ Create Campaign
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
 
     <!-- Campaigns Grid -->
     <div v-if="!loading && filteredCampaigns.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <UCard
+      <Card
         v-for="campaign in filteredCampaigns"
         :key="campaign.id"
-        class="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+        class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
         @click="editCampaign(campaign.id)"
       >
-        <div class="space-y-4">
+        <CardContent class="space-y-4 p-6">
           <!-- Header -->
           <div class="flex items-start justify-between">
             <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-foreground truncate">
+              <CardTitle class="font-semibold text-foreground truncate text-base">
                 {{ campaign.meta?.title || campaign.id }}
-              </h3>
+              </CardTitle>
               <p class="text-sm text-muted-foreground">
                 ID: {{ campaign.id }}
               </p>
             </div>
             
-            <UDropdown :items="getCampaignMenuItems(campaign)" :popper="{ placement: 'bottom-start' }">
-              <UButton
-                variant="ghost"
-                size="sm"
-                icon="i-heroicons-ellipsis-vertical"
-                @click.stop
-              />
-            </UDropdown>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child @click.stop>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  class="h-8 w-8 p-0"
+                >
+                  ⋮
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem @click="editCampaign(campaign.id)">
+                  ✏️ Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem @click="handleDuplicate(campaign.id)">
+                  📄 Duplicate  
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  @click="handleDelete(campaign.id)"
+                  class="text-destructive focus:text-destructive"
+                >
+                  🗑️ Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <!-- Description -->
@@ -141,34 +179,32 @@
             </div>
             <div>
               <span class="text-muted-foreground">Difficulty:</span>
-              <UBadge
-                :color="getDifficultyColor(campaign.meta?.difficulty)"
-                size="xs"
-                class="ml-1"
+              <Badge
+                :class="getDifficultyClasses(campaign.meta?.difficulty)"
+                class="ml-1 text-xs"
               >
                 {{ campaign.meta?.difficulty || 'Unknown' }}
-              </UBadge>
+              </Badge>
             </div>
           </div>
 
           <!-- Tags -->
           <div v-if="campaign.meta?.tags && campaign.meta.tags.length > 0" class="flex flex-wrap gap-1">
-            <UBadge
+            <Badge
               v-for="tag in campaign.meta.tags.slice(0, 3)"
               :key="tag"
-              variant="soft"
-              size="xs"
+              variant="secondary"
+              class="text-xs"
             >
               {{ tag }}
-            </UBadge>
-            <UBadge
+            </Badge>
+            <Badge
               v-if="campaign.meta.tags.length > 3"
-              variant="soft"
-              size="xs"
-              class="text-muted-foreground"
+              variant="secondary"
+              class="text-xs text-muted-foreground"
             >
               +{{ campaign.meta.tags.length - 3 }}
-            </UBadge>
+            </Badge>
           </div>
 
           <!-- Footer -->
@@ -179,33 +215,56 @@
             </div>
             
             <div class="flex items-center space-x-1">
-              <UIcon
-                v-if="campaign.modified"
-                name="i-heroicons-pencil"
-                class="h-3 w-3 text-orange-500"
-              />
-              <UIcon
-                name="i-heroicons-chevron-right"
-                class="h-4 w-4 text-muted-foreground"
-              />
+              <span v-if="campaign.modified" class="text-orange-500">✏️</span>
+              <span class="text-muted-foreground">→</span>
             </div>
           </div>
-        </div>
-      </UCard>
+        </CardContent>
+      </Card>
     </div>
 
     <!-- Pagination -->
     <div v-if="totalPages > 1" class="flex justify-center">
-      <UPagination
-        v-model="currentPage"
-        :page-count="pageSize"
-        :total="filteredCampaigns.length"
-      />
+      <div class="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          :disabled="currentPage === 1"
+          @click="currentPage--"
+          class="openttd-button"
+        >
+          ← Previous
+        </Button>
+        
+        <div class="flex items-center space-x-1">
+          <span class="text-sm text-muted-foreground">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+        </div>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          :disabled="currentPage === totalPages"
+          @click="currentPage++"
+          class="openttd-button"
+        >
+          Next →
+        </Button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+
 const {
   campaigns,
   loading,
@@ -326,24 +385,22 @@ function formatDate(timestamp: number | undefined) {
   return date.toLocaleDateString()
 }
 
-function getCampaignMenuItems(campaign: any) {
-  return [
-    [{
-      label: 'Edit',
-      icon: 'i-heroicons-pencil',
-      click: () => editCampaign(campaign.id)
-    }],
-    [{
-      label: 'Duplicate',
-      icon: 'i-heroicons-document-duplicate',
-      click: () => handleDuplicate(campaign.id)
-    }],
-    [{
-      label: 'Delete',
-      icon: 'i-heroicons-trash',
-      click: () => handleDelete(campaign.id)
-    }]
-  ]
+// Helper function for difficulty classes
+function getDifficultyClasses(difficulty: string | undefined) {
+  switch (difficulty?.toLowerCase()) {
+    case 'easy': 
+      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
+    case 'medium': 
+      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
+    case 'hard': 
+      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
+    case 'expert': 
+      return 'bg-destructive/20 border-destructive/40 text-destructive'
+    case 'legendary': 
+      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
+    default: 
+      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
+  }
 }
 
 // Navigation and actions
@@ -365,14 +422,14 @@ async function handleDuplicate(id: string) {
     // Show success message
     const toast = useToast()
     toast.add({
-      title: 'Campaign Duplicated',
+      title: '📄 Campaign Duplicated',
       description: `Campaign "${duplicate.meta?.title || duplicate.id}" has been created.`,
       color: 'green'
     })
   } catch (error) {
     const toast = useToast()
     toast.add({
-      title: 'Error',
+      title: '❌ Error',
       description: 'Failed to duplicate campaign',
       color: 'red'
     })
@@ -394,14 +451,14 @@ async function handleDelete(id: string) {
     await deleteCampaign(id)
     const toast = useToast()
     toast.add({
-      title: 'Campaign Deleted',
+      title: '🗑️ Campaign Deleted',
       description: `Campaign "${campaign.meta?.title || campaign.id}" has been deleted.`,
       color: 'green'
     })
   } catch (error) {
     const toast = useToast()
     toast.add({
-      title: 'Error',
+      title: '❌ Error',
       description: 'Failed to delete campaign',
       color: 'red'
     })
