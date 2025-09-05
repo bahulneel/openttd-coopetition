@@ -11,6 +11,8 @@
     "workspaces/*"
   ],
   "scripts": {
+    "postinstall": "node workspaces/gs-doc-cache/bin/update-cache.mjs --verbose",
+    "update-cache": "update-gs-cache --verbose",
     "lint:nut": "GS_LINT_VERBOSE=1 eslint \"src/**/*.nut\"",
     "lint:workspaces": "npm run lint --workspaces",
     "lint:all": "npm run lint:nut && npm run lint:workspaces",

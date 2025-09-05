@@ -5,7 +5,8 @@
   "main": "gs-doc-cache.mjs",
   "type": "module",
   "bin": {
-    "gs-doc-cache": "./gs-doc-cache.mjs"
+    "gs-doc-cache": "./gs-doc-cache.mjs",
+    "update-gs-cache": "./bin/update-cache.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -29,13 +30,15 @@
   },
   "homepage": "https://github.com/bahulneel/openttd-coopetition#readme",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "fuse.js": "^7.1.0"
   },
   "devDependencies": {
     "eslint": "^9.34.0"
   },
   "files": [
     "gs-doc-cache.mjs",
+    "bin/",
     "README.md"
   ],
   "scripts": {
