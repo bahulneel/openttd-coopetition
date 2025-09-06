@@ -12,19 +12,16 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <Button v-if="!showNewForm" class="openttd-button bg-openttd-green text-white" @click="createCampaign">
+        <Button v-if="!showNewForm" class="openttd-button bg-openttd-green text-white" @click="newCampaign">
           ➕ New Campaign
         </Button>
 
-        <Button
-v-if="!showNewForm" variant="outline" :disabled="campaignStore.loading" class="openttd-button"
-          @click="refreshCampaigns">
-          {{ campaignStore.loading ? '🔄' : '↻' }} Refresh
+        <Button v-if="!showNewForm" variant="outline" class="openttd-button" @click="refreshCampaigns">
+          ↻ Refresh
         </Button>
 
         <template v-if="showNewForm">
-          <Button
-:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+          <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
             @click="saveCampaign">
             {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
           </Button>
@@ -77,31 +74,8 @@ v-if="!showNewForm" variant="outline" :disabled="campaignStore.loading" class="o
 
     <!-- Campaign List -->
     <div v-if="!showNewForm">
-      <!-- Loading State -->
-      <div v-if="campaignStore.loading && campaignStore.campaigns.length === 0" class="flex justify-center py-12">
-        <div class="text-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-          <p class="text-muted-foreground">Loading campaigns...</p>
-        </div>
-      </div>
-
-      <!-- Error State -->
-      <Alert v-if="campaignStore.error" class="border-destructive bg-destructive/10">
-        <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
-        <AlertDescription class="text-destructive">
-          {{ campaignStore.error }}
-          <Button
-variant="ghost" size="sm" class="ml-2 text-destructive hover:text-destructive-foreground"
-            @click="() => { }">
-            ✕ Dismiss
-          </Button>
-        </AlertDescription>
-      </Alert>
-
       <!-- Empty State -->
-      <Card
-v-if="!campaignStore.loading && filteredCampaigns.length === 0 && !campaignStore.error"
-        class="openttd-titlebar">
+      <Card v-if="filteredCampaigns.length === 0" class="openttd-titlebar">
         <CardContent class="pt-12 pb-12">
           <div class="text-center">
             <div class="text-6xl mb-4">📁</div>
@@ -111,7 +85,7 @@ v-if="!campaignStore.loading && filteredCampaigns.length === 0 && !campaignStore
             <p class="text-muted-foreground mb-6">
               {{ searchQuery ? 'Try adjusting your search or filters' : 'Create your first campaign to get started' }}
             </p>
-            <Button v-if="!searchQuery" class="openttd-button bg-openttd-green text-white" @click="createCampaign">
+            <Button v-if="!searchQuery" class="openttd-button bg-openttd-green text-white" @click="newCampaign">
               ➕ Create Campaign
             </Button>
           </div>
@@ -119,22 +93,19 @@ v-if="!campaignStore.loading && filteredCampaigns.length === 0 && !campaignStore
       </Card>
 
       <!-- Campaigns Grid -->
-      <div
-v-if="!campaignStore.loading && filteredCampaigns.length > 0"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card
-v-for="campaign in filteredCampaigns" :key="campaign.id"
+      <div v-if="filteredCampaigns.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card v-for="campaign in filteredCampaigns" :key="entityId(campaign)"
           class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
-          @click="editCampaign(campaign.id)">
+          @click="editCampaign(entityId(campaign))">
           <CardContent class="space-y-4 p-6">
             <!-- Header -->
             <div class="flex items-start justify-between">
               <div class="flex-1 min-w-0">
                 <CardTitle class="font-semibold text-foreground truncate text-base">
-                  {{ campaign.meta?.title || campaign.id }}
+                  {{ campaign.name }}
                 </CardTitle>
                 <p class="text-sm text-muted-foreground">
-                  ID: {{ campaign.id }}
+                  ID: {{ entityId(campaign) }}
                 </p>
               </div>
 
@@ -145,13 +116,14 @@ v-for="campaign in filteredCampaigns" :key="campaign.id"
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem @click="editCampaign(campaign.id)">
+                  <DropdownMenuItem @click="editCampaign(entityId(campaign))">
                     ✏️ Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem @click="handleDuplicate(campaign.id)">
+                  <DropdownMenuItem @click="handleDuplicate(entityId(campaign))">
                     📄 Duplicate
                   </DropdownMenuItem>
-                  <DropdownMenuItem class="text-destructive focus:text-destructive" @click="handleDelete(campaign.id)">
+                  <DropdownMenuItem class="text-destructive focus:text-destructive"
+                    @click="handleDelete(entityId(campaign))">
                     🗑️ Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -190,12 +162,12 @@ v-for="campaign in filteredCampaigns" :key="campaign.id"
             <!-- Footer -->
             <div class="flex items-center justify-between pt-2 border-t border-border">
               <div class="text-xs text-muted-foreground">
-                {{ campaign.modified ? 'Modified' : 'Saved' }}
-                {{ formatDate(campaign.lastModified) }}
+                {{ campaign.__meta?.modified ? 'Modified' : 'Saved' }}
+                {{ formatDate(campaign.__meta?.modified) }}
               </div>
 
               <div class="flex items-center space-x-1">
-                <span v-if="campaign.modified" class="text-orange-500">✏️</span>
+                <span v-if="campaign.__meta?.modified" class="text-orange-500">✏️</span>
                 <span class="text-muted-foreground">→</span>
               </div>
             </div>
@@ -206,8 +178,7 @@ v-for="campaign in filteredCampaigns" :key="campaign.id"
       <!-- Pagination -->
       <div v-if="totalPages > 1" class="flex justify-center">
         <div class="flex items-center space-x-2">
-          <Button
-variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
+          <Button variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
             @click="currentPage--">
             ← Previous
           </Button>
@@ -218,8 +189,7 @@ variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
             </span>
           </div>
 
-          <Button
-variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
+          <Button variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
             @click="currentPage++">
             Next →
           </Button>
@@ -324,8 +294,7 @@ variant="outline" size="sm" :disabled="currentPage === totalPages" class="opentt
               <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
                 <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
                   {{ tag }}
-                  <Button
-variant="ghost" size="sm"
+                  <Button variant="ghost" size="sm"
                     class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive" @click="removeTag(index)">
                     ✕
                   </Button>
@@ -334,8 +303,7 @@ variant="ghost" size="sm"
 
               <div class="flex space-x-2">
                 <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
-                <Button
-type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
+                <Button type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
                   @click="addTag">
                   ➕ Add
                 </Button>
@@ -359,13 +327,11 @@ type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button
           </CardHeader>
           <CardContent>
             <div v-if="formData.scenarios && formData.scenarios.length > 0" class="space-y-4">
-              <div
-v-for="(scenario, index) in formData.scenarios" :key="index"
+              <div v-for="(scenario, index) in formData.scenarios" :key="index"
                 class="p-4 border border-border rounded-lg">
                 <div class="flex items-center justify-between mb-4">
                   <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
-                  <Button
-type="button" variant="ghost" size="sm"
+                  <Button type="button" variant="ghost" size="sm"
                     class="text-destructive hover:text-destructive-foreground" @click="removeScenario(index)">
                     🗑️ Remove
                   </Button>
@@ -386,8 +352,7 @@ type="button" variant="ghost" size="sm"
                     <FormItem>
                       <FormLabel>Order</FormLabel>
                       <FormControl>
-                        <Input
-v-bind="componentField" type="number" :value="scenario.order"
+                        <Input v-bind="componentField" type="number" :value="scenario.order"
                           @input="updateScenarioOrder(index, $event)" />
                       </FormControl>
                       <FormMessage />
@@ -419,8 +384,9 @@ v-bind="componentField" type="number" :value="scenario.order"
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
+import type { Campaign, CampaignScenario } from '~/types'
 
-const campaignStore = useCampaignStore()
+const entityStore = useEntityStore()
 const route = useRoute()
 const router = useRouter()
 
@@ -441,8 +407,8 @@ const form = useForm({
   validationSchema: campaignSchema,
   initialValues: {
     id: '',
+    name: '',
     meta: {
-      title: '',
       description: '',
       difficulty: 'medium' as const,
       tags: [],
@@ -466,9 +432,6 @@ const handleHashChange = () => {
 
 // Load campaigns on mount
 onMounted(async () => {
-  if (campaignStore.campaigns.length === 0) {
-    await campaignStore.loadCampaigns()
-  }
   handleHashChange()
 })
 
@@ -493,12 +456,20 @@ const _sortOptions = [
 ]
 
 // Computed
+const campaigns = computed(() => entityStore.select<Campaign>('Campaign').value)
+
 const filteredCampaigns = computed(() => {
-  let filtered = campaignStore.campaigns
+  let filtered = campaigns.value
 
   // Search filter
   if (searchQuery.value) {
-    filtered = campaignStore.searchCampaigns(searchQuery.value)
+    const lowerQuery = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(campaign =>
+      entityId(campaign).toLowerCase().includes(lowerQuery) ||
+      campaign.name.toLowerCase().includes(lowerQuery) ||
+      campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
+      campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery))
+    )
   }
 
   // Difficulty filter
@@ -509,10 +480,10 @@ const filteredCampaigns = computed(() => {
   // Sort
   filtered = [...filtered].sort((a, b) => {
     switch (sortBy.value) {
-      case 'title':
-        return (a.meta?.title || a.id).localeCompare(b.meta?.title || b.id)
+      case 'name':
+        return a.name.localeCompare(b.name)
       case 'id':
-        return a.id.localeCompare(b.id)
+        return entityId(a).localeCompare(entityId(b))
       case 'difficulty': {
         const difficulties = ['easy', 'medium', 'hard', 'expert', 'legendary']
         const aDiff = difficulties.indexOf(a.meta?.difficulty || 'medium')
@@ -521,7 +492,7 @@ const filteredCampaigns = computed(() => {
       }
       case 'lastModified':
       default:
-        return (b.lastModified || 0) - (a.lastModified || 0)
+        return (b.__meta?.modified || 0) - (a.__meta?.modified || 0)
     }
   })
 
@@ -531,14 +502,20 @@ const filteredCampaigns = computed(() => {
 })
 
 const totalPages = computed(() => {
-  let totalCount = campaignStore.campaigns.length
+  let totalCount = campaigns.value.length
 
   if (searchQuery.value) {
-    totalCount = campaignStore.searchCampaigns(searchQuery.value).length
+    const lowerQuery = searchQuery.value.toLowerCase()
+    totalCount = campaigns.value.filter(campaign =>
+      entityId(campaign).toLowerCase().includes(lowerQuery) ||
+      campaign.name?.toLowerCase().includes(lowerQuery) ||
+      campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
+      campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery))
+    ).length
   }
 
   if (difficultyFilter.value) {
-    totalCount = campaignStore.campaigns.filter((c) => c.meta?.difficulty === difficultyFilter.value).length
+    totalCount = campaigns.value.filter((c) => c.meta?.difficulty === difficultyFilter.value).length
   }
 
   return Math.ceil(totalCount / pageSize)
@@ -593,8 +570,9 @@ function getDifficultyClasses(difficulty: string | undefined) {
 function initializeNewCampaign() {
   form.setValues({
     id: '',
+    name: '',
     meta: {
-      title: '',
+      author: '',
       description: '',
       difficulty: 'medium' as const,
       tags: [],
@@ -607,12 +585,14 @@ const saveCampaign = form.handleSubmit(async (values) => {
   saving.value = true
 
   try {
-    await campaignStore.saveCampaign(values)
+    // Create campaign entity manually
+    const campaign: Campaign = asCampaign(values)
+    entityStore.assert(campaign)
 
     const toast = useToast()
     toast.add({
       title: '✨ Campaign Created',
-      description: `Campaign "${values.meta?.title || values.id}" has been created.`,
+      description: `Campaign "${values.name}" has been created.`,
       color: 'green'
     })
 
@@ -664,7 +644,7 @@ function removeScenario(index: number) {
   const currentScenarios = formData.scenarios || []
   const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
   // Reorder remaining scenarios
-  newScenarios.forEach((scenario: { order: number }, idx: number) => {
+  newScenarios.forEach((scenario: CampaignScenario, idx: number) => {
     scenario.order = idx + 1
   })
   form.setFieldValue('scenarios', newScenarios)
@@ -688,7 +668,7 @@ function updateScenarioOrder(index: number, event: Event) {
 }
 
 // Navigation and actions
-function createCampaign() {
+function newCampaign() {
   router.push('/campaigns#new')
 }
 
@@ -697,17 +677,28 @@ function editCampaign(id: string) {
 }
 
 async function refreshCampaigns() {
-  await campaignStore.loadCampaigns()
+  // No need to refresh as entity store is reactive
+  // This could be used to trigger a reload from file system if needed
 }
 
 async function handleDuplicate(id: string) {
   try {
-    const duplicate = await campaignStore.duplicateCampaign(id)
+    const original = entityStore.get(id, 'Campaign')
+    if (!original) {
+      throw new Error('Campaign not found')
+    }
+
+    // Use copyEntity utility to create a duplicate
+    const duplicate = copyEntity(toStorableValue(original))
+    duplicate.name = `${original.name} (Copy)`
+
+    entityStore.assert(duplicate)
+
     // Show success message
     const toast = useToast()
     toast.add({
       title: '📄 Campaign Duplicated',
-      description: `Campaign "${duplicate.meta?.title || duplicate.id}" has been created.`,
+      description: `Campaign "${duplicate.name}" has been created.`,
       color: 'green'
     })
   } catch (error) {
@@ -722,22 +713,22 @@ async function handleDuplicate(id: string) {
 }
 
 async function handleDelete(id: string) {
-  const campaign = campaignStore.campaigns.find((c) => c.id === id)
+  const campaign = entityStore.get(id, 'Campaign')
   if (!campaign) return
 
   // Show confirmation dialog
   const confirmed = confirm(
-    `Are you sure you want to delete "${campaign.meta?.title || campaign.id}"? This action cannot be undone.`
+    `Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`
   )
 
   if (!confirmed) return
 
   try {
-    await campaignStore.deleteCampaign(id)
+    entityStore.retract(id)
     const toast = useToast()
     toast.add({
       title: '🗑️ Campaign Deleted',
-      description: `Campaign "${campaign.meta?.title || campaign.id}" has been deleted.`,
+      description: `Campaign "${campaign.name}" has been deleted.`,
       color: 'green'
     })
   } catch (error) {

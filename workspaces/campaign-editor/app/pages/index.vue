@@ -98,15 +98,15 @@
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <div v-for="campaign in recentCampaigns" :key="campaign.id"
+              <div v-for="campaign in recentCampaigns" :key="entityId(campaign)"
                 class="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
-                @click="editCampaign(campaign.id)">
+                @click="editCampaign(entityId(campaign))">
                 <div class="flex items-center space-x-3">
                   <div class="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
                     <Folder class="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p class="font-medium">{{ campaign.meta?.title || campaign.id }}</p>
+                    <p class="font-medium">{{ campaign.name }}</p>
                     <p class="text-sm text-muted-foreground">
                       {{ campaign.scenarios?.length || 0 }} scenarios •
                       {{ campaign.meta?.difficulty || 'Unknown' }} difficulty
@@ -169,7 +169,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Campaign, Goal, Scenario } from '~/types/campaign'
+import type { Campaign, Goal, Scenario } from '~/types'
 import { Folder } from 'lucide-vue-next'
 
 // Reactive data
@@ -197,12 +197,12 @@ const scenarioStats = computed(() => ({
 }))
 
 const modifiedStats = computed(() => ({
-  count: campaigns.value.filter(c => c.modified).length
+  count: campaigns.value.filter(c => meta.modified(c)).length
 }))
 
 const recentCampaigns = computed(() =>
   [...campaigns.value]
-    .sort((a, b) => (b.lastModified || 0) - (a.lastModified || 0))
+    .sort((a, b) => (meta.modified(b) || 0) - (meta.modified(a) || 0))
     .slice(0, 5)
 )
 

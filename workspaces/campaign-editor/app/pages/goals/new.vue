@@ -29,7 +29,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="id">Goal ID</Label>
-                <Input id="id" v-model="form.id" placeholder="e.g., coal_delivery_goal" class="openttd-input"
+                <Input id="id" v-model="form.__id" placeholder="e.g., coal_delivery_goal" class="openttd-input"
                   required />
                 <p class="text-sm text-muted-foreground mt-1">
                   Unique identifier for this goal
@@ -53,9 +53,8 @@
             </div>
 
             <div>
-              <Label for="title">Title</Label>
-              <Input id="title" v-model="form.meta!.title" placeholder="e.g., Coal Delivery Challenge"
-                class="openttd-input" />
+              <Label for="name">Title</Label>
+              <Input id="name" v-model="form.name" placeholder="e.g., Coal Delivery Challenge" class="openttd-input" />
             </div>
 
             <div>
@@ -118,14 +117,14 @@
               </div>
             </div>
 
-            <div v-if="form.objective.type === 'cargo_delivered'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-if="form.objective?.type === 'cargo_delivered'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="cargo">Cargo Type</Label>
                 <Input id="cargo" v-model="form.objective!.cargo" placeholder="e.g., COAL" class="openttd-input" />
               </div>
             </div>
 
-            <div v-if="form.objective.type === 'town_growth'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-if="form.objective?.type === 'town_growth'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="target_population">Target Population</Label>
                 <Input id="target_population" v-model.number="form.objective!.target_population" type="number"
@@ -193,14 +192,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label for="unlock">Unlock</Label>
-                <Input id="unlock" v-model="form.result!.unlock" placeholder="e.g., new_vehicle_type"
-                  class="openttd-input" />
-              </div>
-
-              <div>
-                <Label for="achievement">Achievement</Label>
-                <Input id="achievement" v-model="form.result!.achievement" placeholder="e.g., coal_master"
+                <Label for="unlocks">Unlocks</Label>
+                <Input id="unlocks" v-model="form.result!.unlocks" placeholder="e.g., new_vehicle_type"
                   class="openttd-input" />
               </div>
             </div>
@@ -211,8 +204,8 @@
             <Button type="button" variant="outline" class="openttd-button" @click="navigateTo('/goals')">
               Cancel
             </Button>
-            <Button type="submit" :disabled="loading" class="openttd-button bg-openttd-green text-white">
-              {{ loading ? 'Saving...' : 'Create Goal' }}
+            <Button type="submit" class="openttd-button bg-openttd-green text-white">
+              Create Goal
             </Button>
           </div>
         </form>
@@ -222,35 +215,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Goal } from '~/types/campaign'
+const { form, save } = useGoalForm()
 
-const { createEmptyGoal, saveGoal: saveGoalStore, loading } = useCampaignStore()
-const toast = useToast()
-
-// Initialize form with empty goal
-const form = ref<Goal>(createEmptyGoal())
-
-// Generate a unique ID if not provided
-if (!form.value.id || form.value.id === 'goal') {
-  form.value.id = useIdentifier('goal')
-}
-
-async function saveGoal() {
-  try {
-    await saveGoalStore(form.value)
-    toast.add({
-      title: '✅ Goal Created',
-      description: `Goal "${form.value.meta?.title || form.value.id}" has been created successfully`,
-      color: 'green'
-    })
-    navigateTo('/goals')
-  } catch (error) {
-    console.error('Failed to create goal:', error)
-    toast.add({
-      title: '❌ Error',
-      description: 'Failed to create goal',
-      color: 'red'
-    })
-  }
+function saveGoal() {
+  save()
+  navigateTo('/goals')
 }
 </script>

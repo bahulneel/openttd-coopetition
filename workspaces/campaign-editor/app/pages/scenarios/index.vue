@@ -37,11 +37,11 @@
                   {{ scenario.goals?.length || 0 }} goals
                 </Badge>
               </div>
-              
+
               <p class="text-muted-foreground mb-3">
                 {{ scenario.meta?.description || scenario.comment || 'No description available' }}
               </p>
-              
+
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div v-if="scenario.constraints?.players">
                   <span class="font-medium text-foreground">Players:</span>
@@ -65,30 +65,16 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="flex items-center space-x-2 ml-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                class="openttd-button"
-                @click="editScenario(scenario)"
-              >
+              <Button variant="outline" size="sm" class="openttd-button" @click="editScenario(scenario)">
                 ✏️ Edit
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                class="openttd-button"
-                @click="duplicateScenarioHandler(scenario)"
-              >
+              <Button variant="outline" size="sm" class="openttd-button" @click="duplicateScenarioHandler(scenario)">
                 📋 Copy
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                class="openttd-button text-red-600 hover:text-red-700"
-                @click="deleteScenario(scenario)"
-              >
+              <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+                @click="deleteScenario(scenario)">
                 🗑️ Delete
               </Button>
             </div>
@@ -120,15 +106,11 @@
 <script setup lang="ts">
 import type { Scenario } from '~/types/campaign'
 
-const { scenarios, loading, loadScenarios, deleteScenario: deleteScenarioStore, duplicateScenario } = useCampaignStore()
+const entityStore = useEntityStore()
 const toast = useToast()
 
-// Load scenarios on mount
-onMounted(async () => {
-  if (scenarios.length === 0) {
-    await loadScenarios()
-  }
-})
+// Get scenarios from entity store
+const scenarios = computed(() => entityStore.select<Scenario>('Scenario').value)
 
 // Methods
 function createScenario() {
@@ -136,7 +118,7 @@ function createScenario() {
 }
 
 function editScenario(scenario: Scenario) {
-  navigateTo(`/scenarios/${scenario.id}/edit`)
+  navigateTo(`/scenarios/${entityId(scenario)}/edit`)
 }
 
 async function duplicateScenarioHandler(scenario: Scenario) {
@@ -195,14 +177,14 @@ function getDifficultyBadgeClass(difficulty: string | undefined) {
 
 function getSettingsDescription(settings: Record<string, unknown>) {
   if (!settings) return 'Default settings'
-  
+
   const parts = []
   if (settings.economy) parts.push(`Economy: ${settings.economy}`)
   if (settings.disasters !== undefined) parts.push(`Disasters: ${settings.disasters ? 'On' : 'Off'}`)
   if (settings.breakdowns !== undefined) parts.push(`Breakdowns: ${settings.breakdowns ? 'On' : 'Off'}`)
   if (settings.inflation !== undefined) parts.push(`Inflation: ${settings.inflation ? 'On' : 'Off'}`)
   if (settings.seasons !== undefined) parts.push(`Seasons: ${settings.seasons ? 'On' : 'Off'}`)
-  
+
   return parts.length > 0 ? parts.join(', ') : 'Default settings'
 }
 </script>

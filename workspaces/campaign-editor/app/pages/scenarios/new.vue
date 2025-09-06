@@ -29,7 +29,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="id">Scenario ID</Label>
-                <Input id="id" v-model="form.id" placeholder="e.g., industrial_hub_scenario" class="openttd-input"
+                <Input id="id" v-model="form.__id" placeholder="e.g., industrial_hub_scenario" class="openttd-input"
                   required />
                 <p class="text-sm text-muted-foreground mt-1">
                   Unique identifier for this scenario
@@ -84,12 +84,12 @@
             </div>
 
             <div v-else class="space-y-3">
-              <div v-for="goal in availableGoals" :key="goal.id"
+              <div v-for="goal in availableGoals" :key="goal.__id"
                 class="flex items-center space-x-3 p-3 border rounded-lg">
-                <input :id="`goal-${goal.id}`" v-model="selectedGoals" :value="goal.id" type="checkbox"
+                <input :id="`goal-${goal.__id}`" v-model="selectedGoals" :value="goal.__id" type="checkbox"
                   class="openttd-checkbox">
-                <label :for="`goal-${goal.id}`" class="flex-1 cursor-pointer">
-                  <div class="font-medium">{{ goal.meta?.title || goal.id }}</div>
+                <label :for="`goal-${goal.__id}`" class="flex-1 cursor-pointer">
+                  <div class="font-medium">{{ goal.meta?.title || goal.__id }}</div>
                   <div class="text-sm text-muted-foreground">{{ goal.meta?.description || goal.comment }}</div>
                 </label>
                 <Badge :class="getGoalTypeBadgeClass(goal.type)">
@@ -180,8 +180,8 @@
             <Button type="button" variant="outline" class="openttd-button" @click="navigateTo('/scenarios')">
               Cancel
             </Button>
-            <Button type="submit" :disabled="loading" class="openttd-button bg-openttd-purple text-white">
-              {{ loading ? 'Saving...' : 'Create Scenario' }}
+            <Button type="submit" class="openttd-button bg-openttd-purple text-white">
+              Create Scenario
             </Button>
           </div>
         </form>
@@ -191,59 +191,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Scenario } from '~/types/campaign'
+const { form, selectedGoals, availableGoals, getGoalTypeBadgeClass, save } = useScenarioForm()
 
-const { createEmptyScenario, saveScenario: saveScenarioStore, goals, loading } = useCampaignStore()
-const toast = useToast()
-
-// Initialize form with empty scenario
-const form = ref<Scenario>(createEmptyScenario())
-
-// Generate a unique ID if not provided
-if (!form.value.id || form.value.id === 'scenario') {
-  form.value.id = useIdentifier('scenario')
-}
-
-// Track selected goals
-const selectedGoals = ref<string[]>([])
-
-// Available goals for selection
-const availableGoals = computed(() => goals)
-
-// Helper function for goal type badges
-function getGoalTypeBadgeClass(type: string | undefined) {
-  switch (type) {
-    case 'player': return 'bg-openttd-blue text-white'
-    case 'company': return 'bg-openttd-purple text-white'
-    case 'scenario': return 'bg-openttd-orange text-white'
-    case 'campaign': return 'bg-openttd-red text-white'
-    default: return 'bg-gray-500 text-white'
-  }
-}
-
-async function saveScenario() {
-  // Convert selected goals to scenario goal format
-  form.value.goals = selectedGoals.value.map(goalId => ({
-    include: goalId,
-    order: 0,
-    required: true
-  }))
-
-  try {
-    await saveScenarioStore(form.value)
-    toast.add({
-      title: '✅ Scenario Created',
-      description: `Scenario "${form.value.meta?.title || form.value.id}" has been created successfully`,
-      color: 'green'
-    })
-    navigateTo('/scenarios')
-  } catch (error) {
-    console.error('Failed to create scenario:', error)
-    toast.add({
-      title: '❌ Error',
-      description: 'Failed to create scenario',
-      color: 'red'
-    })
-  }
+function saveScenario() {
+  save()
+  navigateTo('/scenarios')
 }
 </script>

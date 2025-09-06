@@ -16,20 +16,20 @@
           ➕ New Goal
         </Button>
 
-        <Button variant="outline" :disabled="loading" class="openttd-button" @click="refreshGoals">
-          {{ loading ? '🔄' : '↻' }} Refresh
+        <Button variant="outline" class="openttd-button" @click="refreshGoals">
+          ↻ Refresh
         </Button>
       </div>
     </div>
 
     <!-- Goals List -->
     <div v-if="goals.length > 0" class="space-y-4">
-      <Card v-for="goal in goals" :key="goal.id" class="openttd-titlebar">
+      <Card v-for="goal in goals" :key="entityId(goal)" class="openttd-titlebar">
         <CardContent class="pt-6">
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center space-x-3 mb-2">
-                <CardTitle class="text-lg font-semibold">{{ goal.meta?.title || goal.id }}</CardTitle>
+                <CardTitle class="text-lg font-semibold">{{ goal.meta?.title || entityId(goal) }}</CardTitle>
                 <Badge :class="getGoalTypeBadgeClass(goal.type)">
                   {{ goal.type || 'player' }}
                 </Badge>
@@ -37,19 +37,21 @@
                   {{ goal.meta?.difficulty || 'medium' }}
                 </Badge>
               </div>
-              
+
               <p class="text-muted-foreground mb-3">
                 {{ goal.meta?.description || goal.comment || 'No description available' }}
               </p>
-              
+
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <span class="font-medium text-foreground">Objective:</span>
-                  <p class="text-muted-foreground">{{ getObjectiveDescription(goal.objective) }}</p>
+                  <p class="text-muted-foreground">{{ getObjectiveDescription((goal.objective || {}) as Record<string,
+                      unknown>) }}</p>
                 </div>
                 <div v-if="goal.result">
                   <span class="font-medium text-foreground">Reward:</span>
-                  <p class="text-muted-foreground">{{ getRewardDescription(goal.result) }}</p>
+                  <p class="text-muted-foreground">{{ getRewardDescription(goal.result as Record<string, unknown>) }}
+                  </p>
                 </div>
                 <div v-if="goal.constraints?.players">
                   <span class="font-medium text-foreground">Players:</span>
@@ -65,30 +67,16 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="flex items-center space-x-2 ml-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                class="openttd-button"
-                @click="editGoal(goal)"
-              >
+              <Button variant="outline" size="sm" class="openttd-button" @click="editGoal(goal)">
                 ✏️ Edit
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                class="openttd-button"
-                @click="duplicateGoalHandler(goal)"
-              >
+              <Button variant="outline" size="sm" class="openttd-button" @click="duplicateGoalHandler(goal)">
                 📋 Copy
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                class="openttd-button text-red-600 hover:text-red-700"
-                @click="deleteGoal(goal)"
-              >
+              <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+                @click="deleteGoal(goal)">
                 🗑️ Delete
               </Button>
             </div>
@@ -120,15 +108,11 @@
 <script setup lang="ts">
 import type { Goal } from '~/types/campaign'
 
-const { goals, loading, loadGoals, deleteGoal: deleteGoalStore, duplicateGoal } = useCampaignStore()
+const entityStore = useEntityStore()
 const toast = useToast()
 
-// Load goals on mount
-onMounted(async () => {
-  if (goals.length === 0) {
-    await loadGoals()
-  }
-})
+// Get goals from entity store
+const goals = computed(() => entityStore.select<Goal>('Goal').value)
 
 // Methods
 function createGoal() {
@@ -136,15 +120,29 @@ function createGoal() {
 }
 
 function editGoal(goal: Goal) {
-  navigateTo(`/goals/${goal.id}/edit`)
+  navigateTo(`/goals/${entityId(goal)}/edit`)
 }
 
 async function duplicateGoalHandler(goal: Goal) {
   try {
-    await duplicateGoal(goal.id)
+    const original = entityStore.get<Goal>(entityId(goal), 'Goal')
+    if (!original) {
+      throw new Error('Goal not found')
+    }
+
+    // Use copyEntity utility to create a duplicate
+    const duplicate = copyEntity(toStorableValue(original))
+    duplicate.name = `${original.name} (Copy)`
+    duplicate.meta = {
+      ...original.meta,
+      title: original.meta?.title ? `${original.meta.title} (Copy)` : undefined
+    }
+
+    entityStore.assert(duplicate)
+
     toast.add({
       title: '✅ Goal Duplicated',
-      description: `Goal "${goal.meta?.title || goal.id}" has been duplicated`,
+      description: `Goal "${duplicate.meta?.title || entityId(duplicate)}" has been duplicated`,
       color: 'green'
     })
   } catch (error) {
@@ -158,12 +156,12 @@ async function duplicateGoalHandler(goal: Goal) {
 }
 
 async function deleteGoal(goal: Goal) {
-  if (confirm(`Are you sure you want to delete the goal "${goal.meta?.title || goal.id}"?`)) {
+  if (confirm(`Are you sure you want to delete the goal "${goal.meta?.title || entityId(goal)}"?`)) {
     try {
-      await deleteGoalStore(goal.id)
+      entityStore.retract(entityId(goal))
       toast.add({
         title: '✅ Goal Deleted',
-        description: `Goal "${goal.meta?.title || goal.id}" has been deleted`,
+        description: `Goal "${goal.meta?.title || entityId(goal)}" has been deleted`,
         color: 'green'
       })
     } catch (error) {
@@ -178,7 +176,8 @@ async function deleteGoal(goal: Goal) {
 }
 
 async function refreshGoals() {
-  await loadGoals()
+  // No need to refresh as entity store is reactive
+  // This could be used to trigger a reload from file system if needed
 }
 
 // Helper functions for display
@@ -205,10 +204,10 @@ function getDifficultyBadgeClass(difficulty: string | undefined) {
 
 function getObjectiveDescription(objective: Record<string, unknown>) {
   if (!objective) return 'No objective defined'
-  
+
   const type = objective.type || 'unknown'
   const amount = objective.amount || objective.count || objective.min_value || 0
-  
+
   switch (type) {
     case 'cargo_delivered':
       return `Deliver ${amount} units of ${objective.cargo || 'cargo'}`
@@ -229,14 +228,14 @@ function getObjectiveDescription(objective: Record<string, unknown>) {
 
 function getRewardDescription(result: Record<string, unknown>) {
   if (!result) return 'No reward defined'
-  
+
   const parts = []
   if (result.cash) parts.push(`£${result.cash.toLocaleString()}`)
   if (result.score) parts.push(`${result.score} points`)
   if (result.reputation) parts.push(`${result.reputation} reputation`)
   if (result.unlock) parts.push(`Unlock: ${result.unlock}`)
   if (result.achievement) parts.push(`Achievement: ${result.achievement}`)
-  
+
   return parts.length > 0 ? parts.join(', ') : 'No reward'
 }
 </script>
