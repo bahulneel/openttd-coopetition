@@ -331,7 +331,8 @@ async function saveGoal() {
       color: 'green'
     })
     navigateTo('/goals')
-  } catch {
+  } catch (error) {
+    console.error('Failed to create goal:', error)
     toast.add({
       title: '❌ Error',
       description: 'Failed to create goal',

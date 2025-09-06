@@ -147,7 +147,8 @@ async function duplicateGoalHandler(goal: Goal) {
       description: `Goal "${goal.meta?.title || goal.id}" has been duplicated`,
       color: 'green'
     })
-  } catch {
+  } catch (error) {
+    console.error('Failed to duplicate goal:', error)
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate goal',
@@ -165,7 +166,8 @@ async function deleteGoal(goal: Goal) {
         description: `Goal "${goal.meta?.title || goal.id}" has been deleted`,
         color: 'green'
       })
-    } catch {
+    } catch (error) {
+      console.error('Failed to delete goal:', error)
       toast.add({
         title: '❌ Error',
         description: 'Failed to delete goal',

@@ -147,7 +147,8 @@ async function duplicateScenarioHandler(scenario: Scenario) {
       description: `Scenario "${scenario.meta?.title || scenario.id}" has been duplicated`,
       color: 'green'
     })
-  } catch {
+  } catch (error) {
+    console.error('Failed to duplicate scenario:', error)
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate scenario',
@@ -165,7 +166,8 @@ async function deleteScenario(scenario: Scenario) {
         description: `Scenario "${scenario.meta?.title || scenario.id}" has been deleted`,
         color: 'green'
       })
-    } catch {
+    } catch (error) {
+      console.error('Failed to delete scenario:', error)
       toast.add({
         title: '❌ Error',
         description: 'Failed to delete scenario',

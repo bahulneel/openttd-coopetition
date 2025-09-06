@@ -309,7 +309,8 @@ async function saveScenario() {
       color: 'green'
     })
     navigateTo('/scenarios')
-  } catch {
+  } catch (error) {
+    console.error('Failed to create scenario:', error)
     toast.add({
       title: '❌ Error',
       description: 'Failed to create scenario',
