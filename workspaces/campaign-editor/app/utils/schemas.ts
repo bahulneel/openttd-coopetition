@@ -12,9 +12,9 @@ const metaInfoSchema = z.object({
   description: z.string().optional(),
   difficulty: z.enum(['easy', 'medium', 'hard', 'expert', 'legendary']).optional(),
   estimated_time: z.string().optional(),
-  tags: z.array(z.string()).default([]),
-  requirements: z.array(z.string()).default([]),
-  prerequisites: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]).readonly(),
+  requirements: z.array(z.string()).default([]).readonly(),
+  prerequisites: z.array(z.string()).default([]).readonly(),
   comment: z.string().optional()
 }).default({})
 
@@ -69,7 +69,7 @@ const objectiveSchema = z.object({
   type: z.enum(['cargo_delivered', 'network_length', 'profit', 'station_built', 'company_value', 'town_growth']),
   amount: z.number().min(0, 'Amount must be non-negative').optional(),
   cargo: z.string().optional(),
-  cargo_types: z.array(z.string()).default([]),
+  cargo_types: z.array(z.string()).default([]).readonly(),
   time_limit: z.number().min(0, 'Time limit must be non-negative').optional(),
   track_type: z.string().optional(),
   target: z.string().optional(),
@@ -128,14 +128,14 @@ const scenarioSchemaBase = baseItemSchema.extend({
     constraints: constraintsSchema.optional(),
     comment: z.string().optional()
   }).optional(),
-  goals: z.array(scenarioGoalSchema).default([]),
+  goals: z.array(scenarioGoalSchema).default([]).readonly(),
   constraints: constraintsSchema.optional(),
   meta: metaInfoSchema.optional(),
   settings: scenarioSettingsSchema.optional(),
   rewards: rewardsSchema.optional(),
   objectives: z.object({
-    primary: z.array(z.string()).default([]),
-    secondary: z.array(z.string()).default([]),
+    primary: z.array(z.string()).default([]).readonly(),
+    secondary: z.array(z.string()).default([]).readonly(),
     comment: z.string().optional()
   }).optional(),
   dependencies: z.array(z.object({
@@ -152,7 +152,7 @@ const scenarioSchemaBase = baseItemSchema.extend({
     comment: z.string().optional()
   })).default([]),
   progression: z.object({
-    unlock_order: z.array(z.string()).default([]),
+    unlock_order: z.array(z.string()).default([]).readonly(),
     milestone_rewards: z.array(z.object({
       milestone: z.string(),
       reward: z.string()
@@ -187,7 +187,7 @@ const campaignSettingsSchema = z.object({
 }).default({})
 
 const campaignSchemaBase = baseItemSchema.extend({
-  scenarios: z.array(campaignScenarioSchema).default([]),
+  scenarios: z.array(campaignScenarioSchema).default([]).readonly(),
   branches: z.record(z.array(z.string())).optional(),
   progression: z.object({
     type: z.enum(['linear', 'branching']),
@@ -197,14 +197,14 @@ const campaignSchemaBase = baseItemSchema.extend({
       unlocks: z.string().optional(),
       comment: z.string().optional()
     })).default([]),
-    unlock_order: z.array(z.string()).default([]),
+    unlock_order: z.array(z.string()).default([]).readonly(),
     comment: z.string().optional()
   }).optional(),
   constraints: constraintsSchema.optional(),
   rewards: rewardsSchema.optional(),
   meta: metaInfoSchema.optional(),
   settings: campaignSettingsSchema.optional(),
-  features: z.array(z.string()).default([]),
+  features: z.array(z.string()).default([]).readonly(),
   milestones: z.array(z.object({
     name: z.string().min(1, 'Milestone name is required'),
     description: z.string().min(1, 'Milestone description is required'),
@@ -243,7 +243,7 @@ const campaignManifestSchemaBase = z.object({
   version: z.string().min(1, 'Version is required').regex(/^\d+\.\d+\.\d+$/, 'Version must be in format x.y.z'),
   description: z.string().min(1, 'Description is required'),
   author: z.string().min(1, 'Author is required'),
-  tags: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]).readonly(),
   structure: z.object({
     goals: z.string().min(1, 'Goals path is required'),
     scenarios: z.string().min(1, 'Scenarios path is required'),
@@ -255,7 +255,7 @@ const campaignManifestSchemaBase = z.object({
   }),
   install: z.object({
     copy_to: z.string().min(1, 'Install path is required'),
-    requires: z.array(z.string()).default([])
+    requires: z.array(z.string()).default([]).readonly()
   }),
   created: z.string().min(1, 'Created date is required'),
   updated: z.string().min(1, 'Updated date is required')

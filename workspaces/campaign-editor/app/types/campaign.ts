@@ -10,9 +10,9 @@ export interface MetaInfo {
   description?: string
   difficulty?: 'easy' | 'medium' | 'hard' | 'expert' | 'legendary'
   estimated_time?: string
-  tags?: string[]
-  requirements?: string[]
-  prerequisites?: string[]
+  tags?: readonly string[]
+  requirements?: readonly string[]
+  prerequisites?: readonly string[]
   comment?: string
 }
 
@@ -33,7 +33,7 @@ export interface Constraints {
     min?: string
     max?: string
   }
-  conditional?: ConditionalConstraint[]
+  conditional?: readonly ConditionalConstraint[]
   comment?: string
 }
 
@@ -57,7 +57,7 @@ export interface SharedInfrastructure {
 export interface Rewards {
   completion?: RewardSet
   partial?: RewardSet
-  conditional?: ConditionalReward[]
+  conditional?: readonly ConditionalReward[]
   comment?: string
 }
 
@@ -86,7 +86,7 @@ export interface Objective {
   type: 'cargo_delivered' | 'network_length' | 'profit' | 'station_built' | 'company_value' | 'town_growth'
   amount?: number
   cargo?: string
-  cargo_types?: string[]
+  cargo_types?: readonly string[]
   time_limit?: number
   track_type?: string
   target?: string
@@ -143,11 +143,11 @@ export interface ConditionalScenarioReward {
 }
 
 export interface ScenarioProgression {
-  unlock_order?: string[]
-  milestone_rewards?: Array<{
+  unlock_order?: readonly string[]
+  milestone_rewards?: readonly {
     milestone: string
     reward: string
-  }>
+  }[]
   comment?: string
 }
 
@@ -158,7 +158,7 @@ export interface Scenario extends BaseItem {
     constraints?: Constraints
     comment?: string
   }
-  goals?: ScenarioGoal[]
+  goals?: readonly ScenarioGoal[]
   constraints?: Constraints
   meta?: MetaInfo
   settings?: {
@@ -171,12 +171,12 @@ export interface Scenario extends BaseItem {
   }
   rewards?: Rewards
   objectives?: {
-    primary?: string[]
-    secondary?: string[]
+    primary?: readonly string[]
+    secondary?: readonly string[]
     comment?: string
   }
-  dependencies?: ScenarioDependency[]
-  conditional_rewards?: ConditionalScenarioReward[]
+  dependencies?: readonly ScenarioDependency[]
+  conditional_rewards?: readonly ConditionalScenarioReward[]
   progression?: ScenarioProgression
 }
 
@@ -200,13 +200,13 @@ export interface CampaignBranch {
 
 export interface CampaignProgression {
   type: 'linear' | 'branching'
-  unlock_requirements?: Array<{
+  unlock_requirements?: readonly {
     scenario: string
     completion_threshold: number
     unlocks?: string
     comment?: string
-  }>
-  unlock_order?: string[]
+  }[]
+  unlock_order?: readonly string[]
   comment?: string
 }
 
@@ -237,7 +237,7 @@ export interface DifficultyScaling {
 }
 
 export interface Campaign extends BaseItem {
-  scenarios?: CampaignScenario[]
+  scenarios?: readonly CampaignScenario[]
   branches?: CampaignBranch
   progression?: CampaignProgression
   constraints?: Constraints
@@ -251,8 +251,8 @@ export interface Campaign extends BaseItem {
     seasons?: boolean
     comment?: string
   }
-  features?: string[]
-  milestones?: CampaignMilestone[]
+  features?: readonly string[]
+  milestones?: readonly CampaignMilestone[]
   difficulty_scaling?: DifficultyScaling
   // Editor-specific properties
   lastModified?: number
@@ -266,7 +266,7 @@ export interface CampaignManifest {
   version: string
   description: string
   author: string
-  tags: string[]
+  tags: readonly string[]
   structure: {
     goals: string
     scenarios: string
@@ -278,7 +278,7 @@ export interface CampaignManifest {
   }
   install: {
     copy_to: string
-    requires: string[]
+    requires: readonly string[]
   }
   created: string
   updated: string
