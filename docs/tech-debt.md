@@ -1,0 +1,14 @@
+## Tech Debt Registry
+
+Purpose: Track known design/naming/structure gaps to fix deliberately in later passes. Use alongside `docs/components/decomposition.md`.
+
+| ID      | Area            | Item                                                                            | Impact                                                                                                                        | Proposed Direction                                                                                                                                                                                     | Owner | Opened     | Priority |
+| ------- | --------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | ---------- | -------- |
+| TDR-001 | Naming taxonomy | `MoleculeDashboardCard` reads poorly when reversed ("Card Dashboard Molecule"). | Inconsistent plain-English readability; weak taxonomy signal.                                                                 | Prefer path `Molecule/Dashboard/Card` (already in use). Consider FQN adjustment to `MoleculeCardDashboard` if we standardize “component-kind-last” in FQNs. Cross-check against catalog before change. | –     | 2025-09-06 | Medium   |
+| TDR-002 | Naming taxonomy | `MoleculeActionLink`                                                            | Reverse reads as "Link Action Molecule" (acceptable), but confirm we consistently use `Molecule/Action/Link` path everywhere. | Keep path `Molecule/Action/Link`. If we later standardize FQNs to “ComponentKindLast”, consider `MoleculeLinkAction` for symmetry.                                                                     | –     | 2025-09-06 | Low      |
+| TDR-003 | Naming taxonomy | `MoleculeActionButton`                                                          | Reverse reads as "Button Action Molecule" (acceptable); same concerns as above.                                               | Keep path `Molecule/Action/Button`. Only rename if we adopt global FQN renaming rules.                                                                                                                 | –     | 2025-09-06 | Low      |
+
+Notes:
+
+- See taxonomy guidance in `docs/components/decomposition.md` (Path & Naming Taxonomy). Favor paths as a readable taxonomy; ensure reverse readability; avoid redundancy because Nuxt concatenates path parts into FQNs.
+- When resolving these items, update the catalog and the decomposition guide to reflect the rule, then apply across the tree in a dedicated naming pass.

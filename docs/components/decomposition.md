@@ -127,19 +127,31 @@ Examples:
 
 ### Implementation Phases (by example)
 
-- Phase 1 – Layout extraction
-  - Introduce `TemplateLayoutStacked` and move persistent UI to header/footer slots.
+This recounts the Dashboard pass and, more importantly, how each decision was made so you can reproduce it elsewhere.
 
-- Phase 2 – Molecules for persistent UI
-  - Add `MoleculeHeader`, `Molecule/Navigation/Bar`, `MoleculeFooter`. Remove header/footer markup from the layout.
+- Phase 1 – Layout extraction (discover spatial structure first)
+  - Inputs observed: a persistent header and footer around page content; container paddings duplicated in pages.
+  - Catalog consult: Layouts → choose `Template/Layout/Stacked` (stacked regions) instead of inventing a page‑specific container.
+  - Decision rationale: keep a single root for fallthrough; push spacing/padding into the layout via `:classes`; remove per‑page boilerplate.
+  - Trade‑offs: named slots (`header`, `default`, `footer`) are sufficient; no ordering prop needed yet beyond classes.
 
-- Phase 3 – Screen composition
-  - Create `TemplateLayoutSection`, `TemplateLayoutGrid`, `TemplateLayoutSequential`.
-  - Compose `TemplateScreenDashboard` from these.
+- Phase 2 – Molecules for persistent UI (stabilize chrome)
+  - Inputs observed: the header always shows logo/title (left), navigation (middle), tools (right). Footer content is fixed.
+  - Catalog consult: Molecules → Header, Navigation, Footer exist conceptually; create `Molecule/Header`, `Molecule/Navigation/Bar`, `Molecule/Footer`.
+  - Decision rationale: fix left/right (no choice); allow nav in the middle (default slot) so the layout remains declarative; move fixed footer into a molecule with a tiny prop surface (`version`).
+  - Fallthrough vs forwarding: fallthrough (single root) for attributes; no forwarding because we don’t transform data.
 
-- Phase 4 – Card and action molecules
-  - Introduce `MoleculeDashboardCard` and `MoleculeAction` (+ per-type variants).
-  - Convert inline stats to `DashboardStat[]` and render via `v-bind`.
+- Phase 3 – Screen composition (recognize a recurring page pattern)
+  - Inputs observed: page‑local header (title/subtitle/actions), stats row, main + secondary content.
+  - Catalog consult: Screen pattern → Dashboard is a known shape; build from layouts rather than ad‑hoc wrappers.
+  - Decision rationale: create `Template/Screen/Dashboard` that composes `Template/Layout/Section` (header shell), `Sequential` (vertical rhythm), `Grid` (stats). Keep the Screen thin; don’t forward props—use fallthrough.
+  - Props vs slots: Section exposes `title`/`subtitle` as props (closed) and `#actions` as slot with fallback to `actions?: Action[]` (open when needed).
+
+- Phase 4 – Card and action molecules (normalize repeated fragments)
+  - Inputs observed: four stats tiles share the same structure and tone‑based styling with an optional right‑side control.
+  - Catalog consult: Molecules → prefer an opinionated wrapper around shadcn `Card`; create `Molecule/Dashboard/Card`.
+  - Decision rationale: reduce options to `{ label, value, tone, action? }`. When `action` is present, render through `Molecule/Action`; otherwise show a tone‑based icon. No slot for body to keep consistency.
+  - Convert markup to data: define a local `DashboardStat` and render with `v-for` + `v-bind` to move decisions from markup to data.
 
 ### Common Pitfalls and How to Avoid Them
 
@@ -220,3 +232,21 @@ Use this as a template for your own decomposition.
 - Single root per component; fallthrough works; props minimal; slots only where needed; responsive defaults in layouts; names follow catalog with FQNs.
 
 Repeat this analysis for other pages: first identify regions, then select from the catalog or introduce the smallest new component that reduces options and clarifies responsibility.
+
+## Final Thoughts
+
+### Favour progress over the perfect name
+
+Naming is hard, and decomposition doubly so. If you're stuck on the perfect name, find the closest analogue in the current taxonomy and see if you can find a natural home. If all else fails, do what you think is right and then update the docs/tech-debt.md registry so we can address the problem later.
+
+### Prefer generality over specificity
+
+It's tempting to make the exact component for the use case you have, but it is often better to permit a few decisions to be made by the user in order to cover a wider range of use cases.
+
+### Be aware of your surroundings
+
+In many cases the answers to your questions are in the files nearest to you. Have a look around.
+
+### Think twice before changing something you depend on
+
+It's easy to make a quick change to a component or library you depend on to make your use case work a bit better. Before doing so, check you're not going to break any guarantees already established by the code you want to modify, and consider whether the responsibility is in the right place. Indirection, as is often the case in software, may be a better answer.
