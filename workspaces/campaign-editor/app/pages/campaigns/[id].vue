@@ -34,7 +34,7 @@
 
         <div>
           <h1 class="text-2xl font-bold text-foreground">
-            {{ formData.meta?.title || formData.id }}
+            {{ formData.name }}
           </h1>
           <p class="text-muted-foreground">
             Edit campaign details and configuration
@@ -51,7 +51,8 @@
           👁️ Preview
         </Button>
 
-        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+        <Button
+:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
           @click="saveCampaign">
           {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
         </Button>
@@ -154,7 +155,8 @@
             <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
               <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
                 {{ tag }}
-                <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
+                <Button
+variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
                   @click="removeTag(index)">
                   ✕
                 </Button>
@@ -186,11 +188,13 @@
         </CardHeader>
         <CardContent>
           <div v-if="formData.scenarios && formData.scenarios.length > 0" class="space-y-4">
-            <div v-for="(scenario, index) in formData.scenarios" :key="index"
+            <div
+v-for="(scenario, index) in formData.scenarios" :key="index"
               class="p-4 border border-border rounded-lg">
               <div class="flex items-center justify-between mb-4">
                 <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
-                <Button type="button" variant="ghost" size="sm"
+                <Button
+type="button" variant="ghost" size="sm"
                   class="text-destructive hover:text-destructive-foreground" @click="removeScenario(index)">
                   🗑️ Remove
                 </Button>
@@ -211,7 +215,8 @@
                   <FormItem>
                     <FormLabel>Order</FormLabel>
                     <FormControl>
-                      <Input v-bind="componentField" type="number" :value="scenario.order"
+                      <Input
+v-bind="componentField" type="number" :value="scenario.order"
                         @input="updateScenarioOrder(index, $event)" />
                     </FormControl>
                     <FormMessage />
@@ -254,7 +259,8 @@
             ↺ Reset
           </Button>
 
-          <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+          <Button
+type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
             @click="saveCampaign">
             {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
           </Button>
@@ -266,10 +272,12 @@
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
+import type { Campaign, CampaignScenario, EntityValue } from '~/types'
+import { entityId } from '~/utils/entities'
 
-const campaignStore = useCampaignStore()
 const route = useRoute()
 const router = useRouter()
+const campaignStore = useEntityStore()
 
 // Reactive data
 const loading = ref(false)
@@ -281,15 +289,14 @@ const newTag = ref('')
 const form = useForm({
   validationSchema: campaignSchema,
   initialValues: {
-    id: '',
+    name: '',
     meta: {
-      title: '',
       description: '',
       difficulty: 'medium' as const,
       tags: [],
     },
     scenarios: [],
-  }
+  } satisfies EntityValue<Campaign>
 })
 
 const { values: formData, meta } = form
@@ -316,18 +323,12 @@ async function loadCampaign() {
   error.value = undefined
 
   try {
-    const campaign = await campaignStore.getCampaign(campaignId.value)
+    const campaign = await campaignStore.get(campaignId.value, 'Campaign')
     if (campaign) {
       // Transform Campaign type to form schema
       form.setValues({
-        id: campaign.id,
-        meta: campaign.meta ? {
-          title: campaign.meta.title,
-          description: campaign.meta.description,
-          difficulty: campaign.meta.difficulty || 'medium',
-          tags: campaign.meta.tags || [],
-        } : undefined,
-        scenarios: campaign.scenarios || [],
+        id: entityId(campaign),
+        ...toEntityValue(campaign),
       })
     } else {
       error.value = 'Campaign not found'
@@ -344,12 +345,12 @@ const saveCampaign = form.handleSubmit(async (values) => {
   saving.value = true
 
   try {
-    await campaignStore.saveCampaign(values)
+    await campaignStore.assert(asCampaign(values))
 
     const toast = useToast()
     toast.add({
       title: '💾 Campaign Saved',
-      description: `Campaign "${values.meta?.title || values.id}" has been saved.`,
+      description: `Campaign "${values.name}" has been saved.`,
       color: 'green'
     })
 
@@ -401,7 +402,7 @@ function removeScenario(index: number) {
   const currentScenarios = formData.scenarios || []
   const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
   // Reorder remaining scenarios
-  newScenarios.forEach((scenario: { order: number }, idx: number) => {
+  newScenarios.forEach((scenario: CampaignScenario, idx: number) => {
     scenario.order = idx + 1
   })
   form.setFieldValue('scenarios', newScenarios)
@@ -431,15 +432,15 @@ function previewCampaign() {
 
 async function duplicateCampaign() {
   try {
-    const duplicate = await campaignStore.duplicateCampaign(campaignId.value)
+    const duplicate = campaignStore.copy(campaignId.value, { name: `${formData.name} (Copy)` })
     const toast = useToast()
     toast.add({
       title: '📄 Campaign Duplicated',
-      description: `Campaign "${duplicate.meta?.title || duplicate.id}" has been created.`,
+      description: `Campaign "${duplicate.name}" has been created.`,
       color: 'green'
     })
     // Navigate to the duplicated campaign
-    router.push(`/campaigns/${duplicate.id}`)
+    router.push(`/campaigns/${entityId(duplicate)}`)
   } catch (err) {
     console.error('Failed to duplicate campaign:', err)
     const toast = useToast()

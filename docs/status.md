@@ -8,6 +8,10 @@
 - **API Integration**: OpenTTD GS API v14+ registration and settings
 - **UI Framework**: Dashboard class for UI management
 - **Goal Types**: Cargo delivery, town population, station rating, network length, vehicle count
+- **Goal Progress Tracking**: UpdateProgress() methods fully implemented with event-driven updates
+- **UI Rendering**: Complete Dashboard UI rendering with StoryBook pages and goals windows
+- **Event Handling**: Comprehensive game event listeners for all goal types
+- **Settings Integration**: All settings connected to actual functionality
 
 ### Campaign Content (`campaigns/`)
 - **YAML Files**: Sample campaigns, goals, and scenarios in YAML format
@@ -27,38 +31,16 @@
 - **Import/Export**: ZIP file operations
 - **OpenTTD Theming**: Authentic game-inspired UI design
 - **Store Implementation**: useCampaignStore composable fully implemented with all CRUD operations
+- **Goal Editor UI**: Complete goal management interface with create/edit/delete functionality
+- **Scenario Editor UI**: Complete scenario management interface with goal selection and settings
 
 ### Documentation (`docs/`)
-- **ADRs**: 11 Architecture Decision Records
+- **ADRs**: 14 Architecture Decision Records (including UI Editor and Goal Progress Tracking)
 - **Migration Docs**: Detailed migration completion documentation
 
 ## 🚧 Todo
 
-### GameScript Mod
-- **Goal Progress Tracking**: UpdateProgress() methods not fully implemented
-  - Event listeners for cargo delivery, station building, vehicle creation
-  - Progress calculation and storage
-  - Goal completion detection and rewards
-- **UI Rendering**: Dashboard UI rendering methods incomplete
-  - StoryBook page creation and updates
-  - Goals window entries with progress bars
-  - News messages for milestones and completion
-- **Event Handling**: Game event listeners for goal progress
-  - Cargo delivery event handling
-  - Station construction event handling
-  - Vehicle creation/removal event handling
-- **Settings Integration**: Connect settings to actual functionality
-  - UI visibility toggles working
-  - Reminder system implementation
-  - Reward system integration
-
 ### Campaign Editor
-- **Goal/Scenario UI Pages**: Store exists but is NOT being used - pages show "Coming Soon"
-  - Store has full CRUD operations for goals/scenarios but UI doesn't use them
-  - Replace "Coming Soon" pages with actual goal editor using existing store
-  - Replace "Coming Soon" pages with actual scenario editor using existing store
-  - Connect existing store methods to UI forms
-  - Add proper form validation and error handling
 - **Advanced Validation**: Business rule validation beyond schema
   - Cross-field validation (min/max players, date ranges)
   - Goal reference validation
@@ -115,4 +97,4 @@
 
 ---
 
-**Last Updated**: 2025-10-05
+**Last Updated**: 2025-10-06
