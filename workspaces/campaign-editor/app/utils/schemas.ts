@@ -1,266 +1,344 @@
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import type { EntityValue } from '~/types'
+import type {
+  Difficulty,
+  MetaInfo,
+  Range,
+  Constraints,
+  ConditionalConstraint,
+  SharedInfrastructure,
+  RewardSet,
+  ObjectiveType,
+  Objective,
+  Rewards,
+  Condition,
+  CampaignScenarioOverrides,
+  CampaignScenario,
+  CampaignBranch,
+  CampaignProgressionRequirement,
+  CampaignProgression,
+  CampaignMilestone,
+  ScalingFactor,
+  DifficultyScalingAdaptation,
+  DifficultyScaling,
+  CampaignSettings,
+  Campaign,
+  GoalType,
+  Goal,
+  GoalOverrides,
+  ScenarioGoal,
+  ScenarioDefaults,
+  Scenario,
+  PackageStructure,
+  PackageManifest,
+  AnyItem,
+} from '~/types/model'
 
-// Base schemas
-const baseItemSchema = z.object({
-  id: z.string().min(1, 'ID is required').regex(/^[a-zA-Z0-9_-]+$/, 'ID can only contain letters, numbers, underscores, and hyphens'),
-  comment: z.string().optional()
-})
+// Form data utility type and aliases
+type FormData<T extends AnyItem> = EntityValue<T> & { id: string }
 
-const metaInfoSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  difficulty: z.enum(['easy', 'medium', 'hard', 'expert', 'legendary']).optional(),
-  estimated_time: z.string().optional(),
+export type GoalFormData = FormData<Goal>
+export type ScenarioFormData = FormData<Scenario>
+export type CampaignFormData = FormData<Campaign>
+export type CampaignManifestFormData = FormData<PackageManifest>
+
+// Common field schemas - reusable patterns
+const optionalString = z.string().optional()
+const requiredString = z.string().min(1, 'This field is required')
+const optionalNumber = z.number().optional()
+const optionalBoolean = z.boolean().optional()
+const optionalStringArray = z.array(z.string()).optional()
+
+// Semantic field names
+const commentField = optionalString
+const nameField = z.string().min(1, 'Name is required')
+const idField = z
+  .string()
+  .min(1, 'ID is required')
+  .regex(/^[a-zA-Z0-9_-]+$/, 'ID can only contain letters, numbers, underscores, and hyphens')
+
+// Common object patterns - removed unused helper functions
+
+// Reusable object schemas for common patterns
+const sharedInfrastructureShape = {
+  track: optionalBoolean,
+  stations: optionalBoolean,
+  vehicles: optionalBoolean,
+  depots: optionalBoolean,
+  comment: commentField,
+} as const
+
+const rewardSetShape = {
+  cash: optionalNumber,
+  score: optionalNumber,
+  reputation: optionalNumber,
+  unlocks: optionalStringArray,
+  comment: commentField,
+} as const
+
+const constraintsShape = () =>
+  ({
+    players: rangeSchema.optional(),
+    date: rangeSchema.optional(),
+    map_size: rangeSchema.optional(),
+    difficulty: rangeSchema.optional(),
+    conditional: z.array(conditionalConstraintSchema).optional(),
+    comment: commentField,
+  }) as const
+
+// Note: Since SharedInfrastructure, RewardSet, and Constraints already have all optional fields,
+// Partial<T> is identical to T, so we can use the base schemas directly with .optional()
+
+// Common validation ranges
+const playerRange = z.number().min(1, 'Minimum players must be at least 1').max(8, 'Maximum players cannot exceed 8')
+const yearRange = z.number().min(1920, 'Start year must be 1920 or later').max(2100, 'End year cannot exceed 2100')
+const mapSizeRange = z
+  .number()
+  .min(64, 'Minimum map size must be at least 64')
+  .max(2048, 'Maximum map size cannot exceed 2048')
+const nonNegativeNumber = z.number().min(0, 'Value must be non-negative')
+const difficultySchema = z.enum(['easy', 'medium', 'hard', 'expert', 'legendary'] as const)
+
+// Base schemas that match model types exactly
+const metaInfoSchema: z.ZodType<MetaInfo> = z.object({
+  author: optionalString,
+  description: optionalString,
+  difficulty: difficultySchema.optional(),
+  estimated_time: optionalString,
   tags: z.array(z.string()).default([]),
   requirements: z.array(z.string()).default([]),
   prerequisites: z.array(z.string()).default([]),
-  comment: z.string().optional()
-}).default({})
-
-const constraintsSchema = z.object({
-  players: z.object({
-    min: z.number().min(1, 'Minimum players must be at least 1').max(8, 'Maximum players cannot exceed 8').optional(),
-    max: z.number().min(1, 'Minimum players must be at least 1').max(8, 'Maximum players cannot exceed 8').optional()
-  }).default({}),
-  date: z.object({
-    min: z.number().min(1920, 'Start year must be 1920 or later').max(2100, 'Start year cannot exceed 2100').optional(),
-    max: z.number().min(1920, 'End year must be 1920 or later').max(2100, 'End year cannot exceed 2100').optional()
-  }).default({}),
-  map_size: z.object({
-    min: z.number().min(64, 'Minimum map size must be at least 64').max(2048, 'Maximum map size cannot exceed 2048').optional(),
-    max: z.number().min(64, 'Minimum map size must be at least 64').max(2048, 'Maximum map size cannot exceed 2048').optional()
-  }).default({}),
-  difficulty: z.object({
-    min: z.string().optional(),
-    max: z.string().optional()
-  }).default({}),
-  comment: z.string().optional()
-}).default({})
-
-const sharedInfrastructureSchema = z.object({
-  track: z.boolean().default(false),
-  stations: z.boolean().default(false),
-  vehicles: z.boolean().default(false),
-  depots: z.boolean().default(false),
-  comment: z.string().optional()
-}).default({})
-
-const rewardSetSchema = z.object({
-  cash: z.number().min(0, 'Cash reward cannot be negative').optional(),
-  score: z.number().min(0, 'Score points cannot be negative').optional(),
-  reputation: z.number().min(0, 'Reputation cannot be negative').optional(),
-  unlock: z.string().optional(),
-  achievement: z.string().optional(),
-  bonus: z.object({
-    type: z.enum(['multiplier', 'percentage']),
-    amount: z.number().min(0, 'Bonus amount cannot be negative'),
-    target: z.string().min(1, 'Bonus target is required')
-  }).optional()
-}).default({})
-
-const rewardsSchema = z.object({
-  completion: rewardSetSchema,
-  partial: rewardSetSchema.optional(),
-  comment: z.string().optional()
-}).default({})
-
-const objectiveSchema = z.object({
-  type: z.enum(['cargo_delivered', 'network_length', 'profit', 'station_built', 'company_value', 'town_growth']),
-  amount: z.number().min(0, 'Amount must be non-negative').optional(),
-  cargo: z.string().optional(),
-  cargo_types: z.array(z.string()).default([]),
-  time_limit: z.number().min(0, 'Time limit must be non-negative').optional(),
-  track_type: z.string().optional(),
-  target: z.string().optional(),
-  min_value: z.number().min(0, 'Minimum value must be non-negative').optional(),
-  town_id: z.string().optional(),
-  target_population: z.number().min(0, 'Target population must be non-negative').optional(),
-  location: z.string().optional(),
-  count: z.number().min(0, 'Count must be non-negative').optional(),
-  comment: z.string().optional()
+  comment: commentField,
 })
 
-// Goal schema
-const goalSchemaBase = baseItemSchema.extend({
-  type: z.enum(['player', 'company', 'scenario', 'campaign']).optional(),
-  objective: objectiveSchema,
+const rangeSchema: z.ZodType<Range> = z.object({
+  min: optionalNumber,
+  max: optionalNumber,
+})
+
+// Use lazy evaluation to handle circular reference in Constraints
+const constraintsSchema: z.ZodType<Constraints> = z.lazy(() => z.object(constraintsShape()))
+
+const conditionalConstraintSchema: z.ZodType<ConditionalConstraint> = z.object({
+  condition: z.object({
+    type: z.string(),
+    operator: optionalString,
+    value: z.union([z.number(), z.string()]).optional(),
+  }),
+  constraint: constraintsSchema,
+})
+
+const sharedInfrastructureSchema: z.ZodType<SharedInfrastructure> = z.object(sharedInfrastructureShape)
+
+const rewardSetSchema: z.ZodType<RewardSet> = z.object(rewardSetShape)
+
+const objectiveTypeSchema = z.enum([
+  'cargo_delivered',
+  'network_length',
+  'profit',
+  'station_built',
+  'company_value',
+  'town_growth',
+] as const)
+
+const objectiveSchema: z.ZodType<Objective> = z.object({
+  type: objectiveTypeSchema,
+  amount: optionalNumber,
+  cargo: optionalString,
+  cargo_types: optionalStringArray,
+  time_limit: optionalNumber,
+  track_type: optionalString,
+  target: optionalString,
+  min_value: optionalNumber,
+  town_id: optionalString,
+  target_population: optionalNumber,
+  location: optionalString,
+  count: optionalNumber,
+  comment: commentField,
+})
+
+const conditionSchema: z.ZodType<Condition> = z.object({
+  type: z.string(),
+  threshold: optionalNumber,
+  target: optionalString,
+  comment: commentField,
+})
+
+const campaignScenarioOverridesSchema: z.ZodType<CampaignScenarioOverrides> = z.object({
+  shared: sharedInfrastructureSchema.optional(),
+  result: rewardSetSchema.optional(),
+  constraints: constraintsSchema.optional(),
+  comment: commentField,
+})
+
+const campaignScenarioSchema: z.ZodType<CampaignScenario> = z.object({
+  include: z.string(),
+  order: optionalNumber,
+  required: optionalBoolean,
+  branch: optionalString,
+  condition: conditionSchema.optional(),
+  overrides: campaignScenarioOverridesSchema.optional(),
+  comment: commentField,
+})
+
+const campaignBranchSchema: z.ZodType<CampaignBranch> = z.object({
+  name: z.string(),
+  description: optionalString,
+  unlock_condition: conditionSchema.optional(),
+  scenarios: z.array(campaignScenarioSchema),
+  comment: commentField,
+})
+
+const campaignProgressionRequirementSchema: z.ZodType<CampaignProgressionRequirement> = z.object({
+  scenario: z.string(),
+  completion_threshold: z.number(),
+  unlocks: optionalString,
+  comment: commentField,
+})
+
+const campaignProgressionSchema: z.ZodType<CampaignProgression> = z.object({
+  type: z.enum(['linear', 'branching'] as const),
+  unlock_requirements: z.array(campaignProgressionRequirementSchema).optional(),
+  unlock_order: optionalStringArray,
+  comment: commentField,
+})
+
+const campaignMilestoneSchema: z.ZodType<CampaignMilestone> = z.object({
+  name: z.string(),
+  description: z.string(),
+  reward: rewardSetSchema,
+  condition: conditionSchema.optional(),
+  comment: commentField,
+})
+
+const scalingFactorSchema: z.ZodType<ScalingFactor> = z.object({
+  factor: z.string(),
+  adjustment: z.number(),
+})
+
+const difficultyScalingAdaptationSchema: z.ZodType<DifficultyScalingAdaptation> = z.object({
+  enabled: z.boolean(),
+  adjustment_rate: z.number(),
+  max_adjustment: z.number(),
+  comment: commentField,
+})
+
+const difficultyScalingSchema: z.ZodType<DifficultyScaling> = z.object({
+  enabled: z.boolean(),
+  base_difficulty: z.string(),
+  scaling_factors: z.array(scalingFactorSchema).optional(),
+  adaptive: difficultyScalingAdaptationSchema.optional(),
+  comment: z.string().optional(),
+})
+
+const rewardsSchema: z.ZodType<Rewards> = z.object({
+  completion: rewardSetSchema.optional(),
+  milestones: z.array(campaignMilestoneSchema).optional(),
+  scaling: difficultyScalingSchema.optional(),
+  comment: z.string().optional(),
+})
+
+const campaignSettingsSchema: z.ZodType<CampaignSettings> = z.object({
+  economy: z.string().optional(),
+  disasters: z.boolean().optional(),
+  breakdowns: z.boolean().optional(),
+  inflation: z.boolean().optional(),
+  comment: z.string().optional(),
+})
+
+const goalTypeSchema = z.enum(['player', 'company', 'scenario', 'campaign'] as const)
+
+const goalOverridesSchema: z.ZodType<GoalOverrides> = z.object({
+  shared: sharedInfrastructureSchema.optional(),
+  result: rewardSetSchema.optional(),
+  constraints: constraintsSchema.optional(),
+  comment: commentField,
+})
+
+const scenarioGoalSchema: z.ZodType<ScenarioGoal> = z.object({
+  include: z.string(),
+  order: z.number().optional(),
+  required: z.boolean().optional(),
+  branch: z.string().optional(),
+  condition: conditionSchema.optional(),
+  overrides: goalOverridesSchema.optional(),
+  comment: z.string().optional(),
+})
+
+const scenarioDefaultsSchema: z.ZodType<ScenarioDefaults> = z.object({
+  shared: sharedInfrastructureSchema.optional(),
+  result: rewardSetSchema.optional(),
+  constraints: constraintsSchema.optional(),
+  comment: z.string().optional(),
+})
+
+const packageStructureSchema: z.ZodType<PackageStructure> = z.object({
+  goals: z.string(),
+  scenarios: z.string(),
+  campaigns: z.string(),
+  comment: z.string().optional(),
+})
+
+// Main entity schemas - using FormData types for form validation
+const goalSchemaBase: z.ZodType<GoalFormData> = z.object({
+  id: z.string(),
+  name: z.string(),
+  comment: z.string().optional(),
+  meta: metaInfoSchema,
+  type: goalTypeSchema.optional(),
+  objective: objectiveSchema.optional(),
   constraints: constraintsSchema.optional(),
   shared: sharedInfrastructureSchema.optional(),
   result: rewardSetSchema.optional(),
-  meta: metaInfoSchema.optional()
 })
 
-export const goalSchema = toTypedSchema(goalSchemaBase)
-
-// Scenario schema
-const scenarioGoalSchema = z.object({
-  include: z.string().min(1, 'Scenario ID is required'),
-  order: z.number().min(1, 'Order must be at least 1').optional(),
-  required: z.boolean().default(true),
-  branch: z.string().optional(),
-  condition: z.object({
-    type: z.string(),
-    threshold: z.number().optional(),
-    target: z.string().optional()
-  }).optional(),
-  overrides: z.object({
-    objective: objectiveSchema.optional(),
-    constraints: constraintsSchema.optional(),
-    result: rewardSetSchema.optional()
-  }).optional(),
-  comment: z.string().optional()
-})
-
-const scenarioSettingsSchema = z.object({
-  economy: z.string().optional(),
-  disasters: z.boolean().default(false),
-  breakdowns: z.boolean().default(false),
-  inflation: z.boolean().default(false),
-  seasons: z.boolean().default(false),
-  comment: z.string().optional()
-}).default({})
-
-const scenarioSchemaBase = baseItemSchema.extend({
-  defaults: z.object({
-    shared: sharedInfrastructureSchema.optional(),
-    result: rewardSetSchema.optional(),
-    constraints: constraintsSchema.optional(),
-    comment: z.string().optional()
-  }).optional(),
-  goals: z.array(scenarioGoalSchema).default([]),
+const scenarioSchemaBase: z.ZodType<ScenarioFormData> = z.object({
+  id: z.string(),
+  name: z.string(),
+  comment: z.string().optional(),
+  meta: metaInfoSchema,
+  goals: z.array(scenarioGoalSchema).optional(),
   constraints: constraintsSchema.optional(),
-  meta: metaInfoSchema.optional(),
-  settings: scenarioSettingsSchema.optional(),
-  rewards: rewardsSchema.optional(),
-  objectives: z.object({
-    primary: z.array(z.string()).default([]),
-    secondary: z.array(z.string()).default([]),
-    comment: z.string().optional()
-  }).optional(),
-  dependencies: z.array(z.object({
-    goal: z.string(),
-    required_by: z.string(),
-    comment: z.string().optional()
-  })).default([]),
-  conditional_rewards: z.array(z.object({
-    condition: z.object({
-      type: z.string(),
-      threshold: z.number(),
-    }),
-    reward: rewardSetSchema,
-    comment: z.string().optional()
-  })).default([]),
-  progression: z.object({
-    unlock_order: z.array(z.string()).default([]),
-    milestone_rewards: z.array(z.object({
-      milestone: z.string(),
-      reward: z.string()
-    })).default([]),
-    comment: z.string().optional()
-  }).optional()
+  defaults: scenarioDefaultsSchema.optional(),
 })
 
-export const scenarioSchema = toTypedSchema(scenarioSchemaBase)
-
-// Campaign schema
-const campaignScenarioSchema = z.object({
-  include: z.string().min(1, 'Scenario ID is required'),
-  order: z.number().min(1, 'Order must be at least 1'),
-  required: z.boolean().default(true),
-  branch: z.string().optional(),
-  condition: z.object({
-    type: z.string(),
-    threshold: z.number().optional(),
-    target: z.string().optional()
-  }).optional(),
-  comment: z.string().optional()
-})
-
-const campaignSettingsSchema = z.object({
-  economy: z.string().optional(),
-  disasters: z.boolean().default(false),
-  breakdowns: z.boolean().default(false),
-  inflation: z.boolean().default(false),
-  seasons: z.boolean().default(false),
-  comment: z.string().optional()
-}).default({})
-
-const campaignSchemaBase = baseItemSchema.extend({
-  scenarios: z.array(campaignScenarioSchema).default([]),
-  branches: z.record(z.array(z.string())).optional(),
-  progression: z.object({
-    type: z.enum(['linear', 'branching']),
-    unlock_requirements: z.array(z.object({
-      scenario: z.string(),
-      completion_threshold: z.number().min(0).max(100),
-      unlocks: z.string().optional(),
-      comment: z.string().optional()
-    })).default([]),
-    unlock_order: z.array(z.string()).default([]),
-    comment: z.string().optional()
-  }).optional(),
+const campaignSchemaBase: z.ZodType<CampaignFormData> = z.object({
+  id: z.string(),
+  name: z.string(),
+  comment: z.string().optional(),
+  meta: metaInfoSchema,
+  scenarios: z.array(campaignScenarioSchema).optional(),
+  branches: campaignBranchSchema.optional(),
+  progression: campaignProgressionSchema.optional(),
   constraints: constraintsSchema.optional(),
   rewards: rewardsSchema.optional(),
-  meta: metaInfoSchema.optional(),
   settings: campaignSettingsSchema.optional(),
-  features: z.array(z.string()).default([]),
-  milestones: z.array(z.object({
-    name: z.string().min(1, 'Milestone name is required'),
-    description: z.string().min(1, 'Milestone description is required'),
-    reward: rewardSetSchema,
-    condition: z.object({
-      type: z.string(),
-      threshold: z.number().optional(),
-      scenario: z.string().optional()
-    }).optional()
-  })).default([]),
-  difficulty_scaling: z.object({
-    enabled: z.boolean().default(false),
-    base_difficulty: z.string(),
-    scaling_factors: z.array(z.object({
-      factor: z.string(),
-      adjustment: z.number()
-    })).default([]),
-    adaptive: z.object({
-      enabled: z.boolean().default(false),
-      adjustment_rate: z.number().min(0).max(1),
-      max_adjustment: z.number().min(0)
-    }).optional(),
-    comment: z.string().optional()
-  }).optional(),
-  // Editor-specific properties
-  lastModified: z.number().optional(),
-  modified: z.boolean().default(false),
-  filePath: z.string().optional()
 })
 
-export const campaignSchema = toTypedSchema(campaignSchemaBase)
-
-// Campaign Manifest schema
-const campaignManifestSchemaBase = z.object({
-  name: z.string().min(1, 'Manifest name is required'),
-  version: z.string().min(1, 'Version is required').regex(/^\d+\.\d+\.\d+$/, 'Version must be in format x.y.z'),
-  description: z.string().min(1, 'Description is required'),
-  author: z.string().min(1, 'Author is required'),
-  tags: z.array(z.string()).default([]),
-  structure: z.object({
-    goals: z.string().min(1, 'Goals path is required'),
-    scenarios: z.string().min(1, 'Scenarios path is required'),
-    campaigns: z.string().min(1, 'Campaigns path is required')
-  }),
-  main_campaign: z.string().min(1, 'Main campaign is required'),
+const campaignManifestSchemaBase: z.ZodType<CampaignManifestFormData> = z.object({
+  id: z.string(),
+  name: z.string(),
+  comment: z.string().optional(),
+  meta: metaInfoSchema,
+  tags: z.array(z.string()),
+  structure: packageStructureSchema,
+  main_campaign: z.string().optional(),
   dependencies: z.object({
-    coopetition_version: z.string().min(1, 'Coopetition version is required')
+    coopetition_version: z.string(),
   }),
-  install: z.object({
-    copy_to: z.string().min(1, 'Install path is required'),
-    requires: z.array(z.string()).default([])
-  }),
-  created: z.string().min(1, 'Created date is required'),
-  updated: z.string().min(1, 'Updated date is required')
+  install: z
+    .object({
+      copy_to: z.string(),
+      requires: z.array(z.string()),
+    })
+    .optional(),
 })
 
+// VeeValidate typed schemas
+export const goalSchema = toTypedSchema(goalSchemaBase)
+export const scenarioSchema = toTypedSchema(scenarioSchemaBase)
+export const campaignSchema = toTypedSchema(campaignSchemaBase)
 export const campaignManifestSchema = toTypedSchema(campaignManifestSchemaBase)
 
 // Export all schemas as a collection
@@ -268,11 +346,7 @@ export const schemas = {
   goal: goalSchemaBase,
   scenario: scenarioSchemaBase,
   campaign: campaignSchemaBase,
-  campaignManifest: campaignManifestSchemaBase
+  campaignManifest: campaignManifestSchemaBase,
 } as const
 
-// Type exports for use in components
-export type GoalFormData = z.infer<typeof goalSchemaBase>
-export type ScenarioFormData = z.infer<typeof scenarioSchemaBase>
-export type CampaignFormData = z.infer<typeof campaignSchemaBase>
-export type CampaignManifestFormData = z.infer<typeof campaignManifestSchemaBase>
+// Type exports are now at the top of the file with the utility type

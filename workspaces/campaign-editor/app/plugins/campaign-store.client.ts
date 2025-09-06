@@ -1,10 +1,10 @@
 export default defineNuxtPlugin(() => {
-  // The composable will be available globally
-  const campaignStore = useCampaignStore()
-  
+  // The entity store is available globally
+  const entityStore = useEntityStore()
+
   return {
     provide: {
-      campaignStore
-    }
+      entityStore,
+    },
   }
 })

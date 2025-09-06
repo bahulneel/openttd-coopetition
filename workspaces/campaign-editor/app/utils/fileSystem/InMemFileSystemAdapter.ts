@@ -1,148 +1,137 @@
-import { FileSystemFeature } from '~/types/campaign'
+import type { AnyEntity, FileSystemAdapter, Storable, EntityFile, FeatureZipImport, FeatureZipExport } from '~/types'
+import { FileSystemFeature } from '~/types'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
-import type { Campaign, Goal, Scenario, CampaignManifest, FileSystemAdapter, FeatureZipImport, FeatureZipExport } from '~/types/index'
 
-// In-memory adapter (for browser-only mode)
+// In-memory adapter (for browser-only mode) - simple KV store
 export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImport, FeatureZipExport {
-  private campaigns: Campaign[] = []
-  private goals: Goal[] = []
-  private scenarios: Scenario[] = []
-  private manifest: CampaignManifest | undefined = undefined
+  private store: Map<string, Storable<AnyEntity>> = new Map()
 
   constructor() {
     // Load from localStorage if available
     this.loadFromLocalStorage()
   }
 
-  async loadCampaigns(): Promise<Campaign[]> {
-    return [...this.campaigns]
+  async load<T extends AnyEntity>(path: string): Promise<Storable<T> | undefined> {
+    return this.store.get(path) as Storable<T> | undefined
   }
 
-  async loadGoals(): Promise<Goal[]> {
-    return [...this.goals]
+  async save<T extends AnyEntity>(entityFile: EntityFile<T>): Promise<void> {
+    this.store.set(entityFile.path, entityFile.storable)
+    this.saveToLocalStorage()
   }
 
-  async loadScenarios(): Promise<Scenario[]> {
-    return [...this.scenarios]
+  async delete(path: string): Promise<void> {
+    this.store.delete(path)
+    this.saveToLocalStorage()
   }
 
-  async loadManifest(): Promise<CampaignManifest | undefined> {
-    return this.manifest
+  async loadAll<T extends AnyEntity>(pattern: string): Promise<Storable<T>[]> {
+    // For now, return all entities regardless of pattern
+    // In a more sophisticated implementation, we could parse the pattern
+    return Array.from(this.store.values()) as Storable<T>[]
   }
 
-  async saveCampaign(campaign: Campaign): Promise<void> {
-    const existingIndex = this.campaigns.findIndex(c => c.id === campaign.id)
-    if (existingIndex !== -1) {
-      this.campaigns[existingIndex] = campaign
-    } else {
-      this.campaigns.push(campaign)
+  supports(feature: FileSystemFeature): boolean {
+    switch (feature) {
+      case FileSystemFeature.ZIP_IMPORT:
+        return true // In-memory adapter supports ZIP import
+      case FileSystemFeature.ZIP_EXPORT:
+        return true // In-memory adapter supports ZIP export
+      case FileSystemFeature.WATCH:
+        return false // In-memory adapter doesn't support watching
+      case FileSystemFeature.PERSISTENCE:
+        return true // In-memory adapter supports persistence via localStorage
+      default:
+        return false
     }
-    this.saveToLocalStorage()
   }
 
-  async saveGoal(goal: Goal): Promise<void> {
-    const existingIndex = this.goals.findIndex(g => g.id === goal.id)
-    if (existingIndex !== -1) {
-      this.goals[existingIndex] = goal
-    } else {
-      this.goals.push(goal)
-    }
-    this.saveToLocalStorage()
-  }
-
-  async saveScenario(scenario: Scenario): Promise<void> {
-    const existingIndex = this.scenarios.findIndex(s => s.id === scenario.id)
-    if (existingIndex !== -1) {
-      this.scenarios[existingIndex] = scenario
-    } else {
-      this.scenarios.push(scenario)
-    }
-    this.saveToLocalStorage()
-  }
-
-  async saveManifest(manifest: CampaignManifest): Promise<void> {
-    this.manifest = manifest
-    this.saveToLocalStorage()
-  }
-
-  async deleteCampaign(id: string): Promise<void> {
-    this.campaigns = this.campaigns.filter(c => c.id !== id)
-    this.saveToLocalStorage()
-  }
-
-  async deleteGoal(id: string): Promise<void> {
-    this.goals = this.goals.filter(g => g.id !== id)
-    this.saveToLocalStorage()
-  }
-
-  async deleteScenario(id: string): Promise<void> {
-    this.scenarios = this.scenarios.filter(s => s.id !== id)
-    this.saveToLocalStorage()
-  }
-
+  // ZIP export functionality
   async exportAll(): Promise<Blob> {
     const zip = new JSZip()
-    
+
+    // Group entities by type for folder structure
+    const campaigns: Storable<AnyEntity>[] = []
+    const goals: Storable<AnyEntity>[] = []
+    const scenarios: Storable<AnyEntity>[] = []
+    let manifest: Storable<AnyEntity> | undefined
+
+    for (const entity of this.store.values()) {
+      if (entity.__type === 'Campaign') {
+        campaigns.push(entity)
+      } else if (entity.__type === 'Goal') {
+        goals.push(entity)
+      } else if (entity.__type === 'Scenario') {
+        scenarios.push(entity)
+      } else if (entity.__type === 'Manifest') {
+        manifest = entity
+      }
+    }
+
     // Add campaigns
     const campaignsFolder = zip.folder('campaigns')
-    for (const campaign of this.campaigns) {
+    for (const campaign of campaigns) {
       const yamlContent = stringifyYAML(campaign)
-      campaignsFolder?.file(`${campaign.id}.yaml`, yamlContent)
+      campaignsFolder?.file(`${campaign.__meta.filename}`, yamlContent)
     }
-    
+
     // Add goals
     const goalsFolder = zip.folder('goals')
-    for (const goal of this.goals) {
+    for (const goal of goals) {
       const yamlContent = stringifyYAML(goal)
-      goalsFolder?.file(`${goal.id}.yaml`, yamlContent)
+      goalsFolder?.file(`${goal.__meta.filename}`, yamlContent)
     }
-    
+
     // Add scenarios
     const scenariosFolder = zip.folder('scenarios')
-    for (const scenario of this.scenarios) {
+    for (const scenario of scenarios) {
       const yamlContent = stringifyYAML(scenario)
-      scenariosFolder?.file(`${scenario.id}.yaml`, yamlContent)
+      scenariosFolder?.file(`${scenario.__meta.filename}`, yamlContent)
     }
-    
+
     // Add manifest
-    if (this.manifest) {
-      const manifestContent = stringifyYAML(this.manifest)
+    if (manifest) {
+      const manifestContent = stringifyYAML(manifest)
       zip.file('manifest.yaml', manifestContent)
     }
-    
+
     return await zip.generateAsync({ type: 'blob' })
   }
 
+  // ZIP import functionality
   async importFromZip(file: File): Promise<void> {
     const zip = new JSZip()
     const zipContents = await zip.loadAsync(file)
-    
+
     // Clear existing data
-    this.campaigns = []
-    this.goals = []
-    this.scenarios = []
-    this.manifest = undefined
-    
+    this.store.clear()
+
     // Process each file in the ZIP
     for (const [filename, zipFile] of Object.entries(zipContents.files)) {
       if (zipFile.dir) continue
-      
+
       const content = await zipFile.async('text')
       const yamlData = parseYAML(content)
-      
-      if (filename.startsWith('campaigns/') && filename.endsWith('.yaml')) {
-        this.campaigns.push(yamlData as Campaign)
-      } else if (filename.startsWith('goals/') && filename.endsWith('.yaml')) {
-        this.goals.push(yamlData as Goal)
-      } else if (filename.startsWith('scenarios/') && filename.endsWith('.yaml')) {
-        this.scenarios.push(yamlData as Scenario)
+
+      // Determine the path based on the file location
+      let path: string
+      if (filename.startsWith('campaigns/')) {
+        path = `campaigns/${filename.replace('campaigns/', '')}`
+      } else if (filename.startsWith('goals/')) {
+        path = `goals/${filename.replace('goals/', '')}`
+      } else if (filename.startsWith('scenarios/')) {
+        path = `scenarios/${filename.replace('scenarios/', '')}`
       } else if (filename === 'manifest.yaml') {
-        this.manifest = yamlData as CampaignManifest
+        path = 'manifest.yaml'
+      } else {
+        continue // Skip unknown files
       }
+
+      this.store.set(path, yamlData as Storable<AnyEntity>)
     }
-    
+
     this.saveToLocalStorage()
   }
 
@@ -153,24 +142,10 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
 
   private loadFromLocalStorage(): void {
     try {
-      const campaignsData = localStorage.getItem('campaigns')
-      if (campaignsData) {
-        this.campaigns = JSON.parse(campaignsData)
-      }
-      
-      const goalsData = localStorage.getItem('goals')
-      if (goalsData) {
-        this.goals = JSON.parse(goalsData)
-      }
-      
-      const scenariosData = localStorage.getItem('scenarios')
-      if (scenariosData) {
-        this.scenarios = JSON.parse(scenariosData)
-      }
-      
-      const manifestData = localStorage.getItem('manifest')
-      if (manifestData) {
-        this.manifest = JSON.parse(manifestData)
+      const storeData = localStorage.getItem('fileSystemStore')
+      if (storeData) {
+        const parsed = JSON.parse(storeData)
+        this.store = new Map(parsed)
       }
     } catch (error) {
       console.warn('Failed to load data from localStorage:', error)
@@ -179,25 +154,10 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
 
   private saveToLocalStorage(): void {
     try {
-      localStorage.setItem('campaigns', JSON.stringify(this.campaigns))
-      localStorage.setItem('goals', JSON.stringify(this.goals))
-      localStorage.setItem('scenarios', JSON.stringify(this.scenarios))
-      if (this.manifest) {
-        localStorage.setItem('manifest', JSON.stringify(this.manifest))
-      }
+      const storeArray = Array.from(this.store.entries())
+      localStorage.setItem('fileSystemStore', JSON.stringify(storeArray))
     } catch (error) {
       console.warn('Failed to save to localStorage:', error)
-    }
-  }
-
-  supports(feature: FileSystemFeature): boolean {
-    switch (feature) {
-      case FileSystemFeature.ZIP_IMPORT:
-        return true // In-memory adapter supports ZIP import
-      case FileSystemFeature.ZIP_EXPORT:
-        return true // In-memory adapter supports ZIP export
-      default:
-        return false
     }
   }
 }

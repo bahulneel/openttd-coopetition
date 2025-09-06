@@ -51,17 +51,12 @@
           <!-- Basic Information -->
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-foreground">Basic Information</h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="id">Scenario ID</Label>
-                <Input
-                  id="id"
-                  v-model="form.id"
-                  placeholder="e.g., industrial_hub_scenario"
-                  class="openttd-input"
-                  required
-                />
+                <Input id="id" v-model="form.id" placeholder="e.g., industrial_hub_scenario" class="openttd-input"
+                  required />
                 <p class="text-sm text-muted-foreground mt-1">
                   Unique identifier for this scenario
                 </p>
@@ -70,29 +65,20 @@
 
             <div>
               <Label for="title">Title</Label>
-              <Input
-                id="title"
-                v-model="form.meta.title"
-                placeholder="e.g., Industrial Hub Challenge"
-                class="openttd-input"
-              />
+              <Input id="title" v-model="form.meta!.title" placeholder="e.g., Industrial Hub Challenge"
+                class="openttd-input" />
             </div>
 
             <div>
               <Label for="description">Description</Label>
-              <Textarea
-                id="description"
-                v-model="form.meta.description"
-                placeholder="Describe what this scenario requires players to do..."
-                class="openttd-input"
-                rows="3"
-              />
+              <Textarea id="description" v-model="form.meta!.description"
+                placeholder="Describe what this scenario requires players to do..." class="openttd-input" rows="3" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="difficulty">Difficulty</Label>
-                <Select v-model="form.meta.difficulty">
+                <Select v-model="form.meta!.difficulty">
                   <SelectTrigger class="openttd-input">
                     <SelectValue placeholder="Select difficulty" />
                   </SelectTrigger>
@@ -108,12 +94,8 @@
 
               <div>
                 <Label for="estimated_time">Estimated Time</Label>
-                <Input
-                  id="estimated_time"
-                  v-model="form.meta.estimated_time"
-                  placeholder="e.g., 2 hours"
-                  class="openttd-input"
-                />
+                <Input id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 2 hours"
+                  class="openttd-input" />
               </div>
             </div>
           </div>
@@ -121,20 +103,17 @@
           <!-- Goals Selection -->
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-foreground">Goals</h3>
-            
+
             <div v-if="availableGoals.length === 0" class="text-center py-8 text-muted-foreground">
-              <p>No goals available. <NuxtLink to="/goals" class="text-openttd-blue hover:underline">Create some goals first</NuxtLink>.</p>
+              <p>No goals available. <NuxtLink to="/goals" class="text-openttd-blue hover:underline">Create some goals
+                  first</NuxtLink>.</p>
             </div>
-            
+
             <div v-else class="space-y-3">
-              <div v-for="goal in availableGoals" :key="goal.id" class="flex items-center space-x-3 p-3 border rounded-lg">
-                <input
-                  :id="`goal-${goal.id}`"
-                  v-model="selectedGoals"
-                  :value="goal.id"
-                  type="checkbox"
-                  class="openttd-checkbox"
-                >
+              <div v-for="goal in availableGoals" :key="goal.id"
+                class="flex items-center space-x-3 p-3 border rounded-lg">
+                <input :id="`goal-${goal.id}`" v-model="selectedGoals" :value="goal.id" type="checkbox"
+                  class="openttd-checkbox">
                 <label :for="`goal-${goal.id}`" class="flex-1 cursor-pointer">
                   <div class="font-medium">{{ goal.meta?.title || goal.id }}</div>
                   <div class="text-sm text-muted-foreground">{{ goal.meta?.description || goal.comment }}</div>
@@ -149,54 +128,32 @@
           <!-- Constraints -->
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-foreground">Constraints</h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_players">Minimum Players</Label>
-                <Input
-                  id="min_players"
-                  v-model.number="form.constraints.players.min"
-                  type="number"
-                  min="1"
-                  max="8"
-                  class="openttd-input"
-                />
+                <Input id="min_players" v-model.number="form.constraints!.players!.min" type="number" min="1" max="8"
+                  class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_players">Maximum Players</Label>
-                <Input
-                  id="max_players"
-                  v-model.number="form.constraints.players.max"
-                  type="number"
-                  min="1"
-                  max="8"
-                  class="openttd-input"
-                />
+                <Input id="max_players" v-model.number="form.constraints!.players!.max" type="number" min="1" max="8"
+                  class="openttd-input" />
               </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_date">Minimum Date</Label>
-                <Input
-                  id="min_date"
-                  v-model.number="form.constraints.date.min"
-                  type="number"
-                  placeholder="e.g., 1950"
-                  class="openttd-input"
-                />
+                <Input id="min_date" v-model.number="form.constraints!.date!.min" type="number" placeholder="e.g., 1950"
+                  class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_date">Maximum Date</Label>
-                <Input
-                  id="max_date"
-                  v-model.number="form.constraints.date.max"
-                  type="number"
-                  placeholder="e.g., 2050"
-                  class="openttd-input"
-                />
+                <Input id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeholder="e.g., 2050"
+                  class="openttd-input" />
               </div>
             </div>
           </div>
@@ -204,11 +161,11 @@
           <!-- Game Settings -->
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-foreground">Game Settings</h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="economy">Economy</Label>
-                <Select v-model="form.settings.economy">
+                <Select v-model="form.settings!.economy">
                   <SelectTrigger class="openttd-input">
                     <SelectValue placeholder="Select economy type" />
                   </SelectTrigger>
@@ -223,42 +180,22 @@
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div class="flex items-center space-x-2">
-                <input
-                  id="disasters"
-                  v-model="form.settings.disasters"
-                  type="checkbox"
-                  class="openttd-checkbox"
-                >
+                <input id="disasters" v-model="form.settings!.disasters" type="checkbox" class="openttd-checkbox">
                 <label for="disasters" class="text-sm">Disasters</label>
               </div>
 
               <div class="flex items-center space-x-2">
-                <input
-                  id="breakdowns"
-                  v-model="form.settings.breakdowns"
-                  type="checkbox"
-                  class="openttd-checkbox"
-                >
+                <input id="breakdowns" v-model="form.settings!.breakdowns" type="checkbox" class="openttd-checkbox">
                 <label for="breakdowns" class="text-sm">Breakdowns</label>
               </div>
 
               <div class="flex items-center space-x-2">
-                <input
-                  id="inflation"
-                  v-model="form.settings.inflation"
-                  type="checkbox"
-                  class="openttd-checkbox"
-                >
+                <input id="inflation" v-model="form.settings!.inflation" type="checkbox" class="openttd-checkbox">
                 <label for="inflation" class="text-sm">Inflation</label>
               </div>
 
               <div class="flex items-center space-x-2">
-                <input
-                  id="seasons"
-                  v-model="form.settings.seasons"
-                  type="checkbox"
-                  class="openttd-checkbox"
-                >
+                <input id="seasons" v-model="form.settings!.seasons" type="checkbox" class="openttd-checkbox">
                 <label for="seasons" class="text-sm">Seasons</label>
               </div>
             </div>
@@ -266,19 +203,10 @@
 
           <!-- Actions -->
           <div class="flex justify-end space-x-4 pt-6 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              class="openttd-button"
-              @click="navigateTo('/scenarios')"
-            >
+            <Button type="button" variant="outline" class="openttd-button" @click="navigateTo('/scenarios')">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              :disabled="loading"
-              class="openttd-button bg-openttd-purple text-white"
-            >
+            <Button type="submit" :disabled="loading" class="openttd-button bg-openttd-purple text-white">
               {{ loading ? 'Saving...' : 'Save Changes' }}
             </Button>
           </div>
@@ -292,18 +220,18 @@
 import type { Scenario } from '~/types/campaign'
 
 const route = useRoute()
-const { getScenario, saveScenario: saveScenarioStore, goals, loading } = useCampaignStore()
+const { getScenario, saveScenario: saveScenarioStore, createEmptyScenario, goals, loading } = useCampaignStore()
 const toast = useToast()
 
 const scenarioId = route.params.id as string
 const scenario = ref<Scenario | undefined>(undefined)
-const form = ref<Scenario | undefined>(undefined)
+const form = ref<Scenario>(createEmptyScenario())
 
 // Track selected goals
 const selectedGoals = ref<string[]>([])
 
 // Available goals for selection
-const availableGoals = computed(() => goals.value)
+const availableGoals = computed(() => goals)
 
 // Load scenario data
 onMounted(async () => {
@@ -311,7 +239,7 @@ onMounted(async () => {
   if (scenarioData) {
     scenario.value = scenarioData
     form.value = JSON.parse(JSON.stringify(scenarioData)) // Deep clone
-    
+
     // Initialize selected goals from scenario
     if (scenarioData.goals) {
       selectedGoals.value = scenarioData.goals.map(goal => goal.include)
@@ -332,7 +260,7 @@ function getGoalTypeBadgeClass(type: string | undefined) {
 
 async function saveScenario() {
   if (!form.value) return
-  
+
   // Convert selected goals to scenario goal format
   form.value.goals = selectedGoals.value.map(goalId => ({
     include: goalId,
