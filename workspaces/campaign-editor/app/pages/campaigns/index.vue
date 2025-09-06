@@ -16,13 +16,15 @@
           ➕ New Campaign
         </Button>
 
-        <Button v-if="!showNewForm" variant="outline" :disabled="campaignStore.loading" class="openttd-button"
+        <Button
+v-if="!showNewForm" variant="outline" :disabled="campaignStore.loading" class="openttd-button"
           @click="refreshCampaigns">
           {{ campaignStore.loading ? '🔄' : '↻' }} Refresh
         </Button>
 
         <template v-if="showNewForm">
-          <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+          <Button
+:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
             @click="saveCampaign">
             {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
           </Button>
@@ -88,7 +90,8 @@
         <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
         <AlertDescription class="text-destructive">
           {{ campaignStore.error }}
-          <Button variant="ghost" size="sm" class="ml-2 text-destructive hover:text-destructive-foreground"
+          <Button
+variant="ghost" size="sm" class="ml-2 text-destructive hover:text-destructive-foreground"
             @click="() => { }">
             ✕ Dismiss
           </Button>
@@ -96,7 +99,8 @@
       </Alert>
 
       <!-- Empty State -->
-      <Card v-if="!campaignStore.loading && filteredCampaigns.length === 0 && !campaignStore.error"
+      <Card
+v-if="!campaignStore.loading && filteredCampaigns.length === 0 && !campaignStore.error"
         class="openttd-titlebar">
         <CardContent class="pt-12 pb-12">
           <div class="text-center">
@@ -115,9 +119,11 @@
       </Card>
 
       <!-- Campaigns Grid -->
-      <div v-if="!campaignStore.loading && filteredCampaigns.length > 0"
+      <div
+v-if="!campaignStore.loading && filteredCampaigns.length > 0"
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card v-for="campaign in filteredCampaigns" :key="campaign.id"
+        <Card
+v-for="campaign in filteredCampaigns" :key="campaign.id"
           class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
           @click="editCampaign(campaign.id)">
           <CardContent class="space-y-4 p-6">
@@ -200,7 +206,8 @@
       <!-- Pagination -->
       <div v-if="totalPages > 1" class="flex justify-center">
         <div class="flex items-center space-x-2">
-          <Button variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
+          <Button
+variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
             @click="currentPage--">
             ← Previous
           </Button>
@@ -211,7 +218,8 @@
             </span>
           </div>
 
-          <Button variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
+          <Button
+variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
             @click="currentPage++">
             Next →
           </Button>
@@ -316,7 +324,8 @@
               <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
                 <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
                   {{ tag }}
-                  <Button variant="ghost" size="sm"
+                  <Button
+variant="ghost" size="sm"
                     class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive" @click="removeTag(index)">
                     ✕
                   </Button>
@@ -325,7 +334,8 @@
 
               <div class="flex space-x-2">
                 <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
-                <Button type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
+                <Button
+type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
                   @click="addTag">
                   ➕ Add
                 </Button>
@@ -349,11 +359,13 @@
           </CardHeader>
           <CardContent>
             <div v-if="formData.scenarios && formData.scenarios.length > 0" class="space-y-4">
-              <div v-for="(scenario, index) in formData.scenarios" :key="index"
+              <div
+v-for="(scenario, index) in formData.scenarios" :key="index"
                 class="p-4 border border-border rounded-lg">
                 <div class="flex items-center justify-between mb-4">
                   <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
-                  <Button type="button" variant="ghost" size="sm"
+                  <Button
+type="button" variant="ghost" size="sm"
                     class="text-destructive hover:text-destructive-foreground" @click="removeScenario(index)">
                     🗑️ Remove
                   </Button>
@@ -374,7 +386,8 @@
                     <FormItem>
                       <FormLabel>Order</FormLabel>
                       <FormControl>
-                        <Input v-bind="componentField" type="number" :value="scenario.order"
+                        <Input
+v-bind="componentField" type="number" :value="scenario.order"
                           @input="updateScenarioOrder(index, $event)" />
                       </FormControl>
                       <FormMessage />

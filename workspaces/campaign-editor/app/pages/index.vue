@@ -98,7 +98,8 @@
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <div v-for="campaign in recentCampaigns" :key="campaign.id"
+              <div
+v-for="campaign in recentCampaigns" :key="campaign.id"
                 class="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
                 @click="editCampaign(campaign.id)">
                 <div class="flex items-center space-x-3">
@@ -138,7 +139,8 @@
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <Button class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
+              <Button
+class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
                 @click="createNewCampaign">
                 ➕ New Campaign
               </Button>
