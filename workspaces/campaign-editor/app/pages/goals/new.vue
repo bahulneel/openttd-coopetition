@@ -21,7 +21,7 @@
     <!-- Goal Form -->
     <Card class="openttd-titlebar">
       <CardContent class="pt-6">
-        <form @submit.prevent="saveGoal" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="saveGoal">
           <!-- Basic Information -->
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-foreground">Basic Information</h3>
@@ -331,7 +331,7 @@ async function saveGoal() {
       color: 'green'
     })
     navigateTo('/goals')
-  } catch (error) {
+  } catch {
     toast.add({
       title: '❌ Error',
       description: 'Failed to create goal',

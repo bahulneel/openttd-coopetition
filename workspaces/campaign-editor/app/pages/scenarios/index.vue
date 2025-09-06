@@ -79,7 +79,7 @@
                 variant="outline" 
                 size="sm" 
                 class="openttd-button"
-                @click="duplicateScenario(scenario)"
+                @click="duplicateScenarioHandler(scenario)"
               >
                 📋 Copy
               </Button>
@@ -139,7 +139,7 @@ function editScenario(scenario: Scenario) {
   navigateTo(`/scenarios/${scenario.id}/edit`)
 }
 
-async function duplicateScenario(scenario: Scenario) {
+async function duplicateScenarioHandler(scenario: Scenario) {
   try {
     await duplicateScenario(scenario.id)
     toast.add({
@@ -147,7 +147,7 @@ async function duplicateScenario(scenario: Scenario) {
       description: `Scenario "${scenario.meta?.title || scenario.id}" has been duplicated`,
       color: 'green'
     })
-  } catch (error) {
+  } catch {
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate scenario',
@@ -165,7 +165,7 @@ async function deleteScenario(scenario: Scenario) {
         description: `Scenario "${scenario.meta?.title || scenario.id}" has been deleted`,
         color: 'green'
       })
-    } catch (error) {
+    } catch {
       toast.add({
         title: '❌ Error',
         description: 'Failed to delete scenario',
@@ -191,7 +191,7 @@ function getDifficultyBadgeClass(difficulty: string | undefined) {
   }
 }
 
-function getSettingsDescription(settings: any) {
+function getSettingsDescription(settings: Record<string, unknown>) {
   if (!settings) return 'Default settings'
   
   const parts = []

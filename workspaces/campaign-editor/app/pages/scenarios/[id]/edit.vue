@@ -47,7 +47,7 @@
     <!-- Scenario Form -->
     <Card v-else class="openttd-titlebar">
       <CardContent class="pt-6">
-        <form @submit.prevent="saveScenario" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="saveScenario">
           <!-- Basic Information -->
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-foreground">Basic Information</h3>
@@ -134,7 +134,7 @@
                   :value="goal.id"
                   type="checkbox"
                   class="openttd-checkbox"
-                />
+                >
                 <label :for="`goal-${goal.id}`" class="flex-1 cursor-pointer">
                   <div class="font-medium">{{ goal.meta?.title || goal.id }}</div>
                   <div class="text-sm text-muted-foreground">{{ goal.meta?.description || goal.comment }}</div>
@@ -228,7 +228,7 @@
                   v-model="form.settings.disasters"
                   type="checkbox"
                   class="openttd-checkbox"
-                />
+                >
                 <label for="disasters" class="text-sm">Disasters</label>
               </div>
 
@@ -238,7 +238,7 @@
                   v-model="form.settings.breakdowns"
                   type="checkbox"
                   class="openttd-checkbox"
-                />
+                >
                 <label for="breakdowns" class="text-sm">Breakdowns</label>
               </div>
 
@@ -248,7 +248,7 @@
                   v-model="form.settings.inflation"
                   type="checkbox"
                   class="openttd-checkbox"
-                />
+                >
                 <label for="inflation" class="text-sm">Inflation</label>
               </div>
 
@@ -258,7 +258,7 @@
                   v-model="form.settings.seasons"
                   type="checkbox"
                   class="openttd-checkbox"
-                />
+                >
                 <label for="seasons" class="text-sm">Seasons</label>
               </div>
             </div>
@@ -289,7 +289,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Scenario, Goal } from '~/types/campaign'
+import type { Scenario } from '~/types/campaign'
 
 const route = useRoute()
 const { getScenario, saveScenario: saveScenarioStore, goals, loading } = useCampaignStore()
@@ -348,7 +348,7 @@ async function saveScenario() {
       color: 'green'
     })
     navigateTo('/scenarios')
-  } catch (error) {
+  } catch {
     toast.add({
       title: '❌ Error',
       description: 'Failed to update scenario',

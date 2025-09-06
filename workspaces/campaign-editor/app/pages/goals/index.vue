@@ -79,7 +79,7 @@
                 variant="outline" 
                 size="sm" 
                 class="openttd-button"
-                @click="duplicateGoal(goal)"
+                @click="duplicateGoalHandler(goal)"
               >
                 📋 Copy
               </Button>
@@ -139,7 +139,7 @@ function editGoal(goal: Goal) {
   navigateTo(`/goals/${goal.id}/edit`)
 }
 
-async function duplicateGoal(goal: Goal) {
+async function duplicateGoalHandler(goal: Goal) {
   try {
     await duplicateGoal(goal.id)
     toast.add({
@@ -147,7 +147,7 @@ async function duplicateGoal(goal: Goal) {
       description: `Goal "${goal.meta?.title || goal.id}" has been duplicated`,
       color: 'green'
     })
-  } catch (error) {
+  } catch {
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate goal',
@@ -165,7 +165,7 @@ async function deleteGoal(goal: Goal) {
         description: `Goal "${goal.meta?.title || goal.id}" has been deleted`,
         color: 'green'
       })
-    } catch (error) {
+    } catch {
       toast.add({
         title: '❌ Error',
         description: 'Failed to delete goal',
@@ -201,7 +201,7 @@ function getDifficultyBadgeClass(difficulty: string | undefined) {
   }
 }
 
-function getObjectiveDescription(objective: any) {
+function getObjectiveDescription(objective: Record<string, unknown>) {
   if (!objective) return 'No objective defined'
   
   const type = objective.type || 'unknown'
@@ -225,7 +225,7 @@ function getObjectiveDescription(objective: any) {
   }
 }
 
-function getRewardDescription(result: any) {
+function getRewardDescription(result: Record<string, unknown>) {
   if (!result) return 'No reward defined'
   
   const parts = []
