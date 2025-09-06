@@ -1,4 +1,4 @@
-import type { Scenario } from '~/types/campaign'
+import type { Scenario, Goal } from '~/types'
 import type { EntityOptions } from '~/types/entity'
 
 export function useScenarioForm(initialData?: EntityOptions<Scenario>) {
@@ -12,7 +12,7 @@ export function useScenarioForm(initialData?: EntityOptions<Scenario>) {
   const selectedGoals = ref<string[]>([])
 
   // Available goals for selection
-  const availableGoals = computed(() => store.select<Goal>('Goal').value)
+  const availableGoals = computed(() => store.select('Goal').value)
 
   // Helper function for goal type badges
   function getGoalTypeBadgeClass(type: string | undefined) {
@@ -41,7 +41,7 @@ export function useScenarioForm(initialData?: EntityOptions<Scenario>) {
     store.assert(form.value)
     toast.add({
       title: '✅ Scenario Created',
-      description: `Scenario "${form.value.meta?.title || form.value.__id}" has been created successfully`,
+      description: `Scenario "${form.value.name}" has been created successfully`,
       color: 'green',
     })
     return true

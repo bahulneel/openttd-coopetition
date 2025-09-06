@@ -90,11 +90,11 @@ export const useEntityStore = defineStore('entity', () => {
     return stored
   }
 
-  function select<T extends AnyEntity>(type: string): ComputedRef<Storable<T>[]> {
+  function select<T extends keyof TypeMap, E extends AnyEntity = TypeMap[T]>(type: T): ComputedRef<Storable<E>[]> {
     return computed(() =>
       Array.from(index.value.get(type)?.values() || [])
         .filter((entity) => !isDeleted(entity))
-        .map((entity) => entity as Storable<T>),
+        .map((entity) => entity as Storable<E>),
     )
   }
 

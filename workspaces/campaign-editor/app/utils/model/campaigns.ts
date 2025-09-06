@@ -1,5 +1,5 @@
 import defu from 'defu'
-import type { Campaign, EntityOptions, ModelOptions } from '~/types'
+import type { Campaign, EntityOptions, ModelOptions, CampaignFormData } from '~/types'
 
 export const campaignTemplate = {
   defaults: {
@@ -39,4 +39,12 @@ export function isCampaign(value: unknown): value is Campaign {
 
 export function asCampaign<T extends ModelOptions<Campaign>>(value: T): Campaign {
   return asEntity('Campaign', defu(campaignTemplate.defaults, value))
+}
+
+export function campaignToFormData(campaign: Campaign): CampaignFormData {
+  const { __id, __type, ...value } = campaign
+  return {
+    ...value,
+    id: __id,
+  }
 }

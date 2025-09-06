@@ -24,12 +24,12 @@
 
     <!-- Scenarios List -->
     <div v-if="scenarios.length > 0" class="space-y-4">
-      <Card v-for="scenario in scenarios" :key="scenario.id" class="openttd-titlebar">
+      <Card v-for="scenario in scenarios" :key="entityId(scenario)" class="openttd-titlebar">
         <CardContent class="pt-6">
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center space-x-3 mb-2">
-                <CardTitle class="text-lg font-semibold">{{ scenario.meta?.title || scenario.id }}</CardTitle>
+                <CardTitle class="text-lg font-semibold">{{ scenario.name }}</CardTitle>
                 <Badge :class="getDifficultyBadgeClass(scenario.meta?.difficulty)">
                   {{ scenario.meta?.difficulty || 'medium' }}
                 </Badge>
@@ -73,8 +73,7 @@
               <Button variant="outline" size="sm" class="openttd-button" @click="duplicateScenarioHandler(scenario)">
                 📋 Copy
               </Button>
-              <Button
-variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+              <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
                 @click="deleteScenario(scenario)">
                 🗑️ Delete
               </Button>
@@ -105,13 +104,16 @@ variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-70
 </template>
 
 <script setup lang="ts">
-import type { Scenario } from '~/types/campaign'
+import type { Scenario } from '~/types'
 
 const entityStore = useEntityStore()
 const toast = useToast()
 
+// Loading state
+const { isLoading: loading, start, finish } = useLoadingIndicator()
+
 // Get scenarios from entity store
-const scenarios = computed(() => entityStore.select<Scenario>('Scenario').value)
+const scenarios = computed(() => entityStore.select('Scenario').value)
 
 // Methods
 function createScenario() {
@@ -124,10 +126,19 @@ function editScenario(scenario: Scenario) {
 
 async function duplicateScenarioHandler(scenario: Scenario) {
   try {
-    await duplicateScenario(scenario.id)
+    const scenarioId = entityId(scenario)
+    if (!entityStore.has(scenarioId)) {
+      throw new Error('Scenario not found')
+    }
+
+    // Use entity store copy method to create a duplicate
+    const duplicate = entityStore.copy(scenarioId, {
+      name: `${scenario.name} (Copy)`
+    })
+
     toast.add({
       title: '✅ Scenario Duplicated',
-      description: `Scenario "${scenario.meta?.title || scenario.id}" has been duplicated`,
+      description: `Scenario "${scenario.name}" has been duplicated`,
       color: 'green'
     })
   } catch (error) {
@@ -141,12 +152,14 @@ async function duplicateScenarioHandler(scenario: Scenario) {
 }
 
 async function deleteScenario(scenario: Scenario) {
-  if (confirm(`Are you sure you want to delete the scenario "${scenario.meta?.title || scenario.id}"?`)) {
+  if (confirm(`Are you sure you want to delete the scenario "${scenario.name}"?`)) {
     try {
-      await deleteScenarioStore(scenario.id)
+      // Remove from store
+      entityStore.retract(entityId(scenario))
+
       toast.add({
         title: '✅ Scenario Deleted',
-        description: `Scenario "${scenario.meta?.title || scenario.id}" has been deleted`,
+        description: `Scenario "${scenario.name}" has been deleted`,
         color: 'green'
       })
     } catch (error) {
@@ -161,7 +174,23 @@ async function deleteScenario(scenario: Scenario) {
 }
 
 async function refreshScenarios() {
-  await loadScenarios()
+  start()
+  try {
+    const { scenarios } = await $fetch('/api/scenarios')
+    // Clear existing scenarios and add new ones
+    scenarios.forEach((scenario: Scenario) => {
+      entityStore.assert(scenario)
+    })
+    finish()
+  } catch (error) {
+    console.error('Failed to refresh scenarios:', error)
+    finish({ error: true })
+    toast.add({
+      title: '❌ Error',
+      description: 'Failed to refresh scenarios',
+      color: 'red'
+    })
+  }
 }
 
 // Helper functions for display

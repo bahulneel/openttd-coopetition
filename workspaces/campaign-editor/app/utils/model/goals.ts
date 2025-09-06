@@ -1,5 +1,5 @@
 import defu from 'defu'
-import type { Goal, EntityOptions, GoalType, ModelOptions } from '~/types'
+import type { Goal, EntityOptions, GoalType, ModelOptions, GoalFormData } from '~/types'
 
 export const goalTypes: GoalType[] = ['player', 'company', 'scenario', 'campaign'] as const
 
@@ -51,4 +51,12 @@ export function isGoal(value: unknown): value is Goal {
 
 export function asGoal<T extends ModelOptions<Goal>>(value: T): Goal {
   return asEntity('Goal', defu(goalTemplate.defaults, value))
+}
+
+export function goalToFormData(goal: Goal): GoalFormData {
+  const { __id, __type, ...value } = goal
+  return {
+    ...value,
+    id: __id,
+  }
 }

@@ -30,7 +30,7 @@
     "build:tools": "mkdir -p dist && zip -r dist/coopetition-tools-v$(grep -o 'COOPETITION_VERSION = [0-9]\\+' src/version.nut | grep -o '[0-9]\\+').zip workspaces/ package.json package-lock.json eslint.config.mjs",
     "build:all": "npm run build:mod && npm run build:content && npm run build:tools",
     "test": "turbo run test",
-    "check": "npm run lint && npm run validate:all && npm run typecheck && npm run test",
+    "check": "npm run typecheck && npm run lint && npm run validate:all && npm run test",
     "test:check": "npm run check",
     "prebuild": "npm run test",
     "dev": "turbo run dev",

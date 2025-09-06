@@ -61,28 +61,63 @@ export interface RewardSet extends Commentable {
   unlocks?: string[]
 }
 
-export type ObjectiveType =
-  | 'cargo_delivered'
-  | 'network_length'
-  | 'profit'
-  | 'station_built'
-  | 'company_value'
-  | 'town_growth'
-
-export interface Objective extends Commentable {
-  type: ObjectiveType
-  amount?: number
-  cargo?: string
-  cargo_types?: string[]
+// Base objective interface with common fields
+export interface BaseObjective extends Commentable {
   time_limit?: number
-  track_type?: string
-  target?: string
-  min_value?: number
-  town_id?: string
-  target_population?: number
-  location?: string
-  count?: number
 }
+
+// Cargo delivery objective - requires cargo type and amount
+export interface CargoDeliveredObjective extends BaseObjective {
+  type: 'cargo_delivered'
+  amount: number
+  cargo: string
+  cargo_types?: string[]
+}
+
+// Network length objective - requires amount (in tiles)
+export interface NetworkLengthObjective extends BaseObjective {
+  type: 'network_length'
+  amount: number
+  track_type?: string
+}
+
+// Profit objective - requires amount (in currency)
+export interface ProfitObjective extends BaseObjective {
+  type: 'profit'
+  amount: number
+}
+
+// Station building objective - requires count
+export interface StationBuiltObjective extends BaseObjective {
+  type: 'station_built'
+  count: number
+  location?: string
+}
+
+// Company value objective - requires min_value
+export interface CompanyValueObjective extends BaseObjective {
+  type: 'company_value'
+  min_value: number
+}
+
+// Town growth objective - requires target_population and town_id
+export interface TownGrowthObjective extends BaseObjective {
+  type: 'town_growth'
+  target_population: number
+  town_id: string
+}
+
+// Discriminated union of all objective types
+export type Objective =
+  | CargoDeliveredObjective
+  | NetworkLengthObjective
+  | ProfitObjective
+  | StationBuiltObjective
+  | CompanyValueObjective
+  | TownGrowthObjective
+
+// Legacy type for backward compatibility (deprecated)
+export type ObjectiveType = Objective['type']
 
 export interface Rewards extends Commentable {
   completion?: RewardSet

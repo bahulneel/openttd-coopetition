@@ -21,8 +21,8 @@ export default defineEventHandler(async (_event) => {
         const scenario = parseYAML(content) as Scenario
 
         // Ensure the scenario has an ID
-        if (!scenario.id) {
-          scenario.id = file.replace('.yaml', '')
+        if (!scenario.__id) {
+          scenario.__id = `scenario/${file.replace('.yaml', '')}`
         }
 
         scenarios.push(scenario)

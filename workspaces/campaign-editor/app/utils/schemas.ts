@@ -9,6 +9,12 @@ import type {
   SharedInfrastructure,
   RewardSet,
   Objective,
+  CargoDeliveredObjective,
+  NetworkLengthObjective,
+  ProfitObjective,
+  StationBuiltObjective,
+  CompanyValueObjective,
+  TownGrowthObjective,
   Rewards,
   Condition,
   CampaignScenarioOverrides,
@@ -60,6 +66,9 @@ const sharedInfrastructureShape = {
   comment: commentField,
 } as const
 
+// Common validation ranges
+const nonNegativeNumber = z.number().min(0, 'Value must be non-negative')
+
 const rewardSetShape = {
   cash: nonNegativeNumber.optional(),
   score: nonNegativeNumber.optional(),
@@ -83,7 +92,7 @@ const constraintsShape = () =>
         },
         {
           message: 'Player count must be between 1 and 8',
-        }
+        },
       )
       .optional(),
     date: rangeSchema
@@ -99,7 +108,7 @@ const constraintsShape = () =>
         },
         {
           message: 'Date must be between 1920 and 2100',
-        }
+        },
       )
       .optional(),
     map_size: rangeSchema
@@ -115,7 +124,7 @@ const constraintsShape = () =>
         },
         {
           message: 'Map size must be between 64 and 2048',
-        }
+        },
       )
       .optional(),
     difficulty: rangeSchema.optional(),
@@ -126,8 +135,6 @@ const constraintsShape = () =>
 // Note: Since SharedInfrastructure, RewardSet, and Constraints already have all optional fields,
 // Partial<T> is identical to T, so we can use the base schemas directly with .optional()
 
-// Common validation ranges
-const nonNegativeNumber = z.number().min(0, 'Value must be non-negative')
 const difficultySchema = z.enum(['easy', 'medium', 'hard', 'expert', 'legendary'] as const)
 
 // Base schemas that match model types exactly
@@ -142,20 +149,22 @@ const metaInfoSchema: z.ZodType<MetaInfo> = z.object({
   comment: commentField,
 })
 
-const rangeSchema: z.ZodType<Range> = z.object({
-  min: optionalNumber,
-  max: optionalNumber,
-}).refine(
-  (range) => {
-    if (range.min !== undefined && range.max !== undefined) {
-      return range.min <= range.max
-    }
-    return true
-  },
-  {
-    message: 'Minimum value must be less than or equal to maximum value',
-  }
-)
+const rangeSchema: z.ZodType<Range> = z
+  .object({
+    min: optionalNumber,
+    max: optionalNumber,
+  })
+  .refine(
+    (range) => {
+      if (range.min !== undefined && range.max !== undefined) {
+        return range.min <= range.max
+      }
+      return true
+    },
+    {
+      message: 'Minimum value must be less than or equal to maximum value',
+    },
+  )
 
 // Use lazy evaluation to handle circular reference in Constraints
 const constraintsSchema: z.ZodType<Constraints> = z.lazy(() => z.object(constraintsShape()))
@@ -173,30 +182,57 @@ const sharedInfrastructureSchema: z.ZodType<SharedInfrastructure> = z.object(sha
 
 const rewardSetSchema: z.ZodType<RewardSet> = z.object(rewardSetShape)
 
-const objectiveTypeSchema = z.enum([
-  'cargo_delivered',
-  'network_length',
-  'profit',
-  'station_built',
-  'company_value',
-  'town_growth',
-] as const)
-
-const objectiveSchema: z.ZodType<Objective> = z.object({
-  type: objectiveTypeSchema,
-  amount: nonNegativeNumber.optional(),
-  cargo: optionalString,
-  cargo_types: optionalStringArray,
+// Base objective schema with common fields
+const baseObjectiveSchema = z.object({
   time_limit: nonNegativeNumber.optional(),
-  track_type: optionalString,
-  target: optionalString,
-  min_value: nonNegativeNumber.optional(),
-  town_id: optionalString,
-  target_population: nonNegativeNumber.optional(),
-  location: optionalString,
-  count: nonNegativeNumber.optional(),
   comment: commentField,
 })
+
+// Individual objective type schemas
+const cargoDeliveredObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('cargo_delivered'),
+  amount: nonNegativeNumber,
+  cargo: z.string().min(1, 'Cargo type is required'),
+  cargo_types: optionalStringArray,
+})
+
+const networkLengthObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('network_length'),
+  amount: nonNegativeNumber,
+  track_type: optionalString,
+})
+
+const profitObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('profit'),
+  amount: nonNegativeNumber,
+})
+
+const stationBuiltObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('station_built'),
+  count: nonNegativeNumber,
+  location: optionalString,
+})
+
+const companyValueObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('company_value'),
+  min_value: nonNegativeNumber,
+})
+
+const townGrowthObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('town_growth'),
+  target_population: nonNegativeNumber,
+  town_id: z.string().min(1, 'Town ID is required'),
+})
+
+// Discriminated union schema for objectives
+const objectiveSchema = z.discriminatedUnion('type', [
+  cargoDeliveredObjectiveSchema,
+  networkLengthObjectiveSchema,
+  profitObjectiveSchema,
+  stationBuiltObjectiveSchema,
+  companyValueObjectiveSchema,
+  townGrowthObjectiveSchema,
+])
 
 const conditionSchema: z.ZodType<Condition> = z.object({
   type: z.string(),
@@ -389,4 +425,10 @@ export const schemas = {
   campaignManifest: campaignManifestSchemaBase,
 } as const
 
-// Type exports are now at the top of the file with the utility type
+export function toFormData<T extends AnyItem>(item: T): FormData<T> {
+  const { __id, __type, ...value } = item
+  return {
+    id: __id,
+    ...value,
+  } as FormData<T>
+}

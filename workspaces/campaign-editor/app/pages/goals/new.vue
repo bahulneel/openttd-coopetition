@@ -29,8 +29,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="id">Goal ID</Label>
-                <Input
-id="id" v-model="form.__id" placeholder="e.g., coal_delivery_goal" class="openttd-input"
+                <Input id="id" v-model="form.__id" placeholder="e.g., coal_delivery_goal" class="openttd-input"
                   required />
                 <p class="text-sm text-muted-foreground mt-1">
                   Unique identifier for this goal
@@ -60,8 +59,7 @@ id="id" v-model="form.__id" placeholder="e.g., coal_delivery_goal" class="opentt
 
             <div>
               <Label for="description">Description</Label>
-              <Textarea
-id="description" v-model="form.meta!.description"
+              <Textarea id="description" v-model="form.meta!.description"
                 placeholder="Describe what this goal requires players to do..." class="openttd-input" rows="3" />
             </div>
 
@@ -84,8 +82,7 @@ id="description" v-model="form.meta!.description"
 
               <div>
                 <Label for="estimated_time">Estimated Time</Label>
-                <Input
-id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 30 minutes"
+                <Input id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 30 minutes"
                   class="openttd-input" />
               </div>
             </div>
@@ -113,27 +110,77 @@ id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 30 mi
                 </Select>
               </div>
 
+              <!-- Amount field for cargo_delivered, network_length, profit -->
+              <div v-if="['cargo_delivered', 'network_length', 'profit'].includes(form.objective?.type || '')">
+                <Label for="amount">Amount</Label>
+                <Input id="amount" v-model.number="(form.objective as any)?.amount" type="number"
+                  placeholder="e.g., 1000" class="openttd-input" />
+              </div>
+
+              <!-- Count field for station_built -->
+              <div v-if="form.objective?.type === 'station_built'">
+                <Label for="count">Number of Stations</Label>
+                <Input id="count" v-model.number="(form.objective as any)?.count" type="number" placeholder="e.g., 5"
+                  class="openttd-input" />
+              </div>
+
+              <!-- Min value field for company_value -->
+              <div v-if="form.objective?.type === 'company_value'">
+                <Label for="min_value">Minimum Company Value</Label>
+                <Input id="min_value" v-model.number="(form.objective as any)?.min_value" type="number"
+                  placeholder="e.g., 1000000" class="openttd-input" />
+              </div>
+
+              <!-- Target population field for town_growth -->
+              <div v-if="form.objective?.type === 'town_growth'">
+                <Label for="target_population">Target Population</Label>
+                <Input id="target_population" v-model.number="(form.objective as any)?.target_population" type="number"
+                  placeholder="e.g., 5000" class="openttd-input" />
+              </div>
+            </div>
+
+            <!-- Cargo-specific fields -->
+            <div v-if="form.objective?.type === 'cargo_delivered'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label for="amount">Amount/Value</Label>
-                <Input
-id="amount" v-model.number="form.objective!.amount" type="number" placeholder="e.g., 1000"
+                <Label for="cargo">Cargo Type</Label>
+                <Input id="cargo" v-model="(form.objective as any)?.cargo" placeholder="e.g., COAL"
                   class="openttd-input" />
               </div>
             </div>
 
-            <div v-if="form.objective?.type === 'cargo_delivered'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Town growth-specific fields -->
+            <div v-if="form.objective?.type === 'town_growth'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label for="cargo">Cargo Type</Label>
-                <Input id="cargo" v-model="form.objective!.cargo" placeholder="e.g., COAL" class="openttd-input" />
+                <Label for="town_id">Town ID</Label>
+                <Input id="town_id" v-model="(form.objective as any)?.town_id" placeholder="e.g., TOWN_001"
+                  class="openttd-input" />
               </div>
             </div>
 
-            <div v-if="form.objective?.type === 'town_growth'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Network length-specific fields -->
+            <div v-if="form.objective?.type === 'network_length'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label for="target_population">Target Population</Label>
-                <Input
-id="target_population" v-model.number="form.objective!.target_population" type="number"
-                  placeholder="e.g., 5000" class="openttd-input" />
+                <Label for="track_type">Track Type</Label>
+                <Input id="track_type" v-model="(form.objective as any)?.track_type" placeholder="e.g., RAIL"
+                  class="openttd-input" />
+              </div>
+            </div>
+
+            <!-- Station built-specific fields -->
+            <div v-if="form.objective?.type === 'station_built'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label for="location">Location (Optional)</Label>
+                <Input id="location" v-model="(form.objective as any)?.location" placeholder="e.g., Near coal mine"
+                  class="openttd-input" />
+              </div>
+            </div>
+
+            <!-- Time limit (common to all objectives) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label for="time_limit">Time Limit (Optional)</Label>
+                <Input id="time_limit" v-model.number="(form.objective as any)?.time_limit" type="number"
+                  placeholder="e.g., 365 (days)" class="openttd-input" />
               </div>
             </div>
           </div>
@@ -145,15 +192,13 @@ id="target_population" v-model.number="form.objective!.target_population" type="
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_players">Minimum Players</Label>
-                <Input
-id="min_players" v-model.number="form.constraints!.players!.min" type="number" min="1" max="8"
+                <Input id="min_players" v-model.number="form.constraints!.players!.min" type="number" min="1" max="8"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_players">Maximum Players</Label>
-                <Input
-id="max_players" v-model.number="form.constraints!.players!.max" type="number" min="1" max="8"
+                <Input id="max_players" v-model.number="form.constraints!.players!.max" type="number" min="1" max="8"
                   class="openttd-input" />
               </div>
             </div>
@@ -161,15 +206,13 @@ id="max_players" v-model.number="form.constraints!.players!.max" type="number" m
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_date">Minimum Date</Label>
-                <Input
-id="min_date" v-model.number="form.constraints!.date!.min" type="number" placeholder="e.g., 1950"
+                <Input id="min_date" v-model.number="form.constraints!.date!.min" type="number" placeholder="e.g., 1950"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_date">Maximum Date</Label>
-                <Input
-id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeholder="e.g., 2050"
+                <Input id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeholder="e.g., 2050"
                   class="openttd-input" />
               </div>
             </div>
@@ -182,22 +225,19 @@ id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeho
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label for="cash_reward">Cash Reward</Label>
-                <Input
-id="cash_reward" v-model.number="form.result!.cash" type="number" placeholder="e.g., 50000"
+                <Input id="cash_reward" v-model.number="form.result!.cash" type="number" placeholder="e.g., 50000"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="score_reward">Score Reward</Label>
-                <Input
-id="score_reward" v-model.number="form.result!.score" type="number" placeholder="e.g., 100"
+                <Input id="score_reward" v-model.number="form.result!.score" type="number" placeholder="e.g., 100"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="reputation_reward">Reputation Reward</Label>
-                <Input
-id="reputation_reward" v-model.number="form.result!.reputation" type="number"
+                <Input id="reputation_reward" v-model.number="form.result!.reputation" type="number"
                   placeholder="e.g., 10" class="openttd-input" />
               </div>
             </div>
@@ -205,8 +245,7 @@ id="reputation_reward" v-model.number="form.result!.reputation" type="number"
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="unlocks">Unlocks</Label>
-                <Input
-id="unlocks" v-model="form.result!.unlocks" placeholder="e.g., new_vehicle_type"
+                <Input id="unlocks" v-model="form.result!.unlocks" placeholder="e.g., new_vehicle_type"
                   class="openttd-input" />
               </div>
             </div>

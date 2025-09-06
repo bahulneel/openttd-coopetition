@@ -1,4 +1,4 @@
-import type { Campaign } from '~/types/campaign'
+import type { Campaign } from '~/types'
 import type { EntityOptions } from '~/types/entity'
 
 export function useCampaignForm(initialData?: EntityOptions<Campaign>) {
@@ -12,7 +12,7 @@ export function useCampaignForm(initialData?: EntityOptions<Campaign>) {
     store.assert(form.value)
     toast.add({
       title: '✅ Campaign Created',
-      description: `Campaign "${form.value.meta?.title || form.value.__id}" has been created successfully`,
+      description: `Campaign "${form.value.name}" has been created successfully`,
       color: 'green',
     })
     return true

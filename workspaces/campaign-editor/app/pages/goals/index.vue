@@ -29,7 +29,7 @@
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center space-x-3 mb-2">
-                <CardTitle class="text-lg font-semibold">{{ goal.meta?.title || entityId(goal) }}</CardTitle>
+                <CardTitle class="text-lg font-semibold">{{ goal.name }}</CardTitle>
                 <Badge :class="getGoalTypeBadgeClass(goal.type)">
                   {{ goal.type || 'player' }}
                 </Badge>
@@ -45,8 +45,7 @@
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <span class="font-medium text-foreground">Objective:</span>
-                  <p class="text-muted-foreground">{{ getObjectiveDescription((goal.objective || {}) as Record<string,
-                      unknown>) }}</p>
+                  <p class="text-muted-foreground">{{ getObjectiveDescription(goal.objective) }}</p>
                 </div>
                 <div v-if="goal.result">
                   <span class="font-medium text-foreground">Reward:</span>
@@ -75,8 +74,7 @@
               <Button variant="outline" size="sm" class="openttd-button" @click="duplicateGoalHandler(goal)">
                 📋 Copy
               </Button>
-              <Button
-variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+              <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
                 @click="deleteGoal(goal)">
                 🗑️ Delete
               </Button>
@@ -107,13 +105,13 @@ variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-70
 </template>
 
 <script setup lang="ts">
-import type { Goal } from '~/types/campaign'
+import type { Goal, Objective } from '~/types'
 
 const entityStore = useEntityStore()
 const toast = useToast()
 
 // Get goals from entity store
-const goals = computed(() => entityStore.select<Goal>('Goal').value)
+const goals = computed(() => entityStore.select('Goal').value)
 
 // Methods
 function createGoal() {
@@ -126,24 +124,19 @@ function editGoal(goal: Goal) {
 
 async function duplicateGoalHandler(goal: Goal) {
   try {
-    const original = entityStore.get<Goal>(entityId(goal), 'Goal')
-    if (!original) {
+    const goalId = entityId(goal)
+    if (!entityStore.has(goalId)) {
       throw new Error('Goal not found')
     }
 
-    // Use copyEntity utility to create a duplicate
-    const duplicate = copyEntity(toStorableValue(original))
-    duplicate.name = `${original.name} (Copy)`
-    duplicate.meta = {
-      ...original.meta,
-      title: original.meta?.title ? `${original.meta.title} (Copy)` : undefined
-    }
-
-    entityStore.assert(duplicate)
+    // Use entity store copy method to create a duplicate
+    const duplicate = entityStore.copy(goalId, {
+      name: `${goal.name} (Copy)`
+    })
 
     toast.add({
       title: '✅ Goal Duplicated',
-      description: `Goal "${duplicate.meta?.title || entityId(duplicate)}" has been duplicated`,
+      description: `Goal "${duplicate.name}" has been duplicated`,
       color: 'green'
     })
   } catch (error) {
@@ -157,12 +150,12 @@ async function duplicateGoalHandler(goal: Goal) {
 }
 
 async function deleteGoal(goal: Goal) {
-  if (confirm(`Are you sure you want to delete the goal "${goal.meta?.title || entityId(goal)}"?`)) {
+  if (confirm(`Are you sure you want to delete the goal "${goal.name}"?`)) {
     try {
       entityStore.retract(entityId(goal))
       toast.add({
         title: '✅ Goal Deleted',
-        description: `Goal "${goal.meta?.title || entityId(goal)}" has been deleted`,
+        description: `Goal "${goal.name}" has been deleted`,
         color: 'green'
       })
     } catch (error) {
@@ -203,27 +196,25 @@ function getDifficultyBadgeClass(difficulty: string | undefined) {
   }
 }
 
-function getObjectiveDescription(objective: Record<string, unknown>) {
+function getObjectiveDescription(objective: Objective | undefined) {
   if (!objective) return 'No objective defined'
 
-  const type = objective.type || 'unknown'
-  const amount = objective.amount || objective.count || objective.min_value || 0
-
-  switch (type) {
+  switch (objective.type) {
     case 'cargo_delivered':
-      return `Deliver ${amount} units of ${objective.cargo || 'cargo'}`
+      return `Deliver ${objective.amount.toLocaleString()} units of ${objective.cargo}`
     case 'network_length':
-      return `Build ${amount} tiles of network`
+      return `Build ${objective.amount.toLocaleString()} tiles of network${objective.track_type ? ` (${objective.track_type})` : ''}`
     case 'profit':
-      return `Reach £${amount.toLocaleString()} profit`
+      return `Reach £${objective.amount.toLocaleString()} profit`
     case 'station_built':
-      return `Build ${amount} stations`
+      return `Build ${objective.count} stations${objective.location ? ` at ${objective.location}` : ''}`
     case 'company_value':
-      return `Reach £${amount.toLocaleString()} company value`
+      return `Reach £${objective.min_value.toLocaleString()} company value`
     case 'town_growth':
-      return `Grow town to ${objective.target_population || amount} population`
+      return `Grow town ${objective.town_id} to ${objective.target_population.toLocaleString()} population`
     default:
-      return `${type}: ${amount}`
+      // This should never happen with proper typing, but provides a fallback
+      return `Unknown objective type: ${(objective as any).type}`
   }
 }
 
