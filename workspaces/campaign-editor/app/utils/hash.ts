@@ -1,5 +1,5 @@
 import objectHash from 'object-hash'
-import type { Identified } from '~/types'
+// import type { Identified } from '~/types'
 
 const valueKey = Symbol('value')
 

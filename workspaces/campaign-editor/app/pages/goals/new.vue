@@ -29,7 +29,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="id">Goal ID</Label>
-                <Input id="id" v-model="form.__id" placeholder="e.g., coal_delivery_goal" class="openttd-input"
+                <Input
+id="id" v-model="form.__id" placeholder="e.g., coal_delivery_goal" class="openttd-input"
                   required />
                 <p class="text-sm text-muted-foreground mt-1">
                   Unique identifier for this goal
@@ -59,7 +60,8 @@
 
             <div>
               <Label for="description">Description</Label>
-              <Textarea id="description" v-model="form.meta!.description"
+              <Textarea
+id="description" v-model="form.meta!.description"
                 placeholder="Describe what this goal requires players to do..." class="openttd-input" rows="3" />
             </div>
 
@@ -82,7 +84,8 @@
 
               <div>
                 <Label for="estimated_time">Estimated Time</Label>
-                <Input id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 30 minutes"
+                <Input
+id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 30 minutes"
                   class="openttd-input" />
               </div>
             </div>
@@ -112,7 +115,8 @@
 
               <div>
                 <Label for="amount">Amount/Value</Label>
-                <Input id="amount" v-model.number="form.objective!.amount" type="number" placeholder="e.g., 1000"
+                <Input
+id="amount" v-model.number="form.objective!.amount" type="number" placeholder="e.g., 1000"
                   class="openttd-input" />
               </div>
             </div>
@@ -127,7 +131,8 @@
             <div v-if="form.objective?.type === 'town_growth'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="target_population">Target Population</Label>
-                <Input id="target_population" v-model.number="form.objective!.target_population" type="number"
+                <Input
+id="target_population" v-model.number="form.objective!.target_population" type="number"
                   placeholder="e.g., 5000" class="openttd-input" />
               </div>
             </div>
@@ -140,13 +145,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_players">Minimum Players</Label>
-                <Input id="min_players" v-model.number="form.constraints!.players!.min" type="number" min="1" max="8"
+                <Input
+id="min_players" v-model.number="form.constraints!.players!.min" type="number" min="1" max="8"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_players">Maximum Players</Label>
-                <Input id="max_players" v-model.number="form.constraints!.players!.max" type="number" min="1" max="8"
+                <Input
+id="max_players" v-model.number="form.constraints!.players!.max" type="number" min="1" max="8"
                   class="openttd-input" />
               </div>
             </div>
@@ -154,13 +161,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_date">Minimum Date</Label>
-                <Input id="min_date" v-model.number="form.constraints!.date!.min" type="number" placeholder="e.g., 1950"
+                <Input
+id="min_date" v-model.number="form.constraints!.date!.min" type="number" placeholder="e.g., 1950"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_date">Maximum Date</Label>
-                <Input id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeholder="e.g., 2050"
+                <Input
+id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeholder="e.g., 2050"
                   class="openttd-input" />
               </div>
             </div>
@@ -173,19 +182,22 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label for="cash_reward">Cash Reward</Label>
-                <Input id="cash_reward" v-model.number="form.result!.cash" type="number" placeholder="e.g., 50000"
+                <Input
+id="cash_reward" v-model.number="form.result!.cash" type="number" placeholder="e.g., 50000"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="score_reward">Score Reward</Label>
-                <Input id="score_reward" v-model.number="form.result!.score" type="number" placeholder="e.g., 100"
+                <Input
+id="score_reward" v-model.number="form.result!.score" type="number" placeholder="e.g., 100"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="reputation_reward">Reputation Reward</Label>
-                <Input id="reputation_reward" v-model.number="form.result!.reputation" type="number"
+                <Input
+id="reputation_reward" v-model.number="form.result!.reputation" type="number"
                   placeholder="e.g., 10" class="openttd-input" />
               </div>
             </div>
@@ -193,7 +205,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="unlocks">Unlocks</Label>
-                <Input id="unlocks" v-model="form.result!.unlocks" placeholder="e.g., new_vehicle_type"
+                <Input
+id="unlocks" v-model="form.result!.unlocks" placeholder="e.g., new_vehicle_type"
                   class="openttd-input" />
               </div>
             </div>

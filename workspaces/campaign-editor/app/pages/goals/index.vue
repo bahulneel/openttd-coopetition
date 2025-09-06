@@ -75,7 +75,8 @@
               <Button variant="outline" size="sm" class="openttd-button" @click="duplicateGoalHandler(goal)">
                 📋 Copy
               </Button>
-              <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+              <Button
+variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
                 @click="deleteGoal(goal)">
                 🗑️ Delete
               </Button>

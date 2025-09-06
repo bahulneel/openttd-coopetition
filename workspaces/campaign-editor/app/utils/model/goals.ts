@@ -1,5 +1,5 @@
 import defu from 'defu'
-import type { Goal, EntityOptions, GoalType, EntityValue, ModelOptions } from '~/types'
+import type { Goal, EntityOptions, GoalType, ModelOptions } from '~/types'
 
 export const goalTypes: GoalType[] = ['player', 'company', 'scenario', 'campaign'] as const
 

@@ -73,7 +73,8 @@
               <Button variant="outline" size="sm" class="openttd-button" @click="duplicateScenarioHandler(scenario)">
                 📋 Copy
               </Button>
-              <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+              <Button
+variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
                 @click="deleteScenario(scenario)">
                 🗑️ Delete
               </Button>

@@ -1,5 +1,5 @@
 import defu from 'defu'
-import type { PackageManifest, EntityOptions, EntityValue, ModelOptions } from '~/types'
+import type { PackageManifest, EntityOptions, ModelOptions } from '~/types'
 
 import { isEntityType } from '../entities'
 

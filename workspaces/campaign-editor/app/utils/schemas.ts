@@ -2,14 +2,12 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import type { EntityValue } from '~/types'
 import type {
-  Difficulty,
   MetaInfo,
   Range,
   Constraints,
   ConditionalConstraint,
   SharedInfrastructure,
   RewardSet,
-  ObjectiveType,
   Objective,
   Rewards,
   Condition,
@@ -24,7 +22,6 @@ import type {
   DifficultyScaling,
   CampaignSettings,
   Campaign,
-  GoalType,
   Goal,
   GoalOverrides,
   ScenarioGoal,
@@ -45,18 +42,12 @@ export type CampaignManifestFormData = FormData<PackageManifest>
 
 // Common field schemas - reusable patterns
 const optionalString = z.string().optional()
-const requiredString = z.string().min(1, 'This field is required')
 const optionalNumber = z.number().optional()
 const optionalBoolean = z.boolean().optional()
 const optionalStringArray = z.array(z.string()).optional()
 
 // Semantic field names
 const commentField = optionalString
-const nameField = z.string().min(1, 'Name is required')
-const idField = z
-  .string()
-  .min(1, 'ID is required')
-  .regex(/^[a-zA-Z0-9_-]+$/, 'ID can only contain letters, numbers, underscores, and hyphens')
 
 // Common object patterns - removed unused helper functions
 
@@ -70,18 +61,63 @@ const sharedInfrastructureShape = {
 } as const
 
 const rewardSetShape = {
-  cash: optionalNumber,
-  score: optionalNumber,
-  reputation: optionalNumber,
+  cash: nonNegativeNumber.optional(),
+  score: nonNegativeNumber.optional(),
+  reputation: optionalNumber, // Reputation can be negative
   unlocks: optionalStringArray,
   comment: commentField,
 } as const
 
 const constraintsShape = () =>
   ({
-    players: rangeSchema.optional(),
-    date: rangeSchema.optional(),
-    map_size: rangeSchema.optional(),
+    players: rangeSchema
+      .refine(
+        (range) => {
+          if (range?.min !== undefined) {
+            return range.min >= 1 && range.min <= 8
+          }
+          if (range?.max !== undefined) {
+            return range.max >= 1 && range.max <= 8
+          }
+          return true
+        },
+        {
+          message: 'Player count must be between 1 and 8',
+        }
+      )
+      .optional(),
+    date: rangeSchema
+      .refine(
+        (range) => {
+          if (range?.min !== undefined) {
+            return range.min >= 1920 && range.min <= 2100
+          }
+          if (range?.max !== undefined) {
+            return range.max >= 1920 && range.max <= 2100
+          }
+          return true
+        },
+        {
+          message: 'Date must be between 1920 and 2100',
+        }
+      )
+      .optional(),
+    map_size: rangeSchema
+      .refine(
+        (range) => {
+          if (range?.min !== undefined) {
+            return range.min >= 64 && range.min <= 2048
+          }
+          if (range?.max !== undefined) {
+            return range.max >= 64 && range.max <= 2048
+          }
+          return true
+        },
+        {
+          message: 'Map size must be between 64 and 2048',
+        }
+      )
+      .optional(),
     difficulty: rangeSchema.optional(),
     conditional: z.array(conditionalConstraintSchema).optional(),
     comment: commentField,
@@ -91,12 +127,6 @@ const constraintsShape = () =>
 // Partial<T> is identical to T, so we can use the base schemas directly with .optional()
 
 // Common validation ranges
-const playerRange = z.number().min(1, 'Minimum players must be at least 1').max(8, 'Maximum players cannot exceed 8')
-const yearRange = z.number().min(1920, 'Start year must be 1920 or later').max(2100, 'End year cannot exceed 2100')
-const mapSizeRange = z
-  .number()
-  .min(64, 'Minimum map size must be at least 64')
-  .max(2048, 'Maximum map size cannot exceed 2048')
 const nonNegativeNumber = z.number().min(0, 'Value must be non-negative')
 const difficultySchema = z.enum(['easy', 'medium', 'hard', 'expert', 'legendary'] as const)
 
@@ -115,7 +145,17 @@ const metaInfoSchema: z.ZodType<MetaInfo> = z.object({
 const rangeSchema: z.ZodType<Range> = z.object({
   min: optionalNumber,
   max: optionalNumber,
-})
+}).refine(
+  (range) => {
+    if (range.min !== undefined && range.max !== undefined) {
+      return range.min <= range.max
+    }
+    return true
+  },
+  {
+    message: 'Minimum value must be less than or equal to maximum value',
+  }
+)
 
 // Use lazy evaluation to handle circular reference in Constraints
 const constraintsSchema: z.ZodType<Constraints> = z.lazy(() => z.object(constraintsShape()))
@@ -144,23 +184,23 @@ const objectiveTypeSchema = z.enum([
 
 const objectiveSchema: z.ZodType<Objective> = z.object({
   type: objectiveTypeSchema,
-  amount: optionalNumber,
+  amount: nonNegativeNumber.optional(),
   cargo: optionalString,
   cargo_types: optionalStringArray,
-  time_limit: optionalNumber,
+  time_limit: nonNegativeNumber.optional(),
   track_type: optionalString,
   target: optionalString,
-  min_value: optionalNumber,
+  min_value: nonNegativeNumber.optional(),
   town_id: optionalString,
-  target_population: optionalNumber,
+  target_population: nonNegativeNumber.optional(),
   location: optionalString,
-  count: optionalNumber,
+  count: nonNegativeNumber.optional(),
   comment: commentField,
 })
 
 const conditionSchema: z.ZodType<Condition> = z.object({
   type: z.string(),
-  threshold: optionalNumber,
+  threshold: nonNegativeNumber.optional(),
   target: optionalString,
   comment: commentField,
 })
@@ -174,7 +214,7 @@ const campaignScenarioOverridesSchema: z.ZodType<CampaignScenarioOverrides> = z.
 
 const campaignScenarioSchema: z.ZodType<CampaignScenario> = z.object({
   include: z.string(),
-  order: optionalNumber,
+  order: nonNegativeNumber.optional(),
   required: optionalBoolean,
   branch: optionalString,
   condition: conditionSchema.optional(),

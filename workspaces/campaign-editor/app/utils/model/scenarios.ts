@@ -1,5 +1,5 @@
 import defu from 'defu'
-import type { Scenario, EntityOptions, EntityValue, ModelOptions } from '~/types'
+import type { Scenario, EntityOptions, ModelOptions } from '~/types'
 
 export const scenarioTemplate = {
   defaults: {
