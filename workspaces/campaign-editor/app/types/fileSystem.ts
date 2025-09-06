@@ -1,6 +1,6 @@
 // File system type definitions
 import type { AnyEntity } from './entity'
-import type { Campaign, Goal, Scenario, PackageManifest, EntityFile } from './model'
+import type { EntityFile } from './model'
 import type { Storable } from './storable'
 
 export enum FileSystemFeature {

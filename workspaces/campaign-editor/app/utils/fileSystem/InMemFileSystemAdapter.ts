@@ -27,7 +27,7 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
     this.saveToLocalStorage()
   }
 
-  async loadAll<T extends AnyEntity>(pattern: string): Promise<Storable<T>[]> {
+  async loadAll<T extends AnyEntity>(_pattern: string): Promise<Storable<T>[]> {
     // For now, return all entities regardless of pattern
     // In a more sophisticated implementation, we could parse the pattern
     return Array.from(this.store.values()) as Storable<T>[]

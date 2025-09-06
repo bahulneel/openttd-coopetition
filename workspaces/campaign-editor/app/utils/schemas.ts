@@ -2,14 +2,12 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import type { EntityValue } from '~/types'
 import type {
-  Difficulty,
   MetaInfo,
   Range,
   Constraints,
   ConditionalConstraint,
   SharedInfrastructure,
   RewardSet,
-  ObjectiveType,
   Objective,
   Rewards,
   Condition,
@@ -24,7 +22,6 @@ import type {
   DifficultyScaling,
   CampaignSettings,
   Campaign,
-  GoalType,
   Goal,
   GoalOverrides,
   ScenarioGoal,
@@ -45,18 +42,12 @@ export type CampaignManifestFormData = FormData<PackageManifest>
 
 // Common field schemas - reusable patterns
 const optionalString = z.string().optional()
-const requiredString = z.string().min(1, 'This field is required')
 const optionalNumber = z.number().optional()
 const optionalBoolean = z.boolean().optional()
 const optionalStringArray = z.array(z.string()).optional()
 
 // Semantic field names
 const commentField = optionalString
-const nameField = z.string().min(1, 'Name is required')
-const idField = z
-  .string()
-  .min(1, 'ID is required')
-  .regex(/^[a-zA-Z0-9_-]+$/, 'ID can only contain letters, numbers, underscores, and hyphens')
 
 // Common object patterns - removed unused helper functions
 
@@ -90,14 +81,7 @@ const constraintsShape = () =>
 // Note: Since SharedInfrastructure, RewardSet, and Constraints already have all optional fields,
 // Partial<T> is identical to T, so we can use the base schemas directly with .optional()
 
-// Common validation ranges
-const playerRange = z.number().min(1, 'Minimum players must be at least 1').max(8, 'Maximum players cannot exceed 8')
-const yearRange = z.number().min(1920, 'Start year must be 1920 or later').max(2100, 'End year cannot exceed 2100')
-const mapSizeRange = z
-  .number()
-  .min(64, 'Minimum map size must be at least 64')
-  .max(2048, 'Maximum map size cannot exceed 2048')
-const nonNegativeNumber = z.number().min(0, 'Value must be non-negative')
+// Common validation ranges - removed unused range validators
 const difficultySchema = z.enum(['easy', 'medium', 'hard', 'expert', 'legendary'] as const)
 
 // Base schemas that match model types exactly

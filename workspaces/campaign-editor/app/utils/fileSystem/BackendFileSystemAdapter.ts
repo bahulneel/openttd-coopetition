@@ -61,7 +61,7 @@ export class BackendFileSystemAdapter implements FileSystemAdapter {
     })
   }
 
-  async loadAll<T extends AnyEntity>(pattern: string): Promise<Storable<T>[]> {
+  async loadAll<T extends AnyEntity>(_pattern: string): Promise<Storable<T>[]> {
     try {
       // For now, load all entities of all types
       // In a more sophisticated implementation, we could parse the pattern
