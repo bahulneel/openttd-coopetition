@@ -27,10 +27,24 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
     this.saveToLocalStorage()
   }
 
-  async loadAll<T extends AnyEntity>(_pattern: string): Promise<Storable<T>[]> {
-    // For now, return all entities regardless of pattern
-    // In a more sophisticated implementation, we could parse the pattern
-    return Array.from(this.store.values()) as Storable<T>[]
+  async loadAll<T extends AnyEntity>(pattern: string): Promise<Storable<T>[]> {
+    // Parse pattern to filter entities
+    const entityTypes = this.parsePattern(pattern)
+    
+    if (entityTypes.has('*')) {
+      // Return all entities for wildcard pattern
+      return Array.from(this.store.values()) as Storable<T>[]
+    }
+    
+    // Filter entities by type based on pattern
+    const filteredEntities: Storable<T>[] = []
+    for (const entity of this.store.values()) {
+      if (this.matchesPattern(entity, entityTypes)) {
+        filteredEntities.push(entity as Storable<T>)
+      }
+    }
+    
+    return filteredEntities
   }
 
   supports(feature: FileSystemFeature): boolean {
@@ -150,6 +164,45 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
     } catch (error) {
       console.warn('Failed to load data from localStorage:', error)
     }
+  }
+
+  private parsePattern(pattern: string): Set<string> {
+    const entityTypes = new Set<string>()
+    
+    // Handle wildcard patterns
+    if (pattern === '*' || pattern === '**/*') {
+      entityTypes.add('*')
+      return entityTypes
+    }
+    
+    // Parse specific patterns
+    if (pattern.includes('campaigns') || pattern.includes('campaign')) {
+      entityTypes.add('Campaign')
+    }
+    if (pattern.includes('goals') || pattern.includes('goal')) {
+      entityTypes.add('Goal')
+    }
+    if (pattern.includes('scenarios') || pattern.includes('scenario')) {
+      entityTypes.add('Scenario')
+    }
+    if (pattern.includes('manifest')) {
+      entityTypes.add('Manifest')
+    }
+    
+    // If no specific patterns matched, default to all
+    if (entityTypes.size === 0) {
+      entityTypes.add('*')
+    }
+    
+    return entityTypes
+  }
+
+  private matchesPattern(entity: Storable<AnyEntity>, entityTypes: Set<string>): boolean {
+    if (entityTypes.has('*')) {
+      return true
+    }
+    
+    return entityTypes.has(entity.__type)
   }
 
   private saveToLocalStorage(): void {

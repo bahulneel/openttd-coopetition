@@ -61,44 +61,49 @@ export class BackendFileSystemAdapter implements FileSystemAdapter {
     })
   }
 
-  async loadAll<T extends AnyEntity>(_pattern: string): Promise<Storable<T>[]> {
+  async loadAll<T extends AnyEntity>(pattern: string): Promise<Storable<T>[]> {
     try {
-      // For now, load all entities of all types
-      // In a more sophisticated implementation, we could parse the pattern
+      // Parse pattern to determine which entity types to load
+      const entityTypes = this.parsePattern(pattern)
       const allEntities: Storable<T>[] = []
 
-      // Load campaigns
-      try {
-        const campaignsResponse = await $fetch<{ campaigns: Storable<T>[] }>('/api/campaigns')
-        allEntities.push(...(campaignsResponse.campaigns || []))
-      } catch (error) {
-        console.warn('Failed to load campaigns:', error)
-      }
-
-      // Load goals
-      try {
-        const goalsResponse = await $fetch<{ goals: Storable<T>[] }>('/api/goals')
-        allEntities.push(...(goalsResponse.goals || []))
-      } catch (error) {
-        console.warn('Failed to load goals:', error)
-      }
-
-      // Load scenarios
-      try {
-        const scenariosResponse = await $fetch<{ scenarios: Storable<T>[] }>('/api/scenarios')
-        allEntities.push(...(scenariosResponse.scenarios || []))
-      } catch (error) {
-        console.warn('Failed to load scenarios:', error)
-      }
-
-      // Load manifest
-      try {
-        const manifestResponse = await $fetch<{ manifest: Storable<T> }>('/api/manifest')
-        if (manifestResponse.manifest) {
-          allEntities.push(manifestResponse.manifest)
+      // Load entities based on pattern
+      if (entityTypes.has('campaigns') || pattern === '*' || pattern.includes('campaigns')) {
+        try {
+          const campaignsResponse = await $fetch<{ campaigns: Storable<T>[] }>('/api/campaigns')
+          allEntities.push(...(campaignsResponse.campaigns || []))
+        } catch (error) {
+          console.warn('Failed to load campaigns:', error)
         }
-      } catch (error) {
-        console.warn('Failed to load manifest:', error)
+      }
+
+      if (entityTypes.has('goals') || pattern === '*' || pattern.includes('goals')) {
+        try {
+          const goalsResponse = await $fetch<{ goals: Storable<T>[] }>('/api/goals')
+          allEntities.push(...(goalsResponse.goals || []))
+        } catch (error) {
+          console.warn('Failed to load goals:', error)
+        }
+      }
+
+      if (entityTypes.has('scenarios') || pattern === '*' || pattern.includes('scenarios')) {
+        try {
+          const scenariosResponse = await $fetch<{ scenarios: Storable<T>[] }>('/api/scenarios')
+          allEntities.push(...(scenariosResponse.scenarios || []))
+        } catch (error) {
+          console.warn('Failed to load scenarios:', error)
+        }
+      }
+
+      if (entityTypes.has('manifest') || pattern === '*' || pattern.includes('manifest')) {
+        try {
+          const manifestResponse = await $fetch<{ manifest: Storable<T> }>('/api/manifest')
+          if (manifestResponse.manifest) {
+            allEntities.push(manifestResponse.manifest)
+          }
+        } catch (error) {
+          console.warn('Failed to load manifest:', error)
+        }
       }
 
       return allEntities
@@ -121,6 +126,43 @@ export class BackendFileSystemAdapter implements FileSystemAdapter {
       default:
         return false
     }
+  }
+
+  private parsePattern(pattern: string): Set<string> {
+    const entityTypes = new Set<string>()
+    
+    // Handle wildcard patterns
+    if (pattern === '*' || pattern === '**/*') {
+      entityTypes.add('campaigns')
+      entityTypes.add('goals')
+      entityTypes.add('scenarios')
+      entityTypes.add('manifest')
+      return entityTypes
+    }
+    
+    // Parse specific patterns
+    if (pattern.includes('campaigns') || pattern.includes('campaign')) {
+      entityTypes.add('campaigns')
+    }
+    if (pattern.includes('goals') || pattern.includes('goal')) {
+      entityTypes.add('goals')
+    }
+    if (pattern.includes('scenarios') || pattern.includes('scenario')) {
+      entityTypes.add('scenarios')
+    }
+    if (pattern.includes('manifest')) {
+      entityTypes.add('manifest')
+    }
+    
+    // If no specific patterns matched, default to all
+    if (entityTypes.size === 0) {
+      entityTypes.add('campaigns')
+      entityTypes.add('goals')
+      entityTypes.add('scenarios')
+      entityTypes.add('manifest')
+    }
+    
+    return entityTypes
   }
 
   private getEntityTypeFromPath(path: string): string | undefined {
