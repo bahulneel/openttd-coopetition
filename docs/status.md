@@ -7,8 +7,13 @@
 - **Core Classes**: PlayerGoal, SharedGoal, Campaign, Dashboard classes implemented
 - **Basic Structure**: Main controller with settings and state management
 - **API Integration**: OpenTTD GS API v14+ registration and settings
-- **UI Framework**: Dashboard class for UI management
+- **UI Framework**: Dashboard class for UI management with StoryBook integration
 - **Goal Types**: Cargo delivery, town population, station rating, network length, vehicle count
+- **Progress Tracking**: Complete implementation of UpdateProgress() and SetProgress() methods
+- **Event Handling**: Full event system for cargo delivery, station building, vehicle creation/removal
+- **UI Rendering**: StoryBook-based UI with shared goals, personal goals, and onboarding pages
+- **Settings Integration**: Working UI visibility toggles and reminder system
+- **Data-Driven Goals**: Support for loading compiled YAML campaign data at runtime
 
 ### Campaign Content (`campaigns/`)
 
@@ -38,6 +43,12 @@
 - **Schema Integration**: Using centralized schemas from `@schemas.ts` instead of duplicates
 - **Type Safety**: Discriminated union types for Objective preventing invalid combinations
 - **Atomic Design**: Component hierarchy architecture designed following atomic design principles
+- **Component Implementation**: Complete implementation of atomic design components
+  - Template components: Layout/Stacked, Layout/Section, Layout/Grid, Layout/Sequential, Layout/List, Screen/Dashboard, Screen/Article, Screen/Collection
+  - Molecule components: Header, Footer, Navigation/Bar, Dashboard/Card, Action/Button, Action/Link, Display, Form/Group, Form/Conditional, Form/Collection
+  - Entity components: Goal/Display/*, Campaign/Display/*, Scenario/Display/*, Manifest/Display/*, Goal/Input/Details, Campaign/Input/Details, Scenario/Input/Details, Manifest/Input/Details
+  - Domain components: Objective/*/Input/Details, Constraints/Input/Details, RewardSet/Display/Summary, MetaInfo/Input/Details, SharedInfrastructure/Input/Details
+  - Aggregate components: Goals, Campaigns, Scenarios (all using proper Template/Layout components)
 
 ### Documentation (`docs/`)
 
@@ -49,36 +60,21 @@
 
 ### GameScript Mod
 
-- **Goal Progress Tracking**: UpdateProgress() methods not fully implemented
-  - Event listeners for cargo delivery, station building, vehicle creation
-  - Progress calculation and storage
-  - Goal completion detection and rewards
-- **UI Rendering**: Dashboard UI rendering methods incomplete
-  - StoryBook page creation and updates
-  - Goals window entries with progress bars
-  - News messages for milestones and completion
-- **Event Handling**: Game event listeners for goal progress
-  - Cargo delivery event handling
-  - Station construction event handling
-  - Vehicle creation/removal event handling
-- **Settings Integration**: Connect settings to actual functionality
-  - UI visibility toggles working
-  - Reminder system implementation
-  - Reward system integration
+- **API Limitations Workarounds**: Some functionality simplified due to OpenTTD GS API limitations
+  - Station ownership checking not available (station counting simplified)
+  - Town service tracking simplified (cannot directly check which towns are served)
+  - Route efficiency tracking placeholder (complex to implement without detailed route tracking)
+- **Performance Optimization**: Optimize for large multiplayer games
+  - Efficient event handling for many companies
+  - Memory management for large goal sets
+  - Network optimization for multiplayer synchronization
 
 ### Campaign Editor
 
-- **Atomic Design Implementation**: Implement the designed component hierarchy
-  - Create Molecule/ components (Display, Form/Group, Form/Conditional, Form/Collection)
-  - Create Domain/ components for specialized types (Objective, Constraints, RewardSet, MetaInfo)
-  - Create Entity/ components with proper visual intents (Goal, Campaign, Scenario, Manifest)
-  - Create Aggregate/ components for collections (Goals, Campaigns, Scenarios)
-  - Create Template/ components for layouts (Layout/List, Layout/Grid, Screen/Article, Screen/Collection)
-- **Page Migration**: Migrate existing pages to use new component architecture
-  - Migrate goal pages to use Entity/Goal/ components
-  - Migrate scenario pages to use Entity/Scenario/ components
-  - Migrate campaign pages to use Entity/Campaign/ components
-  - Replace monolithic page components with composed atomic components
+- **Page Optimization**: Enhance existing atomic design implementation
+  - Improve form validation and error handling
+  - Add more specialized Entity/Display components as needed (e.g., Item, Summary variants)
+  - Create additional Domain components for complex form interactions
 - **Advanced Validation**: Business rule validation beyond schema
   - Cross-field validation (min/max players, date ranges)
   - Goal reference validation
@@ -143,4 +139,4 @@
 
 ---
 
-**Last Updated**: 2025-01-27 (Updated with atomic design architecture)
+**Last Updated**: 2025-01-27 (Completed atomic design decomposition process)
