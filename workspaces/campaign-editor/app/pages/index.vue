@@ -13,7 +13,7 @@ title="Campaign Editor Dashboard"
     </template>
 
     <template #stats>
-      <MoleculeDashboardCard v-for="stat in stats" :key="stat.label" v-bind="stat" />
+      <MoleculeCardDashboard v-for="stat in stats" :key="stat.label" v-bind="stat" />
     </template>
 
     <!-- Recent Activity / Quick Actions -->

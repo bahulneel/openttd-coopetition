@@ -13,7 +13,7 @@ interface DashboardCardProps {
   action?: Action
 }
 
-defineOptions({ name: 'MoleculeDashboardCard' })
+defineOptions({ name: 'MoleculeCardDashboard' })
 
 const props = withDefaults(defineProps<DashboardCardProps>(), {})
 
