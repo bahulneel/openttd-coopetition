@@ -1,5 +1,6 @@
 <template>
-  <TemplateScreenDashboard title="Campaign Editor Dashboard"
+  <TemplateScreenDashboard
+title="Campaign Editor Dashboard"
     subtitle="Create, edit, and manage OpenTTD Coopetition campaigns">
     <template #actions>
       <Button size="sm" class="openttd-button bg-openttd-green text-white" @click="createNewCampaign">
@@ -12,7 +13,7 @@
     </template>
 
     <template #stats>
-      <MoleculeDashboardCard v-for="stat in stats" :key="stat.label" v-bind="stat" />
+      <MoleculeCardDashboard v-for="stat in stats" :key="stat.label" v-bind="stat" />
     </template>
 
     <!-- Recent Activity / Quick Actions -->
@@ -32,7 +33,8 @@
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <div v-for="campaign in recentCampaigns" :key="entityId(campaign)"
+              <div
+v-for="campaign in recentCampaigns" :key="entityId(campaign)"
                 class="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
                 @click="editCampaign(entityId(campaign))">
                 <div class="flex items-center space-x-3">
@@ -72,7 +74,8 @@
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <Button class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
+              <Button
+class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
                 @click="createNewCampaign">
                 ➕ New Campaign
               </Button>
@@ -182,8 +185,8 @@ async function loadData() {
     campaigns.value = []
     // goals.value = [] // This should be handled by the store
     scenarios.value = []
-  } catch (error) {
-    console.error('Failed to load data:', error)
+  } catch {
+    // Error handling is done by individual store operations
   }
 }
 

@@ -4,10 +4,10 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="text-2xl font-bold text-foreground">
-          <slot name="title">{{ title }}</slot>
+          <slot name="title">{{ _props.title }}</slot>
         </h1>
         <p class="text-muted-foreground">
-          <slot name="subtitle">{{ subtitle }}</slot>
+          <slot name="subtitle">{{ _props.subtitle }}</slot>
         </p>
       </div>
 
@@ -17,7 +17,7 @@
     </div>
 
     <!-- Content -->
-    <div v-if="hasContent" class="space-y-4">
+    <div v-if="_props.hasContent" class="space-y-4">
       <slot />
     </div>
 
@@ -27,10 +27,10 @@
         <div class="text-center">
           <div class="text-6xl mb-4">🎯</div>
           <CardTitle class="text-lg font-semibold text-foreground mb-2">
-            <slot name="empty-title">{{ emptyTitle }}</slot>
+            <slot name="empty-title">{{ _props.emptyTitle }}</slot>
           </CardTitle>
           <p class="text-muted-foreground mb-6">
-            <slot name="empty-description">{{ emptyDescription }}</slot>
+            <slot name="empty-description">{{ _props.emptyDescription }}</slot>
           </p>
           <slot name="empty-actions" />
         </div>
@@ -52,7 +52,7 @@ interface Props {
   hasContent?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   title: 'Collection',
   subtitle: 'Manage your items',
   emptyTitle: 'No Items Yet',

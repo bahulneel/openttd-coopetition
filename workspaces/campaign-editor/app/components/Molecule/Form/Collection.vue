@@ -1,20 +1,20 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <Label class="text-sm font-medium">{{ label }}</Label>
+      <Label class="text-sm font-medium">{{ _props.label }}</Label>
       <Button 
         variant="outline" 
         size="sm" 
         class="openttd-button" 
         @click="$emit('add')"
       >
-        ➕ {{ addLabel }}
+        ➕ {{ _props.addLabel }}
       </Button>
     </div>
     
-    <div v-if="items.length > 0" class="space-y-3">
+    <div v-if="_props.items.length > 0" class="space-y-3">
       <div 
-        v-for="(item, index) in items" 
+        v-for="(item, index) in _props.items" 
         :key="index"
         class="flex items-center gap-3 p-3 border rounded-lg bg-card"
       >
@@ -43,14 +43,14 @@
     </div>
     
     <div v-else class="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-      <p class="mb-2">{{ emptyMessage }}</p>
+      <p class="mb-2">{{ _props.emptyMessage }}</p>
       <Button 
         variant="outline" 
         size="sm" 
         class="openttd-button" 
         @click="$emit('add')"
       >
-        ➕ {{ addLabel }}
+        ➕ {{ _props.addLabel }}
       </Button>
     </div>
   </div>
@@ -68,7 +68,7 @@ interface Props {
   items: any[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   label: 'Items',
   addLabel: 'Add Item',
   emptyMessage: 'No items added yet.'

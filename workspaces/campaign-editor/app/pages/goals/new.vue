@@ -28,13 +28,12 @@
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
 import { goalSchema } from '~/utils/schemas'
 
 const { form, save } = useGoalForm()
 
 // Set up form validation with proper initial values
-const { handleSubmit, setValues } = useForm({
+const { handleSubmit } = useForm({
   validationSchema: goalSchema,
   initialValues: {
     id: form.value.__id,

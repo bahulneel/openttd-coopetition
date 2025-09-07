@@ -74,7 +74,8 @@
       <!-- Pagination -->
       <div v-if="totalPages > 1" class="flex justify-center">
         <div class="flex items-center space-x-2">
-          <Button variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
+          <Button
+variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
             @click="currentPage--">
             ← Previous
           </Button>
@@ -85,7 +86,8 @@
             </span>
           </div>
 
-          <Button variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
+          <Button
+variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
             @click="currentPage++">
             Next →
           </Button>
@@ -96,7 +98,8 @@
 
   <TemplateScreenArticle v-else title="New Campaign" subtitle="Create a new campaign">
     <template #actions>
-      <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+      <Button
+:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
         @click="saveCampaign">
         {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
       </Button>
@@ -125,7 +128,7 @@
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
-import type { Campaign, CampaignScenario } from '~/types'
+import type { Campaign } from '~/types'
 
 const entityStore = useEntityStore()
 const route = useRoute()
@@ -141,7 +144,7 @@ const pageSize = 12
 // View state
 const showNewForm = ref(false)
 const saving = ref(false)
-const newTag = ref('')
+// const newTag = ref('') // TODO: Implement tag functionality
 
 // Form setup
 const form = useForm({
@@ -300,8 +303,7 @@ const saveCampaign = form.handleSubmit(async (values) => {
 
     // Return to list view
     closeNewForm()
-  } catch (err) {
-    console.error('Failed to save campaign:', err)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -357,8 +359,7 @@ async function handleDuplicate(campaign: Campaign) {
       description: `Campaign "${duplicate.name}" has been created.`,
       color: 'green'
     })
-  } catch (error) {
-    console.error('Failed to duplicate campaign:', error)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -386,8 +387,7 @@ async function handleDelete(campaign: Campaign) {
       description: `Campaign "${campaign.name}" has been deleted.`,
       color: 'green'
     })
-  } catch (error) {
-    console.error('Failed to delete campaign:', error)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',

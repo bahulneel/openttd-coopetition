@@ -37,6 +37,11 @@ Complete listing of all components in the Campaign Editor atomic design system.
 - **Atom** (empty - shadcn covers everything we need)
 - **Molecule**
   - **Display** - key-value information display
+  - **Dashboard**
+    - **Card** - dashboard statistics card component
+  - **Action**
+    - **Button** - action button component
+    - **Link** - action link component
   - **Form**
     - **Group** - responsive grid layout for form fields
     - **Conditional** - field that shows/hides based on conditions
@@ -192,5 +197,8 @@ Complete listing of all components in the Campaign Editor atomic design system.
 | `Entity/Goal/Display/Card.vue`                      | `EntityGoalDisplayCard`                     | Goal card display              |
 | `Domain/Objective/CargoDelivered/Input/Details.vue` | `DomainObjectiveCargoDeliveredInputDetails` | Cargo delivery objective input |
 | `Template/Screen/Collection.vue`                    | `TemplateScreenCollection`                  | Collection screen layout       |
+| `Molecule/Dashboard/Card.vue`                       | `MoleculeCardDashboard`                     | Dashboard statistics card      |
+| `Molecule/Action/Button.vue`                        | `MoleculeActionButton`                      | Action button component        |
+| `Molecule/Action/Link.vue`                          | `MoleculeActionLink`                        | Action link component          |
 | `Molecule/Form/Group.vue`                           | `MoleculeFormGroup`                         | Form field group               |
 | `Aggregate/Goals.vue`                               | `AggregateGoals`                            | Goals collection               |

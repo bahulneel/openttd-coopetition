@@ -333,9 +333,8 @@ async function loadCampaign() {
     } else {
       error.value = 'Campaign not found'
     }
-  } catch (err) {
+  } catch {
     error.value = 'Failed to load campaign'
-    console.error('Failed to load campaign:', err)
   } finally {
     loading.value = false
   }
@@ -356,8 +355,7 @@ const saveCampaign = form.handleSubmit(async (values) => {
 
     // Reload the campaign to get updated data
     await loadCampaign()
-  } catch (err) {
-    console.error('Failed to save campaign:', err)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
@@ -427,7 +425,7 @@ function updateScenarioOrder(index: number, event: Event) {
 
 function previewCampaign() {
   // TODO: Implement preview functionality
-  console.log('Preview campaign:', formData)
+  toast.add({ title: 'Preview functionality coming soon!', color: 'blue' })
 }
 
 async function duplicateCampaign() {
@@ -441,8 +439,7 @@ async function duplicateCampaign() {
     })
     // Navigate to the duplicated campaign
     router.push(`/campaigns/${entityId(duplicate)}`)
-  } catch (err) {
-    console.error('Failed to duplicate campaign:', err)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',

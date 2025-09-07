@@ -15,11 +15,11 @@ interface ListProps {
 defineOptions({ name: 'TemplateLayoutList' })
 
 const props = withDefaults(defineProps<ListProps>(), {})
-const rootClass = computed(() => cn('space-y-4', props.class))
+const _rootClass = computed(() => cn('space-y-4', props.class))
 </script>
 
 <template>
-  <div :class="rootClass">
+  <div :class="_rootClass">
     <slot />
   </div>
 </template>

@@ -74,11 +74,13 @@
       </CardHeader>
       <CardContent>
         <div v-if="formData.campaigns && formData.campaigns.length > 0" class="space-y-4">
-          <div v-for="(campaign, index) in formData.campaigns" :key="index"
+          <div
+v-for="(campaign, index) in formData.campaigns" :key="index"
             class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Campaign {{ index + 1 }}</h4>
-              <Button type="button" variant="ghost" size="sm"
+              <Button
+type="button" variant="ghost" size="sm"
                 class="text-destructive hover:text-destructive-foreground" @click="removeCampaign(index)">
                 🗑️ Remove
               </Button>
@@ -141,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Manifest } from '~/types'
+// import type { Manifest } from '~/types' // TODO: Use when implementing manifest functionality
 
 defineOptions({
   name: 'EntityManifestInputDetails'
