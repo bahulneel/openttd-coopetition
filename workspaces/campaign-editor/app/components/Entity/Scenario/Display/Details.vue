@@ -79,7 +79,8 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div v-for="(goal, index) in scenario.goals" :key="index" 
+          <div
+v-for="(goal, index) in scenario.goals" :key="index" 
                class="flex items-center justify-between p-3 border border-border rounded-lg">
             <div class="flex-1">
               <div class="flex items-center space-x-3">

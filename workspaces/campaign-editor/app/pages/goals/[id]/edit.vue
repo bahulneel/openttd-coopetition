@@ -54,9 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Goal, GoalFormData } from '~/types'
+import type { Goal } from '~/types'
 import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
 import { goalSchema } from '~/utils/schemas'
 
 const route = useRoute()
@@ -129,8 +128,7 @@ const saveGoal = handleSubmit(async (values) => {
     })
     finish()
     navigateTo('/goals')
-  } catch (error) {
-    console.error('Failed to update goal:', error)
+  } catch {
     finish({ error: true })
     toast.add({
       title: '❌ Error',

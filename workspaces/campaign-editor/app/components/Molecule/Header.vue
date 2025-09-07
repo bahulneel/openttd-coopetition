@@ -15,19 +15,21 @@ const rootClass = computed(() => cn('openttd-toolbar', props.class))
 const colorMode = useColorMode()
 const { public: { spaMode } } = useRuntimeConfig()
 
+const toast = useToast()
+
 const importCampaign = () => {
   // TODO: Implement import functionality
-  console.log('Import campaign clicked')
+  toast.add({ title: 'Import functionality coming soon!', color: 'blue' })
 }
 
 const exportAll = () => {
   // TODO: Implement export functionality
-  console.log('Export all clicked')
+  toast.add({ title: 'Export functionality coming soon!', color: 'blue' })
 }
 
 const resetAll = () => {
   // TODO: Implement reset functionality
-  console.log('Reset all clicked')
+  toast.add({ title: 'Reset functionality coming soon!', color: 'yellow' })
 }
 </script>
 
@@ -54,7 +56,8 @@ const resetAll = () => {
 
         <!-- Right: Actions (no choice) -->
         <div class="flex items-center space-x-3">
-          <div v-if="spaMode"
+          <div
+v-if="spaMode"
             class="text-xs bg-openttd-light-blue/20 text-openttd-blue px-3 py-1 rounded border-2 border-openttd-blue/30">
             Browser Mode
           </div>

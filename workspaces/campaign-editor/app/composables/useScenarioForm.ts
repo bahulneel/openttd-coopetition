@@ -1,4 +1,4 @@
-import type { Scenario, Goal } from '~/types'
+import type { Scenario } from '~/types'
 import type { EntityOptions } from '~/types/entity'
 
 export function useScenarioForm(initialData?: EntityOptions<Scenario>) {

@@ -11,9 +11,11 @@ defineProps<Props>()
 </script>
 
 <template>
-  <MoleculeActionLink v-if="action.type === 'link'" :label="action.label" :variant="action.variant"
+  <MoleculeActionLink
+v-if="action.type === 'link'" :label="action.label" :variant="action.variant"
     :to="action.to || '#'" />
-  <MoleculeActionButton v-else :label="action.label" :variant="action.variant" :disabled="action.disabled"
+  <MoleculeActionButton
+v-else :label="action.label" :variant="action.variant" :disabled="action.disabled"
     @click="action.action?.()" />
 </template>
 

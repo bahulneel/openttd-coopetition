@@ -4,10 +4,10 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="text-2xl font-bold text-foreground">
-          <slot name="title">{{ title }}</slot>
+          <slot name="title">{{ _props.title }}</slot>
         </h1>
         <p class="text-muted-foreground">
-          <slot name="subtitle">{{ subtitle }}</slot>
+          <slot name="subtitle">{{ _props.subtitle }}</slot>
         </p>
       </div>
 
@@ -35,7 +35,7 @@ interface Props {
   subtitle?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   title: 'Article',
   subtitle: 'Edit your content'
 })

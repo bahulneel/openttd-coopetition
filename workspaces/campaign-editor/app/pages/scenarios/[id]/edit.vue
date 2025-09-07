@@ -55,7 +55,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="id">Scenario ID</Label>
-                <Input id="id" v-model="form.id" placeholder="e.g., industrial_hub_scenario" class="openttd-input"
+                <Input
+id="id" v-model="form.id" placeholder="e.g., industrial_hub_scenario" class="openttd-input"
                   required />
                 <p class="text-sm text-muted-foreground mt-1">
                   Unique identifier for this scenario
@@ -70,7 +71,8 @@
 
             <div>
               <Label for="description">Description</Label>
-              <Textarea id="description" v-model="form.meta!.description"
+              <Textarea
+id="description" v-model="form.meta!.description"
                 placeholder="Describe what this scenario requires players to do..." class="openttd-input" rows="3" />
             </div>
 
@@ -93,7 +95,8 @@
 
               <div>
                 <Label for="estimated_time">Estimated Time</Label>
-                <Input id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 2 hours"
+                <Input
+id="estimated_time" v-model="form.meta!.estimated_time" placeholder="e.g., 2 hours"
                   class="openttd-input" />
               </div>
             </div>
@@ -109,9 +112,11 @@
             </div>
 
             <div v-else class="space-y-3">
-              <div v-for="goal in availableGoals" :key="goal.id"
+              <div
+v-for="goal in availableGoals" :key="goal.id"
                 class="flex items-center space-x-3 p-3 border rounded-lg">
-                <input :id="`goal-${goal.id}`" v-model="selectedGoals" :value="goal.id" type="checkbox"
+                <input
+:id="`goal-${goal.id}`" v-model="selectedGoals" :value="goal.id" type="checkbox"
                   class="openttd-checkbox">
                 <label :for="`goal-${goal.id}`" class="flex-1 cursor-pointer">
                   <div class="font-medium">{{ goal.meta?.title || goal.id }}</div>
@@ -131,13 +136,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_players">Minimum Players</Label>
-                <Input id="min_players" v-model.number="form.constraints!.players!.min" type="number" min="1" max="8"
+                <Input
+id="min_players" v-model.number="form.constraints!.players!.min" type="number" min="1" max="8"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_players">Maximum Players</Label>
-                <Input id="max_players" v-model.number="form.constraints!.players!.max" type="number" min="1" max="8"
+                <Input
+id="max_players" v-model.number="form.constraints!.players!.max" type="number" min="1" max="8"
                   class="openttd-input" />
               </div>
             </div>
@@ -145,13 +152,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label for="min_date">Minimum Date</Label>
-                <Input id="min_date" v-model.number="form.constraints!.date!.min" type="number" placeholder="e.g., 1950"
+                <Input
+id="min_date" v-model.number="form.constraints!.date!.min" type="number" placeholder="e.g., 1950"
                   class="openttd-input" />
               </div>
 
               <div>
                 <Label for="max_date">Maximum Date</Label>
-                <Input id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeholder="e.g., 2050"
+                <Input
+id="max_date" v-model.number="form.constraints!.date!.max" type="number" placeholder="e.g., 2050"
                   class="openttd-input" />
               </div>
             </div>
@@ -216,7 +225,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Scenario, ScenarioFormData, Goal } from '~/types'
+import type { Scenario, ScenarioFormData } from '~/types'
 
 const route = useRoute()
 const entityStore = useEntityStore()
@@ -290,8 +299,7 @@ async function saveScenario() {
     })
     finish()
     navigateTo('/scenarios')
-  } catch (error) {
-    console.error('Failed to update scenario:', error)
+  } catch {
     finish({ error: true })
     toast.add({
       title: '❌ Error',

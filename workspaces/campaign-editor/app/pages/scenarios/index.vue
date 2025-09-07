@@ -60,7 +60,7 @@ async function duplicateScenarioHandler(scenario: Scenario) {
     }
 
     // Use entity store copy method to create a duplicate
-    const duplicate = entityStore.copy(scenarioId, {
+    entityStore.copy(scenarioId, {
       name: `${scenario.name} (Copy)`
     })
 
@@ -69,8 +69,7 @@ async function duplicateScenarioHandler(scenario: Scenario) {
       description: `Scenario "${scenario.name}" has been duplicated`,
       color: 'green'
     })
-  } catch (error) {
-    console.error('Failed to duplicate scenario:', error)
+  } catch {
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate scenario',
@@ -90,8 +89,7 @@ async function deleteScenario(scenario: Scenario) {
         description: `Scenario "${scenario.name}" has been deleted`,
         color: 'green'
       })
-    } catch (error) {
-      console.error('Failed to delete scenario:', error)
+    } catch {
       toast.add({
         title: '❌ Error',
         description: 'Failed to delete scenario',
@@ -110,8 +108,7 @@ async function refreshScenarios() {
       entityStore.assert(scenario)
     })
     finish()
-  } catch (error) {
-    console.error('Failed to refresh scenarios:', error)
+  } catch {
     finish({ error: true })
     toast.add({
       title: '❌ Error',
