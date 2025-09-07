@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <TemplateLayoutList>
     <EntityGoalDisplayCard 
       v-for="goal in goals" 
       :key="entityId(goal)" 
@@ -8,7 +8,7 @@
       @duplicate="$emit('duplicate', $event)"
       @delete="$emit('delete', $event)"
     />
-  </div>
+  </TemplateLayoutList>
 </template>
 
 <script setup lang="ts">

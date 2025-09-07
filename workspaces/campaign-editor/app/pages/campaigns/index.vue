@@ -63,16 +63,13 @@
       </Card>
 
       <!-- Campaigns Grid -->
-      <div v-if="filteredCampaigns.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <EntityCampaignDisplayCard 
-          v-for="campaign in filteredCampaigns" 
-          :key="entityId(campaign)" 
-          :campaign="campaign"
-          @edit="editCampaignHandler"
-          @duplicate="handleDuplicate"
-          @delete="handleDelete"
-        />
-      </div>
+      <AggregateCampaigns 
+        v-if="filteredCampaigns.length > 0"
+        :campaigns="filteredCampaigns"
+        @edit="editCampaignHandler"
+        @duplicate="handleDuplicate"
+        @delete="handleDelete"
+      />
 
       <!-- Pagination -->
       <div v-if="totalPages > 1" class="flex justify-center">
@@ -97,45 +94,33 @@
     </TemplateScreenCollection>
   </div>
 
-  <div v-else class="space-y-6">
-    <!-- Header for New Campaign Form -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-foreground">New Campaign</h1>
-        <p class="text-muted-foreground">Create a new campaign</p>
-      </div>
+  <TemplateScreenArticle v-else title="New Campaign" subtitle="Create a new campaign">
+    <template #actions>
+      <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+        @click="saveCampaign">
+        {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
+      </Button>
 
-      <div class="flex items-center space-x-2">
-        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
-          @click="saveCampaign">
-          {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
-        </Button>
+      <Button variant="outline" class="openttd-button" @click="closeNewForm">
+        ← Back to List
+      </Button>
+    </template>
 
-        <Button variant="outline" class="openttd-button" @click="closeNewForm">
-          ← Back to List
-        </Button>
-      </div>
-    </div>
-
-
-    <!-- New Campaign Form -->
-    <div v-else class="space-y-6">
-      <Form @submit="saveCampaign">
-        <EntityCampaignInputDetails :form-data="formData" @update:form-data="updateFormData">
-          <template #actions>
-            <div class="flex justify-end space-x-4 pt-6 border-t">
-              <Button type="button" variant="outline" class="openttd-button" @click="closeNewForm">
-                Cancel
-              </Button>
-              <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white">
-                {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
-              </Button>
-            </div>
-          </template>
-        </EntityCampaignInputDetails>
-      </Form>
-    </div>
-  </div>
+    <Form @submit="saveCampaign">
+      <EntityCampaignInputDetails :form-data="formData" @update:form-data="updateFormData">
+        <template #actions>
+          <div class="flex justify-end space-x-4 pt-6 border-t">
+            <Button type="button" variant="outline" class="openttd-button" @click="closeNewForm">
+              Cancel
+            </Button>
+            <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white">
+              {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
+            </Button>
+          </div>
+        </template>
+      </EntityCampaignInputDetails>
+    </Form>
+  </TemplateScreenArticle>
 </template>
 
 <script setup lang="ts">

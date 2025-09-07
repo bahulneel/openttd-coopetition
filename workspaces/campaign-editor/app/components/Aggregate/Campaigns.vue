@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <TemplateLayoutGrid class="grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
     <EntityCampaignDisplayCard 
       v-for="campaign in campaigns" 
       :key="entityId(campaign)" 
@@ -8,7 +8,7 @@
       @duplicate="$emit('duplicate', $event)"
       @delete="$emit('delete', $event)"
     />
-  </div>
+  </TemplateLayoutGrid>
 </template>
 
 <script setup lang="ts">
