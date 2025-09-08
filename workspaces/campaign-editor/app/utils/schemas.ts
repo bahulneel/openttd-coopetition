@@ -27,7 +27,7 @@ import type {
   ScenarioDefaults,
   Scenario,
   PackageStructure,
-  PackageManifest,
+  Manifest,
   AnyItem,
 } from '~/types/model'
 
@@ -37,7 +37,7 @@ type FormData<T extends AnyItem> = EntityValue<T> & { id: string }
 export type GoalFormData = FormData<Goal>
 export type ScenarioFormData = FormData<Scenario>
 export type CampaignFormData = FormData<Campaign>
-export type CampaignManifestFormData = FormData<PackageManifest>
+export type CampaignManifestFormData = FormData<Manifest>
 
 // Common field schemas - reusable patterns
 const optionalString = z.string().optional()

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { parse as parseYAML } from 'yaml'
-import type { PackageManifest } from '~/types'
+import type { Manifest } from '~/types'
 
 export default defineEventHandler(async (_event) => {
   try {
@@ -10,7 +10,7 @@ export default defineEventHandler(async (_event) => {
 
     try {
       const content = await readFile(manifestPath, 'utf-8')
-      const manifest = parseYAML(content) as PackageManifest
+      const manifest = parseYAML(content) as Manifest
 
       return {
         manifest,

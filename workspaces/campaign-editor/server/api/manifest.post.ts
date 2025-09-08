@@ -1,11 +1,11 @@
 import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { stringify as stringifyYAML } from 'yaml'
-import type { PackageManifest } from '~/types'
+import type { Manifest } from '~/types'
 
 export default defineEventHandler(async (event) => {
   try {
-    const { manifest } = await readBody<{ manifest: PackageManifest }>(event)
+    const { manifest } = await readBody<{ manifest: Manifest }>(event)
 
     if (!manifest) {
       throw createError({

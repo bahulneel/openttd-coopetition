@@ -79,20 +79,8 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div v-for="(goal, index) in scenario.goals" :key="index"
-            class="flex items-center justify-between p-3 border border-border rounded-lg">
-            <div class="flex-1">
-              <div class="flex items-center space-x-3">
-                <span class="font-medium">{{ goal.name || `Goal ${index + 1}` }}</span>
-                <Badge :class="getGoalTypeBadgeClass(goal.type)" class="text-xs">
-                  {{ goal.type || 'player' }}
-                </Badge>
-              </div>
-              <p v-if="goal.meta?.description" class="text-sm text-muted-foreground mt-1">
-                {{ goal.meta.description }}
-              </p>
-            </div>
-          </div>
+          <DomainScenarioGoalDisplayItem v-for="(goal, index) in scenario.goals" :key="index" :scenario-goal="goal"
+            @edit="editGoal" />
         </div>
       </CardContent>
     </Card>

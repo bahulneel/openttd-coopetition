@@ -1,5 +1,5 @@
 // Model type definitions - the core domain entities
-import type { AnyEntity, Entity, EntityOptions } from './entity'
+import type { AnyEntity, Entity, EntityOptions, EntityReference } from './entity'
 import type { Storable } from './storable'
 
 export interface Named {
@@ -222,7 +222,7 @@ export interface GoalOverrides extends Commentable {
 }
 
 export interface ScenarioGoal extends Commentable {
-  include: string
+  include: EntityReference<Goal>
   order?: number
   required?: boolean
   branch?: string
@@ -275,5 +275,7 @@ export interface TypeMap {
   Scenario: Scenario
 }
 
+export type ModelTypes = keyof TypeMap
 export type AnyItem = BaseItem<string>
 export type ModelOptions<T extends AnyItem> = EntityOptions<T> & Pick<T, 'name'>
+export type ModelEntity = Entity<ModelTypes>

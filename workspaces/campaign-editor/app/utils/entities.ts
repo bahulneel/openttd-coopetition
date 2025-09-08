@@ -2,7 +2,7 @@ import { defu } from 'defu'
 import { hash } from './hash'
 
 import type { AnyEntity, EntityOptions, EntityType, EntityValue, Identified, Typed } from '~/types/entity'
-import type { TypeMap } from '~/types'
+import type { ModelTypes, TypeMap } from '~/types'
 
 /**
  * Extracts the value data from an entity, removing metadata fields
@@ -67,7 +67,7 @@ export function entityId<T extends Identified>(value: T): string {
   return value.__id
 }
 
-export function asEntity<K extends keyof TypeMap, T extends AnyEntity = TypeMap[K]>(type: K, value: EntityValue<T>): T {
+export function asEntity<K extends ModelTypes, T extends AnyEntity = TypeMap[K]>(type: K, value: EntityValue<T>): T {
   const { id, ...rest } = value as { id?: string } & EntityValue<T>
   if (id) {
     return {
