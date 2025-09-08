@@ -6,16 +6,13 @@
         <div class="flex items-start justify-between">
           <div class="flex-1 min-w-0">
             <CardTitle class="font-semibold text-foreground text-sm">
-              {{ entity?.name || `Entity ${entityRef.__ref.id}` }}
+              {{ entity.name }}
             </CardTitle>
-            <p class="text-xs text-muted-foreground">
-              ID: {{ entityRef.__ref.id }}
-            </p>
           </div>
 
           <div class="flex items-center space-x-1">
             <Badge variant="outline" class="text-xs">
-              {{ entityRef.__ref.type }}
+              {{ entityType(entity) }}
             </Badge>
           </div>
         </div>

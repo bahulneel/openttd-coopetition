@@ -1,7 +1,15 @@
 import { defu } from 'defu'
 import { hash } from './hash'
 
-import type { AnyEntity, EntityOptions, EntityType, EntityValue, Identified, Typed } from '~/types/entity'
+import type {
+  AnyEntity,
+  EntityOptions,
+  EntityReference,
+  EntityType,
+  EntityValue,
+  Identified,
+  Typed,
+} from '~/types/entity'
 import type { ModelTypes, TypeMap } from '~/types'
 
 /**
@@ -84,4 +92,31 @@ export function asEntity<K extends ModelTypes, T extends AnyEntity = TypeMap[K]>
     __type: type,
     __id: useIdentifier(type.toLowerCase()),
   } as T
+}
+
+export function entityRef<T extends AnyEntity>(id: string, type: EntityType<T>): EntityReference<T> {
+  return {
+    __ref: {
+      id,
+      type,
+    },
+  }
+}
+
+export function toEntityRef<T extends AnyEntity>(entity: T): EntityReference<T> {
+  return entityRef<T>(entity.__id, entity.__type)
+}
+
+/**
+ * Gets the ID from an EntityReference
+ */
+export function referenceId<T extends AnyEntity>(ref: EntityReference<T>): string {
+  return ref.__ref.id
+}
+
+/**
+ * Gets the type from an EntityReference
+ */
+export function referenceType<T extends AnyEntity>(ref: EntityReference<T>): EntityType<T> {
+  return ref.__ref.type
 }

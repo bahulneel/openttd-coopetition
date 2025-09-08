@@ -2,10 +2,11 @@
   <div class="flex items-center space-x-3">
     <span class="font-medium text-foreground">{{ manifest.name }}</span>
     <Badge variant="secondary" class="text-xs">
-      v{{ manifest.version }}
+      {{ manifest.dependencies.coopetition_version }}
     </Badge>
     <span class="text-sm text-muted-foreground">
-      {{ manifest.campaigns?.length || 0 }} campaigns
+      {{ manifest.contents.campaigns.length + manifest.contents.scenarios.length + manifest.contents.goals.length }}
+      items
     </span>
   </div>
 </template>

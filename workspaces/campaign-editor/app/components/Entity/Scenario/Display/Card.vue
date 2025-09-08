@@ -5,12 +5,6 @@
         <div class="flex-1">
           <div class="flex items-center space-x-3 mb-2">
             <CardTitle class="text-lg font-semibold">{{ scenario.name }}</CardTitle>
-            <Badge v-if="scenario.required" variant="default" class="text-xs">
-              Required
-            </Badge>
-            <Badge v-else variant="secondary" class="text-xs">
-              Optional
-            </Badge>
           </div>
 
           <p class="text-muted-foreground mb-3">
@@ -19,10 +13,6 @@
           <DomainMetaInfoDisplayCard :meta-info="scenario.meta" as-partial />
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <span class="font-medium text-foreground">Order:</span>
-              <p class="text-muted-foreground">{{ scenario.order }}</p>
-            </div>
             <div v-if="scenario.goals && scenario.goals.length > 0">
               <span class="font-medium text-foreground">Goals:</span>
               <p class="text-muted-foreground">{{ scenario.goals.length }}</p>

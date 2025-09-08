@@ -4,17 +4,8 @@
     <div class="flex-1 min-w-0">
       <div class="flex items-center space-x-3">
         <h3 class="font-medium text-foreground truncate">{{ scenario.name }}</h3>
-        <Badge v-if="scenario.required" variant="default" class="text-xs">
-          Required
-        </Badge>
-        <Badge v-else variant="secondary" class="text-xs">
-          Optional
-        </Badge>
         <DomainMetaInfoDisplayCard v-if="scenario.meta" :meta-info="scenario.meta" as-partial />
       </div>
-      <p class="text-sm text-muted-foreground mt-1">
-        Order: {{ scenario.order }} • {{ scenario.goals?.length || 0 }} goals
-      </p>
     </div>
 
     <div class="flex items-center space-x-2">

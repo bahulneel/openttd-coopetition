@@ -48,6 +48,27 @@ const optionalStringArray = z.array(z.string()).optional()
 // Semantic field names
 const commentField = optionalString
 
+const scenarioRefSchema = z.object({
+  __ref: z.object({
+    id: z.string(),
+    type: z.literal('Scenario'),
+  }),
+})
+
+const goalRefSchema = z.object({
+  __ref: z.object({
+    id: z.string(),
+    type: z.literal('Goal'),
+  }),
+})
+
+const campaignRefSchema = z.object({
+  __ref: z.object({
+    id: z.string(),
+    type: z.literal('Campaign'),
+  }),
+})
+
 // Common object patterns - removed unused helper functions
 
 // Reusable object schemas for common patterns
@@ -242,7 +263,7 @@ const campaignScenarioOverridesSchema: z.ZodType<CampaignScenarioOverrides> = z.
 })
 
 const campaignScenarioSchema: z.ZodType<CampaignScenario> = z.object({
-  include: z.string(),
+  include: scenarioRefSchema,
   order: nonNegativeNumber.optional(),
   required: optionalBoolean,
   branch: optionalString,
@@ -260,7 +281,7 @@ const campaignBranchSchema: z.ZodType<CampaignBranch> = z.object({
 })
 
 const campaignProgressionRequirementSchema: z.ZodType<CampaignProgressionRequirement> = z.object({
-  scenario: z.string(),
+  scenario: scenarioRefSchema,
   completion_threshold: z.number(),
   unlocks: optionalString,
   comment: commentField,
@@ -327,7 +348,7 @@ const goalOverridesSchema: z.ZodType<GoalOverrides> = z.object({
 })
 
 const scenarioGoalSchema: z.ZodType<ScenarioGoal> = z.object({
-  include: z.string(),
+  include: goalRefSchema,
   order: z.number().optional(),
   required: z.boolean().optional(),
   branch: z.string().optional(),
@@ -344,9 +365,9 @@ const scenarioDefaultsSchema: z.ZodType<ScenarioDefaults> = z.object({
 })
 
 const packageStructureSchema: z.ZodType<PackageStructure> = z.object({
-  goals: z.string(),
-  scenarios: z.string(),
-  campaigns: z.string(),
+  goalPath: z.string(),
+  scenarioPath: z.string(),
+  campaignPath: z.string(),
   comment: z.string().optional(),
 })
 
@@ -397,6 +418,26 @@ const campaignManifestSchemaBase: z.ZodType<CampaignManifestFormData> = z.object
   main_campaign: z.string().optional(),
   dependencies: z.object({
     coopetition_version: z.string(),
+  }),
+  contents: z.object({
+    goals: z.array(
+      z.object({
+        filename: z.string(),
+        entity: goalRefSchema,
+      }),
+    ),
+    scenarios: z.array(
+      z.object({
+        filename: z.string(),
+        entity: scenarioRefSchema,
+      }),
+    ),
+    campaigns: z.array(
+      z.object({
+        filename: z.string(),
+        entity: campaignRefSchema,
+      }),
+    ),
   }),
   install: z
     .object({

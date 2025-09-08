@@ -94,8 +94,7 @@
           <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
             <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
               {{ tag }}
-              <Button
-variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
+              <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
                 @click="removeTag(index)">
                 ✕
               </Button>
@@ -130,15 +129,14 @@ variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:te
           <div v-for="(scenario, index) in formData.scenarios" :key="index" class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
-              <Button
-type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
                 @click="removeScenario(index)">
                 🗑️ Remove
               </Button>
             </div>
 
             <MoleculeFormGroup>
-              <FormField v-slot="{ componentField }" :name="`scenarios.${index}.include`">
+              <FormField v-slot="{ componentField }" :name="`scenarios.${index}.include.id`">
                 <FormItem>
                   <FormLabel>Include</FormLabel>
                   <FormControl>
@@ -152,8 +150,7 @@ type="button" variant="ghost" size="sm" class="text-destructive hover:text-destr
                 <FormItem>
                   <FormLabel>Order</FormLabel>
                   <FormControl>
-                    <Input
-v-bind="componentField" type="number" :value="scenario.order"
+                    <Input v-bind="componentField" type="number" :value="scenario.order"
                       @input="updateScenarioOrder(index, $event)" />
                   </FormControl>
                   <FormMessage />
@@ -253,7 +250,10 @@ function removeTag(index: number) {
 function addScenario() {
   const currentScenarios = props.formData.scenarios || []
   const newScenario = {
-    include: '',
+    include: {
+      id: '',
+      type: 'Scenario' as const
+    },
     order: currentScenarios.length + 1,
     required: true
   }

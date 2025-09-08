@@ -6,11 +6,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <span class="font-medium text-foreground">Goal ID:</span>
-            <span class="text-muted-foreground ml-2 font-mono">{{ scenarioGoal.include.__ref.id }}</span>
+            <span class="text-muted-foreground ml-2 font-mono">{{ referenceId(scenarioGoal.include) }}</span>
           </div>
           <div>
             <span class="font-medium text-foreground">Goal Type:</span>
-            <span class="text-muted-foreground ml-2">{{ resolvedGoal?.type || scenarioGoal.include.__ref.type }}</span>
+            <span class="text-muted-foreground ml-2">{{ resolvedGoal?.type || referenceType(scenarioGoal.include)
+              }}</span>
           </div>
           <div>
             <span class="font-medium text-foreground">Order:</span>
@@ -82,7 +83,7 @@
     </template>
     <template #fallback>
       <div class="p-4 border border-dashed border-muted-foreground rounded-lg text-center text-muted-foreground">
-        Goal not found: {{ scenarioGoal.include.__ref.id }}
+        Goal not found: {{ referenceId(scenarioGoal.include) }}
       </div>
     </template>
   </WithEntity>

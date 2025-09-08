@@ -1,8 +1,5 @@
 <template>
-  <TemplateScreenArticle
-    title="Edit Goal"
-    subtitle="Modify the goal configuration"
-  >
+  <TemplateScreenArticle title="Edit Goal" subtitle="Modify the goal configuration">
     <template #actions>
       <Button variant="outline" class="openttd-button" @click="navigateTo('/goals')">
         ← Back to Goals
@@ -67,7 +64,7 @@ const goal = ref<Goal | undefined>(undefined)
 const { isLoading: loading, start, finish } = useLoadingIndicator()
 
 // Form setup with VeeValidate
-const { handleSubmit, setValues } = useForm({
+const form = useForm({
   validationSchema: goalSchema,
   initialValues: {
     id: '',
@@ -94,6 +91,8 @@ const { handleSubmit, setValues } = useForm({
     }
   }
 })
+
+const { handleSubmit, setValues } = form
 
 // Load goal data
 onMounted(async () => {

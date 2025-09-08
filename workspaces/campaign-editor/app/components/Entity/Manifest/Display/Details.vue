@@ -4,7 +4,7 @@
     <div class="flex items-start justify-between">
       <div>
         <h1 class="text-2xl font-bold text-foreground">{{ manifest.name }}</h1>
-        <p class="text-muted-foreground">Version: {{ manifest.version }}</p>
+        <p class="text-muted-foreground">ID: {{ entityId(manifest) }}</p>
       </div>
       <div class="flex items-center space-x-2">
         <Button variant="outline" class="openttd-button" @click="$emit('edit', manifest)">
@@ -28,42 +28,38 @@
             <span class="text-muted-foreground ml-2">{{ manifest.name }}</span>
           </div>
           <div>
-            <span class="font-medium text-foreground">Version:</span>
-            <span class="text-muted-foreground ml-2">{{ manifest.version }}</span>
-          </div>
-          <div v-if="manifest.author">
-            <span class="font-medium text-foreground">Author:</span>
-            <span class="text-muted-foreground ml-2">{{ manifest.author }}</span>
-          </div>
-          <div v-if="manifest.description">
-            <span class="font-medium text-foreground">Description:</span>
-            <span class="text-muted-foreground ml-2">{{ manifest.description }}</span>
+            <span class="font-medium text-foreground">Dependencies:</span>
+            <span class="text-muted-foreground ml-2">{{ manifest.dependencies.coopetition_version }}</span>
           </div>
         </div>
+
+        <DomainMetaInfoDisplayCard :meta-info="manifest.meta" as-partial />
       </CardContent>
     </Card>
 
-    <!-- Campaigns -->
-    <Card v-if="manifest.campaigns && manifest.campaigns.length > 0" class="openttd-titlebar">
+    <!-- Contents -->
+    <Card
+      v-if="manifest.contents && (manifest.contents.campaigns.length > 0 || manifest.contents.scenarios.length > 0 || manifest.contents.goals.length > 0)"
+      class="openttd-titlebar">
       <CardHeader>
         <CardTitle class="flex items-center space-x-2">
           <span>📁</span>
-          <span>Campaigns ({{ manifest.campaigns.length }})</span>
+          <span>Contents</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div v-for="(campaign, index) in manifest.campaigns" :key="index"
-            class="flex items-center justify-between p-3 border border-border rounded-lg">
-            <div class="flex-1">
-              <div class="flex items-center space-x-3">
-                <span class="font-medium">{{ campaign.name || `Campaign ${index + 1}` }}</span>
-                <DomainMetaInfoDisplayCard v-if="campaign.meta" :meta-info="campaign.meta" as-partial />
-              </div>
-              <p v-if="campaign.description" class="text-sm text-muted-foreground mt-1">
-                {{ campaign.description }}
-              </p>
-            </div>
+          <div v-if="manifest.contents.campaigns.length > 0" class="text-sm">
+            <span class="font-medium text-foreground">Campaigns:</span>
+            <span class="text-muted-foreground ml-2">{{ manifest.contents.campaigns.length }}</span>
+          </div>
+          <div v-if="manifest.contents.scenarios.length > 0" class="text-sm">
+            <span class="font-medium text-foreground">Scenarios:</span>
+            <span class="text-muted-foreground ml-2">{{ manifest.contents.scenarios.length }}</span>
+          </div>
+          <div v-if="manifest.contents.goals.length > 0" class="text-sm">
+            <span class="font-medium text-foreground">Goals:</span>
+            <span class="text-muted-foreground ml-2">{{ manifest.contents.goals.length }}</span>
           </div>
         </div>
       </CardContent>

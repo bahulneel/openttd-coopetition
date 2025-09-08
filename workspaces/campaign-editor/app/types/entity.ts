@@ -14,7 +14,7 @@ export interface Entity<T extends string> extends Identified, Typed {
 
 // Type helpers
 export type AnyEntity = Entity<string>
-export type EntityType<T> = T extends Entity<infer U> ? U : never
+export type EntityType<T extends AnyEntity> = T['__type']
 
 // Value types (without metadata)
 export type EntityValue<T extends AnyEntity> = Omit<T, '__id' | '__type'>

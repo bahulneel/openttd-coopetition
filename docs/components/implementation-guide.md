@@ -5,21 +5,25 @@ Guide for implementing the atomic design component hierarchy in the Campaign Edi
 ## Implementation Phases
 
 ### **Phase 1: Type System Migration** ✅
+
 1. Implement discriminated union types for Objective
-2. Update Zod schemas to use discriminated union validation  
+2. Update Zod schemas to use discriminated union validation
 3. Fix form type safety issues
 
 ### **Phase 2: Component Architecture** (Next)
+
 1. Create atomic component structure
 2. Implement minimal set of needed components
 3. Migrate existing pages to use new components
 
 ### **Phase 3: Domain Specialization**
+
 1. Implement Domain/ components for specialized types
 2. Create Entity/ components with proper visual intents
 3. Build Template/ system for layout composition
 
 ### **Phase 4: Page Migration**
+
 1. Migrate goal pages to new architecture
 2. Migrate scenario pages to new architecture
 3. Migrate campaign pages to new architecture
@@ -50,7 +54,7 @@ Every component should follow this structure:
 <script setup lang="ts">
 // Component name from FQN
 defineOptions({
-  name: 'ComponentFQN'  // e.g., 'EntityGoalDisplayCard'
+  name: 'ComponentFQN', // e.g., 'EntityGoalDisplayCard'
 })
 
 // Props, emits, logic
@@ -61,16 +65,17 @@ defineOptions({
 
 File path determines the FQN:
 
-| File Path | FQN |
-|-----------|-----|
-| `Entity/Goal/Display/Card.vue` | `EntityGoalDisplayCard` |
+| File Path                                           | FQN                                         |
+| --------------------------------------------------- | ------------------------------------------- |
+| `Entity/Goal/Display/Card.vue`                      | `EntityGoalDisplayCard`                     |
 | `Domain/Objective/CargoDelivered/Input/Details.vue` | `DomainObjectiveCargoDeliveredInputDetails` |
-| `Molecule/Form/Group.vue` | `MoleculeFormGroup` |
-| `Template/Screen/Collection.vue` | `TemplateScreenCollection` |
+| `Molecule/Form/Group.vue`                           | `MoleculeFormGroup`                         |
+| `Template/Screen/Collection.vue`                    | `TemplateScreenCollection`                  |
 
 ### **4. Visual Intent Implementation**
 
 #### **Input Components**
+
 ```vue
 <!-- Domain/Objective/CargoDelivered/Input/Details.vue -->
 <template>
@@ -84,7 +89,7 @@ File path determines the FQN:
         <FormMessage />
       </FormItem>
     </FormField>
-    
+
     <FormField name="cargo">
       <FormItem>
         <FormLabel>Cargo Type</FormLabel>
@@ -99,7 +104,7 @@ File path determines the FQN:
 
 <script setup lang="ts">
 defineOptions({
-  name: 'DomainObjectiveCargoDeliveredInputDetails'
+  name: 'DomainObjectiveCargoDeliveredInputDetails',
 })
 
 // Props for cargo delivered objective
@@ -110,6 +115,7 @@ interface Props {
 ```
 
 #### **Display Components**
+
 ```vue
 <!-- Entity/Goal/Display/Card.vue -->
 <template>
@@ -128,7 +134,7 @@ interface Props {
 
 <script setup lang="ts">
 defineOptions({
-  name: 'EntityGoalDisplayCard'
+  name: 'EntityGoalDisplayCard',
 })
 
 interface Props {
@@ -142,7 +148,7 @@ interface Props {
 Components should compose lower-level components:
 
 - **Entity** components compose **Domain** components
-- **Domain** components compose **Molecule** components  
+- **Domain** components compose **Molecule** components
 - **Molecule** components compose **shadcn** components
 - **Aggregate** components compose **Entity** components
 - **Template** components provide layout structure
@@ -167,16 +173,19 @@ Only create components when:
 ## Testing Strategy
 
 ### **Component Testing**
+
 - Each component should be testable in isolation
 - Use Vue Test Utils for component testing
 - Mock dependencies and props appropriately
 
 ### **Integration Testing**
+
 - Test component composition works correctly
 - Verify FQN naming is consistent
 - Test visual intent patterns function properly
 
 ### **Type Testing**
+
 - Verify discriminated union types work correctly
 - Test form validation with new schemas
 - Ensure TypeScript compilation passes
@@ -184,16 +193,19 @@ Only create components when:
 ## Migration Guidelines
 
 ### **Progressive Migration**
+
 - Migrate one page at a time
 - Start with simplest pages (list views)
 - Move to complex pages (form views) last
 
 ### **Backward Compatibility**
+
 - Keep old components until migration is complete
 - Use feature flags if needed during transition
 - Ensure existing functionality continues to work
 
 ### **Quality Gates**
+
 - All new components must have proper FQN
 - All new components must follow visual intent patterns
 - All new components must be properly typed
@@ -202,6 +214,7 @@ Only create components when:
 ## Common Patterns
 
 ### **Conditional Rendering**
+
 ```vue
 <!-- Use MoleculeFormConditional for complex conditions -->
 <MoleculeFormConditional :condition="objective?.type === 'cargo_delivered'">
@@ -210,6 +223,7 @@ Only create components when:
 ```
 
 ### **Form Composition**
+
 ```vue
 <!-- Entity components compose Domain components -->
 <template>
@@ -222,15 +236,12 @@ Only create components when:
 ```
 
 ### **Collection Display**
+
 ```vue
 <!-- Aggregate components use Template layouts -->
 <template>
   <TemplateLayoutList>
-    <EntityGoalDisplayItem 
-      v-for="goal in goals" 
-      :key="goal.__id" 
-      :goal="goal" 
-    />
+    <EntityGoalDisplayItem v-for="goal in goals" :key="entityId(goal)" :goal="goal" />
   </TemplateLayoutList>
 </template>
 ```

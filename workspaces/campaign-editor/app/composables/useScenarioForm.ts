@@ -1,4 +1,4 @@
-import type { Scenario } from '~/types'
+import type { Goal, Scenario } from '~/types'
 import type { EntityOptions } from '~/types/entity'
 
 export function useScenarioForm(initialData?: EntityOptions<Scenario>) {
@@ -33,7 +33,7 @@ export function useScenarioForm(initialData?: EntityOptions<Scenario>) {
   const save = () => {
     // Convert selected goals to scenario goal format
     form.value.goals = selectedGoals.value.map((goalId) => ({
-      include: goalId,
+      include: entityRef<Goal>(goalId, 'Goal'),
       order: 0,
       required: true,
     }))

@@ -21,7 +21,7 @@
       </template>
       <template #fallback>
         <div class="p-3 border border-dashed border-muted-foreground rounded-lg text-center text-muted-foreground">
-          Goal not found: {{ scenarioGoal.include.__ref.id }}
+          Goal not found: {{ referenceId(scenarioGoal.include) }}
         </div>
       </template>
     </WithEntity>
