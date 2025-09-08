@@ -8,6 +8,7 @@ export const campaignTemplate = {
     },
     scenarios: [],
     constraints: {},
+    settings: {},
   },
   newItem: {
     comment: 'New campaign created with the editor',
@@ -15,6 +16,13 @@ export const campaignTemplate = {
     constraints: {
       players: { min: 1, max: 8 },
       date: { min: 1950, max: 2050 },
+    },
+    settings: {
+      economy: 'normal',
+      disasters: false,
+      breakdowns: false,
+      inflation: false,
+      seasons: false,
     },
     meta: {
       description: 'A new campaign created with the editor',

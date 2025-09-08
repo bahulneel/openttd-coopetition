@@ -313,6 +313,7 @@ const campaignSettingsSchema: z.ZodType<CampaignSettings> = z.object({
   disasters: z.boolean().optional(),
   breakdowns: z.boolean().optional(),
   inflation: z.boolean().optional(),
+  seasons: z.boolean().optional(),
   comment: z.string().optional(),
 })
 
@@ -370,6 +371,7 @@ const scenarioSchemaBase: z.ZodType<ScenarioFormData> = z.object({
   goals: z.array(scenarioGoalSchema).optional(),
   constraints: constraintsSchema.optional(),
   defaults: scenarioDefaultsSchema.optional(),
+  settings: campaignSettingsSchema.optional(),
 })
 
 const campaignSchemaBase: z.ZodType<CampaignFormData> = z.object({

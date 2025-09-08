@@ -193,6 +193,7 @@ export interface CampaignSettings extends Commentable {
   disasters?: boolean
   breakdowns?: boolean
   inflation?: boolean
+  seasons?: boolean
 }
 
 export interface Campaign extends BaseItem<'Campaign'> {
@@ -239,6 +240,7 @@ export interface Scenario extends BaseItem<'Scenario'> {
   goals?: ScenarioGoal[]
   constraints?: Constraints
   defaults?: ScenarioDefaults
+  settings?: CampaignSettings
 }
 
 export interface PackageStructure extends Commentable {

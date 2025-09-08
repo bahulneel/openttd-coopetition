@@ -14,7 +14,7 @@
     "src"
   ],
   "scripts": {
-    "postinstall": "node workspaces/gs-doc-cache/bin/update-cache.mjs --verbose",
+    "postinstall": "turbo run dev:prepare",
     "update-cache": "update-gs-cache --verbose",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
