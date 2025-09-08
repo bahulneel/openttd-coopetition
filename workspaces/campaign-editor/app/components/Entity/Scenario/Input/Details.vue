@@ -54,16 +54,6 @@
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="required">
-            <FormItem class="flex items-center space-x-2">
-              <FormControl>
-                <Toggle v-bind="componentField" :pressed="formData.required" />
-              </FormControl>
-              <FormLabel class="text-sm">Required</FormLabel>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-
           <FormField v-slot="{ componentField }" name="meta.difficulty">
             <FormItem>
               <FormLabel>Difficulty</FormLabel>
@@ -218,24 +208,6 @@
 defineOptions({
   name: 'EntityScenarioInputDetails'
 })
-
-interface ScenarioFormData {
-  id: string
-  name: string
-  include: string
-  order?: number
-  required?: boolean
-  meta?: {
-    difficulty?: string
-    estimated_time?: string
-    description?: string
-    tags?: string[]
-  }
-  goals?: Array<{
-    name: string
-    type: string
-  }>
-}
 
 const formData = defineModel<ScenarioFormData>({ required: true })
 

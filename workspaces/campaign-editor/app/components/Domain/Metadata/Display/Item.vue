@@ -1,11 +1,11 @@
 <template>
-  <div class="text-xs text-muted-foreground">
+  <div v-if="metadata" class="text-xs text-muted-foreground">
     {{ formatDate(metadata?.modified) }}
   </div>
 </template>
 
 <script setup lang="ts" generic="T extends AnyEntity">
-import type { Storable, AnyEntity } from '~/types'
+import type { AnyEntity } from '~/types'
 import { storableMeta } from '~/utils/storable'
 
 defineOptions({
@@ -13,12 +13,12 @@ defineOptions({
 })
 
 interface Props {
-  entity: Storable<T>
+  entity: T
 }
 
 const props = defineProps<Props>()
 
-const metadata = computed(() => storableMeta(props.entity))
+const metadata = computed(() => isStorable(props.entity) ? storableMeta(props.entity) : undefined)
 
 function formatDate(timestamp: number | undefined) {
   if (!timestamp) return 'Unknown'

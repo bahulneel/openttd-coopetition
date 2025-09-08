@@ -31,13 +31,11 @@ import type {
   AnyItem,
 } from '~/types/model'
 
-// Form data utility type and aliases
-type FormData<T extends AnyItem> = EntityValue<T> & { id: string }
-
-export type GoalFormData = FormData<Goal>
-export type ScenarioFormData = FormData<Scenario>
-export type CampaignFormData = FormData<Campaign>
-export type CampaignManifestFormData = FormData<Manifest>
+// Form data utility type and aliases - just use EntityValue directly
+export type GoalFormData = EntityValue<Goal>
+export type ScenarioFormData = EntityValue<Scenario>
+export type CampaignFormData = EntityValue<Campaign>
+export type ManifestFormData = EntityValue<Manifest>
 
 // Common field schemas - reusable patterns
 const optionalString = z.string().optional()
@@ -371,9 +369,8 @@ const packageStructureSchema: z.ZodType<PackageStructure> = z.object({
   comment: z.string().optional(),
 })
 
-// Main entity schemas - using FormData types for form validation
+// Main entity schemas - using EntityValue types for form validation
 const goalSchemaBase: z.ZodType<GoalFormData> = z.object({
-  id: z.string(),
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
@@ -385,7 +382,6 @@ const goalSchemaBase: z.ZodType<GoalFormData> = z.object({
 })
 
 const scenarioSchemaBase: z.ZodType<ScenarioFormData> = z.object({
-  id: z.string(),
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
@@ -396,7 +392,6 @@ const scenarioSchemaBase: z.ZodType<ScenarioFormData> = z.object({
 })
 
 const campaignSchemaBase: z.ZodType<CampaignFormData> = z.object({
-  id: z.string(),
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
@@ -408,8 +403,7 @@ const campaignSchemaBase: z.ZodType<CampaignFormData> = z.object({
   settings: campaignSettingsSchema.optional(),
 })
 
-const campaignManifestSchemaBase: z.ZodType<CampaignManifestFormData> = z.object({
-  id: z.string(),
+const campaignManifestSchemaBase: z.ZodType<ManifestFormData> = z.object({
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
@@ -461,10 +455,3 @@ export const schemas = {
   campaignManifest: campaignManifestSchemaBase,
 } as const
 
-export function toFormData<T extends AnyItem>(item: T): FormData<T> {
-  const { __id, __type, ...value } = item
-  return {
-    id: __id,
-    ...value,
-  } as FormData<T>
-}

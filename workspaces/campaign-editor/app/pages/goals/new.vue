@@ -1,16 +1,13 @@
 <template>
-  <TemplateScreenArticle
-    title="Create New Goal"
-    subtitle="Define a new goal that can be used in scenarios"
-  >
+  <TemplateScreenArticle title="Create New Goal" subtitle="Define a new goal that can be used in scenarios">
     <template #actions>
       <Button variant="outline" class="openttd-button" @click="navigateTo('/goals')">
         ← Back to Goals
       </Button>
     </template>
 
-    <Form @submit="saveGoal">
-      <EntityGoalInputDetails>
+    <Form @submit="saveGoal" :validation-schema="goalSchema">
+      <EntityGoalInputDetails v-model="form">
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">
             <Button type="button" variant="outline" class="openttd-button" @click="navigateTo('/goals')">
@@ -27,31 +24,23 @@
 </template>
 
 <script setup lang="ts">
-import { useForm } from 'vee-validate'
+import type { Goal } from '~/types'
+import { createGoal, goalTemplate } from '~/utils/model/goals'
 import { goalSchema } from '~/utils/schemas'
 
-const { form, save } = useGoalForm()
+const store = useEntityStore()
+const toast = useToast()
 
-// Set up form validation with proper initial values
-const { handleSubmit } = useForm({
-  validationSchema: goalSchema,
-  initialValues: {
-    id: form.value.__id,
-    name: form.value.name,
-    type: form.value.type,
-    meta: form.value.meta,
-    objective: form.value.objective,
-    constraints: form.value.constraints,
-    result: form.value.result
-  }
-})
+// Initialize form with empty goal
+const form = ref<Goal>(createGoal('New Goal', goalTemplate.newItem))
 
-const saveGoal = handleSubmit(async (values) => {
-  // Update the form with validated values
-  Object.assign(form.value, values)
-  
-  if (save()) {
-    navigateTo('/goals')
-  }
-})
+function saveGoal() {
+  store.assert(form.value)
+  toast.add({
+    title: '✅ Goal Created',
+    description: `Goal "${form.value.name || form.value.__id}" has been created successfully`,
+    color: 'green',
+  })
+  navigateTo('/goals')
+}
 </script>

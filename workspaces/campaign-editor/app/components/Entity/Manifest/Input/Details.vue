@@ -59,127 +59,17 @@
       </CardContent>
     </Card>
 
-    <!-- Campaigns -->
-    <Card class="openttd-titlebar">
-      <CardHeader>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="text-lg">📁</span>
-            <CardTitle class="text-lg font-semibold">Campaigns</CardTitle>
-          </div>
-          <Button type="button" variant="outline" class="openttd-button" @click="addCampaign">
-            ➕ Add Campaign
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div v-if="formData.campaigns && formData.campaigns.length > 0" class="space-y-4">
-          <div v-for="(campaign, index) in formData.campaigns" :key="index" class="p-4 border border-border rounded-lg">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="font-medium">Campaign {{ index + 1 }}</h4>
-              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
-                @click="removeCampaign(index)">
-                🗑️ Remove
-              </Button>
-            </div>
-
-            <MoleculeFormGroup>
-              <FormField v-slot="{ componentField }" :name="`campaigns.${index}.name`">
-                <FormItem>
-                  <FormLabel>Campaign Name</FormLabel>
-                  <FormControl>
-                    <Input v-bind="componentField" placeholder="Campaign Name" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
-              <FormField v-slot="{ componentField }" :name="`campaigns.${index}.difficulty`">
-                <FormItem>
-                  <FormLabel>Difficulty</FormLabel>
-                  <Select v-bind="componentField">
-                    <FormControl>
-                      <SelectTrigger class="openttd-button">
-                        <SelectValue placeholder="Select difficulty" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="easy">🟢 Easy</SelectItem>
-                      <SelectItem value="medium">🟡 Medium</SelectItem>
-                      <SelectItem value="hard">🟠 Hard</SelectItem>
-                      <SelectItem value="expert">🔴 Expert</SelectItem>
-                      <SelectItem value="legendary">🟣 Legendary</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
-              <FormField v-slot="{ componentField }" :name="`campaigns.${index}.description`">
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea v-bind="componentField" placeholder="Campaign description..." />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </MoleculeFormGroup>
-          </div>
-        </div>
-
-        <div v-else class="text-center py-8 text-muted-foreground">
-          <p>No campaigns added yet. Click "Add Campaign" to get started.</p>
-        </div>
-      </CardContent>
-    </Card>
-
     <!-- Actions Slot -->
     <slot name="actions" />
   </div>
 </template>
 
 <script setup lang="ts">
-// import type { Manifest } from '~/types' // TODO: Use when implementing manifest functionality
+import type { ManifestFormData } from '~/utils/schemas'
 
 defineOptions({
   name: 'EntityManifestInputDetails'
 })
 
-interface ManifestFormData {
-  name: string
-  version: string
-  author?: string
-  description?: string
-  campaigns?: Array<{
-    name: string
-    difficulty: string
-    description: string
-  }>
-}
-
 const formData = defineModel<ManifestFormData>({ required: true })
-
-// Form methods
-function addCampaign() {
-  const currentCampaigns = formData.value.campaigns || []
-  const newCampaign = {
-    name: '',
-    difficulty: 'medium',
-    description: ''
-  }
-  formData.value = {
-    ...formData.value,
-    campaigns: [...currentCampaigns, newCampaign]
-  }
-}
-
-function removeCampaign(index: number) {
-  const currentCampaigns = formData.value.campaigns || []
-  const newCampaigns = currentCampaigns.filter((_: unknown, i: number) => i !== index)
-  formData.value = {
-    ...formData.value,
-    campaigns: newCampaigns
-  }
-}
 </script>

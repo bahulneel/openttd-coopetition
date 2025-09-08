@@ -19,7 +19,7 @@
     </div>
 
     <!-- Scenario Form -->
-    <Form @submit="saveScenario">
+    <Form @submit="saveScenario" :validation-schema="scenarioSchema">
       <EntityScenarioInputDetails v-model="form">
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">
@@ -37,11 +37,23 @@
 </template>
 
 <script setup lang="ts">
-const { form, save } = useScenarioForm()
+import type { Scenario } from '~/types'
+import { createScenario, scenarioTemplate } from '~/utils/model/scenarios'
+import { scenarioSchema } from '~/utils/schemas'
 
+const store = useEntityStore()
+const toast = useToast()
+
+// Initialize form with empty scenario
+const form = ref<Scenario>(createScenario('New Scenario', scenarioTemplate.newItem))
 
 function saveScenario() {
-  save()
+  store.assert(form.value)
+  toast.add({
+    title: '✅ Scenario Created',
+    description: `Scenario "${form.value.name}" has been created successfully`,
+    color: 'green',
+  })
   navigateTo('/scenarios')
 }
 </script>
