@@ -126,7 +126,8 @@
           <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
             <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
               {{ tag }}
-              <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
+              <Button
+variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
                 @click="removeTag(index)">
                 ✕
               </Button>
@@ -161,7 +162,8 @@
           <div v-for="(goal, index) in formData.goals" :key="index" class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Goal {{ index + 1 }}</h4>
-              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+              <Button
+type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
                 @click="removeGoal(index)">
                 🗑️ Remove
               </Button>

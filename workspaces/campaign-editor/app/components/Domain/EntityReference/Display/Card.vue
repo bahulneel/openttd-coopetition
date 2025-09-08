@@ -1,5 +1,5 @@
 <template>
-  <WithEntity :ref="entityRef" #default="{ value: entity }">
+  <WithEntity :ref="entityRef" v-slot="{ value: entity }">
     <DefineContent>
       <div class="space-y-3 p-4">
         <!-- Header -->

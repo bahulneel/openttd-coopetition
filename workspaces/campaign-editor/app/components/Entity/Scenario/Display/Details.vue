@@ -65,7 +65,8 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <DomainScenarioGoalDisplayItem v-for="(goal, index) in scenario.goals" :key="index" :scenario-goal="goal"
+          <DomainScenarioGoalDisplayItem
+v-for="(goal, index) in scenario.goals" :key="index" :scenario-goal="goal"
             @edit="$emit('edit', goal)" />
         </div>
       </CardContent>

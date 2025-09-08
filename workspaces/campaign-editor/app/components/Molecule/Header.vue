@@ -58,7 +58,8 @@ const resetAll = () => {
 
         <!-- Right: Actions (no choice) -->
         <div class="flex items-center space-x-3">
-          <div v-if="spaMode"
+          <div
+v-if="spaMode"
             class="text-xs bg-openttd-light-blue/20 text-openttd-blue px-3 py-1 rounded border-2 border-openttd-blue/30">
             Browser Mode
           </div>

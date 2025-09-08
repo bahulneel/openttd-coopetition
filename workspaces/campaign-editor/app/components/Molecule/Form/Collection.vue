@@ -8,7 +8,8 @@
     </div>
 
     <div v-if="_props.items.length > 0" class="space-y-3">
-      <div v-for="(item, index) in _props.items" :key="index"
+      <div
+v-for="(item, index) in _props.items" :key="index"
         class="flex items-center gap-3 p-3 border rounded-lg bg-card">
         <div class="flex-1">
           <slot name="item" :item="item" :index="index" />
@@ -17,7 +18,8 @@
           <Button variant="ghost" size="sm" class="openttd-button" @click="$emit('edit', index, item)">
             ✏️
           </Button>
-          <Button variant="ghost" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+          <Button
+variant="ghost" size="sm" class="openttd-button text-red-600 hover:text-red-700"
             @click="$emit('remove', index)">
             🗑️
           </Button>

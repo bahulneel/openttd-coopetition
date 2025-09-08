@@ -67,7 +67,8 @@
   </DefineContent>
 
   <!-- Standalone mode (default) -->
-  <Card v-if="!asPartial" class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+  <Card
+v-if="!asPartial" class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
     @click="$emit('edit', campaign)">
     <CardContent>
       <Content />
