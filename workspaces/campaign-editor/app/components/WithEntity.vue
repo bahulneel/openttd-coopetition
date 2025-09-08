@@ -5,9 +5,10 @@ const props = defineProps<{
   ref: EntityReference<E>
 }>()
 
-const entity = computed(() => useResolveEntity(props.ref))
+const entity = computed(() => useResolveEntity<T, E>(props.ref))
 </script>
 
 <template>
-  <slot :value="entity" />
+  <slot v-if="entity" :value="entity" />
+  <slot v-else name="fallback" />
 </template>
