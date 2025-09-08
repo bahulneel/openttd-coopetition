@@ -1,6 +1,5 @@
 <template>
-  <TemplateScreenDashboard
-title="Campaign Editor Dashboard"
+  <TemplateScreenDashboard title="Campaign Editor Dashboard"
     subtitle="Create, edit, and manage OpenTTD Coopetition campaigns">
     <template #actions>
       <Button size="sm" class="openttd-button bg-openttd-green text-white" @click="createNewCampaign">
@@ -33,8 +32,7 @@ title="Campaign Editor Dashboard"
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <EntityCampaignDisplayCard
-v-for="campaign in recentCampaigns" :key="entityId(campaign)"
+              <EntityCampaignDisplayCard v-for="campaign in recentCampaigns" :key="entityId(campaign)"
                 :campaign="campaign" as-partial class="cursor-pointer hover:bg-accent/50 transition-colors"
                 @click="editCampaign(entityId(campaign))" />
 
@@ -55,8 +53,7 @@ v-for="campaign in recentCampaigns" :key="entityId(campaign)"
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <Button
-class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
+              <Button class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
                 @click="createNewCampaign">
                 ➕ New Campaign
               </Button>
@@ -88,7 +85,6 @@ class="w-full justify-start openttd-button bg-openttd-green text-white" variant=
 
 <script setup lang="ts">
 import type { Campaign, Goal, Scenario, Action } from '~/types'
-import { Folder } from 'lucide-vue-next'
 
 // Reactive data
 const refreshing = ref(false)

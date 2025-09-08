@@ -1,4 +1,4 @@
-import type { EntityReference, AnyEntity, ModelEntity, TypeMap, Entity, ModelTypes } from '~/types'
+import type { EntityReference, AnyEntity, TypeMap, ModelTypes } from '~/types'
 
 /**
  * Composable to resolve an entity reference to its actual entity

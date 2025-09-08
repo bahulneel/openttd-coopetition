@@ -65,8 +65,7 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <DomainScenarioGoalDisplayItem
-v-for="(goal, index) in scenario.goals" :key="index" :scenario-goal="goal"
+          <DomainScenarioGoalDisplayItem v-for="(goal, index) in scenario.goals" :key="index" :scenario-goal="goal"
             @edit="$emit('edit', goal)" />
         </div>
       </CardContent>
@@ -104,37 +103,4 @@ defineEmits<{
   edit: [scenario: Scenario | ScenarioGoal]
 }>()
 
-function formatDate(timestamp: number | undefined) {
-  if (!timestamp) return 'Unknown'
-
-  const date = new Date(timestamp)
-  return date.toLocaleDateString()
-}
-
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
-
-function getGoalTypeBadgeClass(type: string | undefined) {
-  switch (type) {
-    case 'player': return 'bg-openttd-blue text-white'
-    case 'company': return 'bg-openttd-purple text-white'
-    case 'scenario': return 'bg-openttd-orange text-white'
-    case 'campaign': return 'bg-openttd-red text-white'
-    default: return 'bg-gray-500 text-white'
-  }
-}
 </script>

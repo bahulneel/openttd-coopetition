@@ -39,7 +39,7 @@
 <script setup lang="ts">
 const { form, save } = useScenarioForm()
 
-function updateFormData(newData: any) {
+function updateFormData(newData: typeof form.value) {
   Object.assign(form.value, newData)
 }
 

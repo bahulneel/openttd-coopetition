@@ -53,8 +53,7 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div
-v-for="(campaign, index) in manifest.campaigns" :key="index"
+          <div v-for="(campaign, index) in manifest.campaigns" :key="index"
             class="flex items-center justify-between p-3 border border-border rounded-lg">
             <div class="flex-1">
               <div class="flex items-center space-x-3">
@@ -104,12 +103,6 @@ defineEmits<{
   edit: [manifest: Manifest]
 }>()
 
-function formatDate(timestamp: number | undefined) {
-  if (!timestamp) return 'Unknown'
-
-  const date = new Date(timestamp)
-  return date.toLocaleDateString()
-}
 
 function getDifficultyClasses(difficulty: string | undefined) {
   switch (difficulty?.toLowerCase()) {

@@ -50,7 +50,7 @@ const emit = defineEmits<{
   edit: [scenarioGoal: ScenarioGoal]
 }>()
 
-function handleGoalEdit(goal: Goal) {
+function handleGoalEdit(_goal: Goal) {
   // Forward the edit event with the scenario goal context
   // This allows the parent to know which scenario goal is being edited
   // even though the edit was triggered from the entity component

@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CampaignScenario, Scenario } from '~/types'
+import type { CampaignScenario } from '~/types'
 
 defineOptions({
   name: 'DomainCampaignScenarioDisplayItem'
@@ -51,7 +51,7 @@ interface Props {
   campaignScenario: CampaignScenario
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 defineEmits<{
   edit: [campaignScenario: CampaignScenario]

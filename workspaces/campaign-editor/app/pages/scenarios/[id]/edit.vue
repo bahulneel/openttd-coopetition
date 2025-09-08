@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import type { GoalReference, Scenario, ScenarioFormData } from '~/types'
+import type { Scenario, ScenarioFormData } from '~/types'
 
 const route = useRoute()
 const entityStore = useEntityStore()

@@ -1,6 +1,5 @@
 // Model type definitions - the core domain entities
 import type { AnyEntity, Entity, EntityOptions, EntityReference } from './entity'
-import type { Storable } from './storable'
 
 export interface Named {
   name: string
