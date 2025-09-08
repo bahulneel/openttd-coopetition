@@ -49,45 +49,45 @@
         </FormItem>
       </FormField>
 
-      <DomainMetaInfoInputDetails />
+      <DomainMetaInfoInputDetails name="meta" />
     </div>
 
     <!-- Objective Configuration -->
     <div class="space-y-4">
       <h3 class="text-lg font-semibold text-foreground">Objective</h3>
 
-      <DomainObjectiveDefaultInputDetails />
+      <DomainObjectiveDefaultInputDetails name="objective" />
 
       <!-- Type-specific objective fields -->
       <MoleculeFormConditional :condition="objectiveType === 'cargo_delivered'">
-        <DomainObjectiveCargoDeliveredInputDetails />
+        <DomainObjectiveCargoDeliveredInputDetails name="objective" />
       </MoleculeFormConditional>
 
       <MoleculeFormConditional :condition="objectiveType === 'network_length'">
-        <DomainObjectiveNetworkLengthInputDetails />
+        <DomainObjectiveNetworkLengthInputDetails name="objective" />
       </MoleculeFormConditional>
 
       <MoleculeFormConditional :condition="objectiveType === 'profit'">
-        <DomainObjectiveProfitInputDetails />
+        <DomainObjectiveProfitInputDetails name="objective" />
       </MoleculeFormConditional>
 
       <MoleculeFormConditional :condition="objectiveType === 'station_built'">
-        <DomainObjectiveStationBuiltInputDetails />
+        <DomainObjectiveStationBuiltInputDetails name="objective" />
       </MoleculeFormConditional>
 
       <MoleculeFormConditional :condition="objectiveType === 'company_value'">
-        <DomainObjectiveCompanyValueInputDetails />
+        <DomainObjectiveCompanyValueInputDetails name="objective" />
       </MoleculeFormConditional>
 
       <MoleculeFormConditional :condition="objectiveType === 'town_growth'">
-        <DomainObjectiveTownGrowthInputDetails />
+        <DomainObjectiveTownGrowthInputDetails name="objective" />
       </MoleculeFormConditional>
     </div>
 
     <!-- Constraints -->
     <div class="space-y-4">
       <h3 class="text-lg font-semibold text-foreground">Constraints</h3>
-      <DomainConstraintsInputDetails />
+      <DomainConstraintsInputDetails name="constraints" />
     </div>
 
     <!-- Rewards -->

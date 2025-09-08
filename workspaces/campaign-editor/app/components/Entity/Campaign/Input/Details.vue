@@ -185,7 +185,7 @@
         </div>
       </CardHeader>
       <CardContent>
-        <DomainGameSettingsInput :settings="formData.settings || {}" @update:settings="updateSettings" />
+        <DomainGameSettingsInput name="settings" />
       </CardContent>
     </Card>
 
@@ -201,85 +201,73 @@ defineOptions({
   name: 'EntityCampaignInputDetails'
 })
 
-interface Props {
-  formData: CampaignFormData
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  'update:formData': [value: CampaignFormData]
-}>()
+const formData = defineModel<CampaignFormData>({ required: true })
 
 const newTag = ref('')
 
 // Form methods
-function updateSettings(settings: CampaignSettings) {
-  emit('update:formData', {
-    ...props.formData,
-    settings
-  })
-}
 function addTag() {
   const tag = newTag.value.trim()
-  if (tag && !props.formData.meta?.tags?.includes(tag)) {
-    const currentTags = props.formData.meta?.tags || []
-    emit('update:formData', {
-      ...props.formData,
+  if (tag && !formData.value.meta?.tags?.includes(tag)) {
+    const currentTags = formData.value.meta?.tags || []
+    formData.value = {
+      ...formData.value,
       meta: {
-        ...props.formData.meta,
+        ...formData.value.meta,
         tags: [...currentTags, tag]
       }
-    })
+    }
     newTag.value = ''
   }
 }
 
 function removeTag(index: number) {
-  const currentTags = props.formData.meta?.tags || []
+  const currentTags = formData.value.meta?.tags || []
   const newTags = currentTags.filter((_: string, i: number) => i !== index)
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     meta: {
-      ...props.formData.meta,
+      ...formData.value.meta,
       tags: newTags
     }
-  })
+  }
 }
 
 function addScenario() {
-  const currentScenarios = props.formData.scenarios || []
+  const currentScenarios = formData.value.scenarios || []
   const newScenario = {
     include: {
-      id: '',
-      type: 'Scenario' as const
+      __ref: {
+        id: '',
+        type: 'Scenario' as const
+      }
     },
     order: currentScenarios.length + 1,
     required: true
   }
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     scenarios: [...currentScenarios, newScenario]
-  })
+  }
 }
 
 function removeScenario(index: number) {
-  const currentScenarios = props.formData.scenarios || []
+  const currentScenarios = formData.value.scenarios || []
   const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
   // Reorder remaining scenarios
   newScenarios.forEach((scenario: CampaignScenario, idx: number) => {
     scenario.order = idx + 1
   })
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     scenarios: newScenarios
-  })
+  }
 }
 
 function updateScenarioOrder(index: number, event: Event) {
   const target = event.target as HTMLInputElement
   const newOrder = parseInt(target.value) || 1
-  const currentScenarios = props.formData.scenarios || []
+  const currentScenarios = formData.value.scenarios || []
   const updatedScenarios = [...currentScenarios]
   const currentScenario = updatedScenarios[index]
   if (currentScenario) {
@@ -290,9 +278,9 @@ function updateScenarioOrder(index: number, event: Event) {
       required: currentScenario.required ?? true
     }
   }
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     scenarios: updatedScenarios
-  })
+  }
 }
 </script>

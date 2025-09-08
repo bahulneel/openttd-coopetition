@@ -20,7 +20,7 @@
 
     <!-- Scenario Form -->
     <Form @submit="saveScenario">
-      <EntityScenarioInputDetails :form-data="form" @update:form-data="updateFormData">
+      <EntityScenarioInputDetails v-model="form">
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">
             <Button type="button" variant="outline" class="openttd-button" @click="navigateTo('/scenarios')">
@@ -39,9 +39,6 @@
 <script setup lang="ts">
 const { form, save } = useScenarioForm()
 
-function updateFormData(newData: typeof form.value) {
-  Object.assign(form.value, newData)
-}
 
 function saveScenario() {
   save()

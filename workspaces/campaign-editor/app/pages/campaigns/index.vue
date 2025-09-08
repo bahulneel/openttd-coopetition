@@ -1,7 +1,6 @@
 <template>
   <div v-if="!showNewForm">
-    <TemplateScreenCollection
-title="Campaigns" subtitle="Manage and edit your OpenTTD Coopetition campaigns"
+    <TemplateScreenCollection title="Campaigns" subtitle="Manage and edit your OpenTTD Coopetition campaigns"
       :has-content="filteredCampaigns.length > 0" empty-title="No campaigns yet"
       empty-description="Create your first campaign to get started">
       <template #actions>
@@ -60,15 +59,13 @@ title="Campaigns" subtitle="Manage and edit your OpenTTD Coopetition campaigns"
       </Card>
 
       <!-- Campaigns Grid -->
-      <AggregateCampaigns
-v-if="filteredCampaigns.length > 0" :campaigns="filteredCampaigns" @edit="editCampaignHandler"
+      <AggregateCampaigns v-if="filteredCampaigns.length > 0" :campaigns="filteredCampaigns" @edit="editCampaignHandler"
         @duplicate="handleDuplicate" @delete="handleDelete" />
 
       <!-- Pagination -->
       <div v-if="totalPages > 1" class="flex justify-center">
         <div class="flex items-center space-x-2">
-          <Button
-variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
+          <Button variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
             @click="currentPage--">
             ← Previous
           </Button>
@@ -79,8 +76,7 @@ variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
             </span>
           </div>
 
-          <Button
-variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
+          <Button variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
             @click="currentPage++">
             Next →
           </Button>
@@ -91,8 +87,7 @@ variant="outline" size="sm" :disabled="currentPage === totalPages" class="opentt
 
   <TemplateScreenArticle v-else title="New Campaign" subtitle="Create a new campaign">
     <template #actions>
-      <Button
-:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+      <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
         @click="saveCampaign">
         {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
       </Button>
@@ -103,7 +98,7 @@ variant="outline" size="sm" :disabled="currentPage === totalPages" class="opentt
     </template>
 
     <Form @submit="saveCampaign">
-      <EntityCampaignInputDetails :form-data="formData" @update:form-data="updateFormData">
+      <EntityCampaignInputDetails v-model="formData">
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">
             <Button type="button" variant="outline" class="openttd-button" @click="closeNewForm">
@@ -276,9 +271,6 @@ function initializeNewCampaign() {
   })
 }
 
-function updateFormData(newData: Campaign) {
-  form.setValues(newData)
-}
 
 const saveCampaign = form.handleSubmit(async (values) => {
   saving.value = true

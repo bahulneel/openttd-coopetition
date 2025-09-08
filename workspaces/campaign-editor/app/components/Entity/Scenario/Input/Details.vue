@@ -126,8 +126,7 @@
           <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
             <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
               {{ tag }}
-              <Button
-variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
+              <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
                 @click="removeTag(index)">
                 ✕
               </Button>
@@ -162,8 +161,7 @@ variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:te
           <div v-for="(goal, index) in formData.goals" :key="index" class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Goal {{ index + 1 }}</h4>
-              <Button
-type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
                 @click="removeGoal(index)">
                 🗑️ Remove
               </Button>
@@ -239,64 +237,56 @@ interface ScenarioFormData {
   }>
 }
 
-interface Props {
-  formData: ScenarioFormData
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  'update:formData': [value: ScenarioFormData]
-}>()
+const formData = defineModel<ScenarioFormData>({ required: true })
 
 const newTag = ref('')
 
 // Form methods
 function addTag() {
   const tag = newTag.value.trim()
-  if (tag && !props.formData.meta?.tags?.includes(tag)) {
-    const currentTags = props.formData.meta?.tags || []
-    emit('update:formData', {
-      ...props.formData,
+  if (tag && !formData.value.meta?.tags?.includes(tag)) {
+    const currentTags = formData.value.meta?.tags || []
+    formData.value = {
+      ...formData.value,
       meta: {
-        ...props.formData.meta,
+        ...formData.value.meta,
         tags: [...currentTags, tag]
       }
-    })
+    }
     newTag.value = ''
   }
 }
 
 function removeTag(index: number) {
-  const currentTags = props.formData.meta?.tags || []
+  const currentTags = formData.value.meta?.tags || []
   const newTags = currentTags.filter((_: string, i: number) => i !== index)
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     meta: {
-      ...props.formData.meta,
+      ...formData.value.meta,
       tags: newTags
     }
-  })
+  }
 }
 
 function addGoal() {
-  const currentGoals = props.formData.goals || []
+  const currentGoals = formData.value.goals || []
   const newGoal = {
     name: '',
     type: 'player'
   }
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     goals: [...currentGoals, newGoal]
-  })
+  }
 }
 
 function removeGoal(index: number) {
-  const currentGoals = props.formData.goals || []
+  const currentGoals = formData.value.goals || []
   const newGoals = currentGoals.filter((_: unknown, i: number) => i !== index)
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     goals: newGoals
-  })
+  }
 }
 </script>

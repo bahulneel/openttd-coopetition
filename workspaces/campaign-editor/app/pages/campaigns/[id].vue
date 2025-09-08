@@ -51,8 +51,7 @@
           👁️ Preview
         </Button>
 
-        <Button
-:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
           @click="saveCampaign">
           {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
         </Button>
@@ -61,7 +60,7 @@
 
     <!-- Form -->
     <form class="space-y-6" @submit.prevent="saveCampaign">
-      <EntityCampaignInputDetails :form-data="formData" @update:form-data="updateFormData">
+      <EntityCampaignInputDetails v-model="formData">
         <template #actions>
           <div class="flex items-center justify-between pt-6 border-t border-border">
             <div class="flex items-center space-x-4">
@@ -79,8 +78,7 @@
                 ↺ Reset
               </Button>
 
-              <Button
-type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+              <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
                 @click="saveCampaign">
                 {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
               </Button>
@@ -188,9 +186,6 @@ const saveCampaign = form.handleSubmit(async (values) => {
   }
 })
 
-function updateFormData(newData: Campaign) {
-  setValues(newData)
-}
 
 function resetForm() {
   loadCampaign()

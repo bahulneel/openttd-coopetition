@@ -77,8 +77,7 @@
           <div v-for="(campaign, index) in formData.campaigns" :key="index" class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Campaign {{ index + 1 }}</h4>
-              <Button
-type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
                 @click="removeCampaign(index)">
                 🗑️ Remove
               </Button>
@@ -159,36 +158,28 @@ interface ManifestFormData {
   }>
 }
 
-interface Props {
-  formData: ManifestFormData
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  'update:formData': [value: ManifestFormData]
-}>()
+const formData = defineModel<ManifestFormData>({ required: true })
 
 // Form methods
 function addCampaign() {
-  const currentCampaigns = props.formData.campaigns || []
+  const currentCampaigns = formData.value.campaigns || []
   const newCampaign = {
     name: '',
     difficulty: 'medium',
     description: ''
   }
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     campaigns: [...currentCampaigns, newCampaign]
-  })
+  }
 }
 
 function removeCampaign(index: number) {
-  const currentCampaigns = props.formData.campaigns || []
+  const currentCampaigns = formData.value.campaigns || []
   const newCampaigns = currentCampaigns.filter((_: unknown, i: number) => i !== index)
-  emit('update:formData', {
-    ...props.formData,
+  formData.value = {
+    ...formData.value,
     campaigns: newCampaigns
-  })
+  }
 }
 </script>
