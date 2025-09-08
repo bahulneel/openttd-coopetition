@@ -8,7 +8,9 @@ interface SequentialProps {
 
 defineOptions({ name: 'TemplateLayoutSequential' })
 
-const props = withDefaults(defineProps<SequentialProps>(), {})
+const props = withDefaults(defineProps<SequentialProps>(), {
+  class: undefined
+})
 const rootClass = computed(() => cn('space-y-6 md:space-y-8', props.class))
 </script>
 

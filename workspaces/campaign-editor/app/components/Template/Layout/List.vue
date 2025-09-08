@@ -14,7 +14,9 @@ interface ListProps {
 
 defineOptions({ name: 'TemplateLayoutList' })
 
-const props = withDefaults(defineProps<ListProps>(), {})
+const props = withDefaults(defineProps<ListProps>(), {
+  class: undefined
+})
 const _rootClass = computed(() => cn('space-y-4', props.class))
 </script>
 

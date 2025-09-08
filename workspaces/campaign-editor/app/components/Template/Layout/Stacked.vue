@@ -10,7 +10,11 @@ interface StackedLayoutProps {
 
 defineOptions({ name: 'TemplateLayoutStacked' })
 
-const props = withDefaults(defineProps<StackedLayoutProps>(), {})
+const props = withDefaults(defineProps<StackedLayoutProps>(), {
+  order: undefined,
+  classes: undefined,
+  class: undefined
+})
 
 const slots = useSlots()
 

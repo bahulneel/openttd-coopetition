@@ -9,7 +9,10 @@ interface SectionProps {
 
 defineOptions({ name: 'TemplateLayoutSection' })
 
-const props = withDefaults(defineProps<SectionProps>(), {})
+const props = withDefaults(defineProps<SectionProps>(), {
+  subtitle: undefined,
+  actions: undefined
+})
 const slots = useSlots()
 
 const hasHeader = computed(() => !!props.title || !!props.subtitle || !!slots.actions)

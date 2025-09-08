@@ -8,7 +8,9 @@ interface NavigationBarProps {
 
 defineOptions({ name: 'MoleculeNavigationBar' })
 
-const props = withDefaults(defineProps<NavigationBarProps>(), {})
+const props = withDefaults(defineProps<NavigationBarProps>(), {
+  class: undefined
+})
 const rootClass = computed(() => cn('hidden md:flex items-center space-x-2', props.class))
 </script>
 

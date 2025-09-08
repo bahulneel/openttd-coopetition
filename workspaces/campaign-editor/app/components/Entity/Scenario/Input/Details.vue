@@ -126,9 +126,8 @@
           <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
             <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
               {{ tag }}
-              <Button
-variant="ghost" size="sm"
-                class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive" @click="removeTag(index)">
+              <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
+                @click="removeTag(index)">
                 ✕
               </Button>
             </Badge>
@@ -136,9 +135,7 @@ variant="ghost" size="sm"
 
           <div class="flex space-x-2">
             <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
-            <Button
-type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
-              @click="addTag">
+            <Button type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button" @click="addTag">
               ➕ Add
             </Button>
           </div>
@@ -161,14 +158,11 @@ type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button
       </CardHeader>
       <CardContent>
         <div v-if="formData.goals && formData.goals.length > 0" class="space-y-4">
-          <div
-v-for="(goal, index) in formData.goals" :key="index"
-            class="p-4 border border-border rounded-lg">
+          <div v-for="(goal, index) in formData.goals" :key="index" class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Goal {{ index + 1 }}</h4>
-              <Button
-type="button" variant="ghost" size="sm"
-                class="text-destructive hover:text-destructive-foreground" @click="removeGoal(index)">
+              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+                @click="removeGoal(index)">
                 🗑️ Remove
               </Button>
             </div>
@@ -225,14 +219,32 @@ defineOptions({
   name: 'EntityScenarioInputDetails'
 })
 
+interface ScenarioFormData {
+  id: string
+  name: string
+  include: string
+  order?: number
+  required?: boolean
+  meta?: {
+    difficulty?: string
+    estimated_time?: string
+    description?: string
+    tags?: string[]
+  }
+  goals?: Array<{
+    name: string
+    type: string
+  }>
+}
+
 interface Props {
-  formData: any
+  formData: ScenarioFormData
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'update:formData': [value: any]
+  'update:formData': [value: ScenarioFormData]
 }>()
 
 const newTag = ref('')

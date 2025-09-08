@@ -94,7 +94,8 @@
           <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
             <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
               {{ tag }}
-              <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
+              <Button
+variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
                 @click="removeTag(index)">
                 ✕
               </Button>
@@ -129,7 +130,8 @@
           <div v-for="(scenario, index) in formData.scenarios" :key="index" class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
-              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+              <Button
+type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
                 @click="removeScenario(index)">
                 🗑️ Remove
               </Button>
@@ -150,7 +152,8 @@
                 <FormItem>
                   <FormLabel>Order</FormLabel>
                   <FormControl>
-                    <Input v-bind="componentField" type="number" :value="scenario.order"
+                    <Input
+v-bind="componentField" type="number" :value="scenario.order"
                       @input="updateScenarioOrder(index, $event)" />
                   </FormControl>
                   <FormMessage />
@@ -185,7 +188,7 @@
         </div>
       </CardHeader>
       <CardContent>
-        <DomainGameSettingsInput :settings="formData.settings || {}" />
+        <DomainGameSettingsInput :settings="formData.settings || {}" @update:settings="updateSettings" />
       </CardContent>
     </Card>
 
@@ -195,25 +198,31 @@
 </template>
 
 <script setup lang="ts">
-import type { CampaignScenario } from '~/types'
+import type { CampaignScenario, CampaignFormData, CampaignSettings } from '~/types'
 
 defineOptions({
   name: 'EntityCampaignInputDetails'
 })
 
 interface Props {
-  formData: any
+  formData: CampaignFormData
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'update:formData': [value: any]
+  'update:formData': [value: CampaignFormData]
 }>()
 
 const newTag = ref('')
 
 // Form methods
+function updateSettings(settings: CampaignSettings) {
+  emit('update:formData', {
+    ...props.formData,
+    settings
+  })
+}
 function addTag() {
   const tag = newTag.value.trim()
   if (tag && !props.formData.meta?.tags?.includes(tag)) {

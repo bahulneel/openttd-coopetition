@@ -15,7 +15,10 @@ interface DashboardCardProps {
 
 defineOptions({ name: 'MoleculeCardDashboard' })
 
-const props = withDefaults(defineProps<DashboardCardProps>(), {})
+const props = withDefaults(defineProps<DashboardCardProps>(), {
+  class: undefined,
+  action: undefined
+})
 
 const toneToRoot = {
   brown: 'bg-openttd-brown/20 border-openttd-brown/40',

@@ -10,7 +10,8 @@ interface FooterProps {
 defineOptions({ name: 'MoleculeFooter' })
 
 const props = withDefaults(defineProps<FooterProps>(), {
-  version: ''
+  version: '',
+  class: undefined
 })
 
 const rootClass = computed(() => cn('openttd-titlebar', props.class))
@@ -27,8 +28,7 @@ const rootClass = computed(() => cn('openttd-titlebar', props.class))
           </span>
         </div>
         <div class="flex items-center space-x-4 text-sm text-foreground/80">
-          <a
-href="https://github.com/bahulneel/openttd-coopetition" target="_blank" rel="noopener noreferrer"
+          <a href="https://github.com/bahulneel/openttd-coopetition" target="_blank" rel="noopener noreferrer"
             class="hover:text-foreground transition-colors underline">
             📂 GitHub
           </a>

@@ -74,14 +74,11 @@
       </CardHeader>
       <CardContent>
         <div v-if="formData.campaigns && formData.campaigns.length > 0" class="space-y-4">
-          <div
-v-for="(campaign, index) in formData.campaigns" :key="index"
-            class="p-4 border border-border rounded-lg">
+          <div v-for="(campaign, index) in formData.campaigns" :key="index" class="p-4 border border-border rounded-lg">
             <div class="flex items-center justify-between mb-4">
               <h4 class="font-medium">Campaign {{ index + 1 }}</h4>
-              <Button
-type="button" variant="ghost" size="sm"
-                class="text-destructive hover:text-destructive-foreground" @click="removeCampaign(index)">
+              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+                @click="removeCampaign(index)">
                 🗑️ Remove
               </Button>
             </div>
@@ -149,14 +146,26 @@ defineOptions({
   name: 'EntityManifestInputDetails'
 })
 
+interface ManifestFormData {
+  name: string
+  version: string
+  author?: string
+  description?: string
+  campaigns?: Array<{
+    name: string
+    difficulty: string
+    description: string
+  }>
+}
+
 interface Props {
-  formData: any
+  formData: ManifestFormData
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'update:formData': [value: any]
+  'update:formData': [value: ManifestFormData]
 }>()
 
 // Form methods

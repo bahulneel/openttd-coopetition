@@ -33,7 +33,7 @@ function getObjectiveDescription(objective: Objective): string {
     case 'town_growth':
       return `Grow town ${objective.town_id} to ${objective.target_population.toLocaleString()} population`
     default:
-      return `Unknown objective type: ${(objective as any).type}`
+      return `Unknown objective type: ${(objective as { type: string }).type}`
   }
 }
 </script>
