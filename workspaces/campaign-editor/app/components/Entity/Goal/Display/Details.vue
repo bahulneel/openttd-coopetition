@@ -29,35 +29,8 @@
               {{ goal.type || 'player' }}
             </Badge>
           </div>
-          <div v-if="goal.meta?.difficulty">
-            <span class="font-medium text-foreground">Difficulty:</span>
-            <Badge :class="getDifficultyBadgeClass(goal.meta.difficulty)" class="ml-2">
-              {{ goal.meta.difficulty }}
-            </Badge>
-          </div>
-          <div v-if="goal.meta?.estimated_time">
-            <span class="font-medium text-foreground">Estimated Time:</span>
-            <span class="text-muted-foreground ml-2">{{ goal.meta.estimated_time }}</span>
-          </div>
-          <div v-if="goal.meta?.author">
-            <span class="font-medium text-foreground">Author:</span>
-            <span class="text-muted-foreground ml-2">{{ goal.meta.author }}</span>
-          </div>
         </div>
-
-        <div v-if="goal.meta?.description">
-          <span class="font-medium text-foreground">Description:</span>
-          <p class="text-muted-foreground mt-1">{{ goal.meta.description }}</p>
-        </div>
-
-        <div v-if="goal.meta?.tags && goal.meta.tags.length > 0">
-          <span class="font-medium text-foreground">Tags:</span>
-          <div class="flex flex-wrap gap-2 mt-1">
-            <Badge v-for="tag in goal.meta.tags" :key="tag" variant="secondary">
-              {{ tag }}
-            </Badge>
-          </div>
-        </div>
+        <DomainMetaInfoDisplayCard :meta-info="goal.meta" as-partial />
       </CardContent>
     </Card>
 
@@ -83,26 +56,7 @@
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div v-if="goal.constraints.players">
-            <span class="font-medium text-foreground">Players:</span>
-            <p class="text-muted-foreground">
-              {{ goal.constraints.players.min || 1 }}-{{ goal.constraints.players.max || 8 }}
-            </p>
-          </div>
-          <div v-if="goal.constraints.date">
-            <span class="font-medium text-foreground">Date Range:</span>
-            <p class="text-muted-foreground">
-              {{ goal.constraints.date.min || 1950 }}-{{ goal.constraints.date.max || 2050 }}
-            </p>
-          </div>
-          <div v-if="goal.constraints.map_size">
-            <span class="font-medium text-foreground">Map Size:</span>
-            <p class="text-muted-foreground">
-              {{ goal.constraints.map_size.min || 'Any' }}-{{ goal.constraints.map_size.max || 'Any' }}
-            </p>
-          </div>
-        </div>
+        <DomainConstraintsDisplayCard :constraints="goal.constraints" as-partial />
       </CardContent>
     </Card>
 

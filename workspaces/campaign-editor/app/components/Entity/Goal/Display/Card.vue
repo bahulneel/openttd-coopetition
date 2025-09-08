@@ -21,17 +21,9 @@
               <span class="font-medium text-foreground">Reward:</span>
               <DomainRewardSetDisplaySummary :reward-set="goal.result" />
             </div>
-            <div v-if="goal.constraints?.players">
-              <span class="font-medium text-foreground">Players:</span>
-              <p class="text-muted-foreground">
-                {{ goal.constraints.players.min || 1 }}-{{ goal.constraints.players.max || 8 }}
-              </p>
-            </div>
-            <div v-if="goal.constraints?.date">
-              <span class="font-medium text-foreground">Date Range:</span>
-              <p class="text-muted-foreground">
-                {{ goal.constraints.date.min || 1950 }}-{{ goal.constraints.date.max || 2050 }}
-              </p>
+            <div v-if="goal.constraints">
+              <span class="font-medium text-foreground">Constraints:</span>
+              <DomainConstraintsDisplayCard :constraints="goal.constraints" as-partial />
             </div>
           </div>
         </div>
