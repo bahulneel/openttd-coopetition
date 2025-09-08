@@ -51,7 +51,8 @@
           👁️ Preview
         </Button>
 
-        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+        <Button
+:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
           @click="saveCampaign">
           {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
         </Button>
@@ -78,7 +79,8 @@
                 ↺ Reset
               </Button>
 
-              <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
+              <Button
+type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
                 @click="saveCampaign">
                 {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
               </Button>
