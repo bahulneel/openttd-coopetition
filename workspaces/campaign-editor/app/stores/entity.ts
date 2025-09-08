@@ -1,4 +1,4 @@
-import type { TypeMap, Manifest, AnyEntity, EntityOptions, Storable, ModelTypes } from '~/types'
+import type { TypeMap, Manifest, AnyEntity, EntityOptions, Storable, ModelTypes, FileReference } from '~/types'
 
 export const useEntityStore = defineStore('entity', () => {
   // State - type => id => entity
@@ -29,6 +29,23 @@ export const useEntityStore = defineStore('entity', () => {
       storable = ops.modified(storable)
     } else {
       storable = ops.created(storable)
+      if (manifest.value) {
+        const contents: FileReference<T>[] =
+          manifest.value.contents[entityType(entity) as keyof Manifest['contents']] || []
+        if (!contents.some((content) => referenceId(content.entity) === entityId(entity))) {
+          const fileRef: FileReference<T> = {
+            entity: toEntityRef(entity),
+            filename: storable.__meta.filename,
+          }
+          manifest.value = ops.modified({
+            ...manifest.value,
+            contents: {
+              ...manifest.value.contents,
+              [entityType(entity)]: [...contents, fileRef],
+            },
+          })
+        }
+      }
     }
 
     if (isManifest(storable)) {
