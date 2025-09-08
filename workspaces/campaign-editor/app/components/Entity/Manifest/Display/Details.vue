@@ -53,9 +53,8 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div
-v-for="(campaign, index) in manifest.campaigns" :key="index" 
-               class="flex items-center justify-between p-3 border border-border rounded-lg">
+          <div v-for="(campaign, index) in manifest.campaigns" :key="index"
+            class="flex items-center justify-between p-3 border border-border rounded-lg">
             <div class="flex-1">
               <div class="flex items-center space-x-3">
                 <span class="font-medium">{{ campaign.name || `Campaign ${index + 1}` }}</span>
@@ -81,16 +80,7 @@ v-for="(campaign, index) in manifest.campaigns" :key="index"
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span class="font-medium text-foreground">Created:</span>
-            <span class="text-muted-foreground ml-2">{{ formatDate(manifest.__meta?.created) }}</span>
-          </div>
-          <div>
-            <span class="font-medium text-foreground">Last Modified:</span>
-            <span class="text-muted-foreground ml-2">{{ formatDate(manifest.__meta?.modified) }}</span>
-          </div>
-        </div>
+        <DomainMetadataDisplayDetails :entity="manifest" />
       </CardContent>
     </Card>
   </div>

@@ -117,6 +117,7 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import type { Campaign } from '~/types'
+import { storableMeta } from '~/utils/storable'
 
 const entityStore = useEntityStore()
 const route = useRoute()
@@ -224,7 +225,7 @@ const filteredCampaigns = computed(() => {
       }
       case 'lastModified':
       default:
-        return (b.__meta?.modified || 0) - (a.__meta?.modified || 0)
+        return (storableMeta(b).modified || 0) - (storableMeta(a).modified || 0)
     }
   })
 

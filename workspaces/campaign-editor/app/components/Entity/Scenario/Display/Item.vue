@@ -1,5 +1,6 @@
 <template>
-  <div class="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+  <div
+    class="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
     <div class="flex-1 min-w-0">
       <div class="flex items-center space-x-3">
         <h3 class="font-medium text-foreground truncate">{{ scenario.name }}</h3>
@@ -19,9 +20,7 @@
     </div>
 
     <div class="flex items-center space-x-2">
-      <span class="text-xs text-muted-foreground">
-        {{ formatDate(scenario.__meta?.modified) }}
-      </span>
+      <DomainMetadataDisplayItem :entity="scenario" />
       <Button variant="ghost" size="sm" @click="$emit('edit', scenario)">
         ✏️
       </Button>
@@ -46,20 +45,6 @@ defineEmits<{
   edit: [scenario: Scenario]
 }>()
 
-function formatDate(timestamp: number | undefined) {
-  if (!timestamp) return 'Unknown'
-
-  const date = new Date(timestamp)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  if (days < 7) return `${days} days ago`
-
-  return date.toLocaleDateString()
-}
 
 function getDifficultyClasses(difficulty: string | undefined) {
   switch (difficulty?.toLowerCase()) {

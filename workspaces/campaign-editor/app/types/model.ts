@@ -249,7 +249,7 @@ export interface PackageStructure extends Commentable {
   campaigns: string
 }
 
-export interface PackageManifest extends BaseItem<'Manifest'> {
+export interface Manifest extends BaseItem<'Manifest'> {
   tags: string[]
   structure: PackageStructure
   main_campaign?: string
@@ -269,7 +269,7 @@ export interface EntityFile<T extends AnyEntity> {
 }
 
 export interface TypeMap {
-  Manifest: PackageManifest
+  Manifest: Manifest
   Campaign: Campaign
   Goal: Goal
   Scenario: Scenario

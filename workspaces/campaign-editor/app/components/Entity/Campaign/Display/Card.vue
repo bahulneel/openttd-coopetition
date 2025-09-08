@@ -1,5 +1,6 @@
 <template>
-  <Card class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer" @click="$emit('edit', campaign)">
+  <Card class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+    @click="$emit('edit', campaign)">
     <CardContent class="space-y-4 p-6">
       <!-- Header -->
       <div class="flex items-start justify-between">
@@ -62,17 +63,7 @@
       </div>
 
       <!-- Footer -->
-      <div class="flex items-center justify-between pt-2 border-t border-border">
-        <div class="text-xs text-muted-foreground">
-          {{ campaign.__meta?.modified ? 'Modified' : 'Saved' }}
-          {{ formatDate(campaign.__meta?.modified) }}
-        </div>
-
-        <div class="flex items-center space-x-1">
-          <span v-if="campaign.__meta?.modified" class="text-orange-500">✏️</span>
-          <span class="text-muted-foreground">→</span>
-        </div>
-      </div>
+      <DomainMetadataDisplayCard :entity="campaign" />
     </CardContent>
   </Card>
 </template>
@@ -96,20 +87,6 @@ defineEmits<{
   delete: [campaign: Campaign]
 }>()
 
-function formatDate(timestamp: number | undefined) {
-  if (!timestamp) return 'Unknown'
-
-  const date = new Date(timestamp)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  if (days < 7) return `${days} days ago`
-
-  return date.toLocaleDateString()
-}
 
 function getDifficultyClasses(difficulty: string | undefined) {
   switch (difficulty?.toLowerCase()) {

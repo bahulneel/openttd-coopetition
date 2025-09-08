@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFormValues } from '@vee-validate/vue'
+import { useFormValues } from 'vee-validate'
 
 defineOptions({
   name: 'EntityGoalInputDetails'
@@ -153,6 +153,6 @@ defineEmits<{
 }>()
 
 // Get the current objective type from form values
-const { objective } = useFormValues<{ objective?: { type?: string } }>()
-const objectiveType = computed(() => objective.value?.type)
+const formValues = useFormValues<{ objective?: { type?: string } }>()
+const objectiveType = computed(() => formValues.value?.objective?.type)
 </script>

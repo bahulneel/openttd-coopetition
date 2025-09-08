@@ -1,5 +1,8 @@
-import type { Identified, Named, Storable } from '~/types'
+import type { Identified, Named, Storable, StorageMeta } from '~/types'
 
+/**
+ * Converts an identified entity to a storable entity
+ */
 export function toStorable<T extends Identified>(identified: T): Storable<T> {
   if (isStorable(identified)) {
     return identified
@@ -14,28 +17,46 @@ export function toStorable<T extends Identified>(identified: T): Storable<T> {
   }
 }
 
+/**
+ * Checks if an entity is a storable entity
+ */
 export function isStorable<T extends Identified>(identified: unknown | Storable<T>): identified is Storable<T> {
   return isIdentified(identified) && '__meta' in identified
 }
 
+export function storableMeta<T extends Identified>(storable: Storable<T>): StorageMeta {
+  return storable.__meta
+}
+
+/**
+ * Checks if a storable entity has changed
+ */
 export function hasChanged<T extends Identified>(storable: Storable<T>, oldStorable?: Storable<T>): boolean {
   if (!oldStorable) {
     return true
   }
-  if (!storable.__meta.modified) {
+  const meta = storableMeta(storable)
+  const oldMeta = storableMeta(oldStorable)
+  if (!meta.modified) {
     return false
   }
-  if (!oldStorable.__meta.modified) {
+  if (!oldMeta.modified) {
     return true
   }
-  return storable.__meta.modified > oldStorable.__meta.modified
+  return meta.modified > oldMeta.modified
 }
 
+/**
+ * Returns the value part of a storable entity
+ */
 export function toStorableValue<T extends Identified>(storable: Storable<T>): T {
-  const { __meta, ...value } = storable
+  const { __meta: _, ...value } = storable
   return value as unknown as T
 }
 
+/**
+ * Hashes a storable entity
+ */
 export function hashStorable<T extends Identified>(storable: Storable<T>): string {
   const value = toStorableValue(storable)
   if (isEntity(value)) {
@@ -44,6 +65,9 @@ export function hashStorable<T extends Identified>(storable: Storable<T>): strin
   return hash(value)
 }
 
+/**
+ * Checks if a storable entity conflicts with another storable entity
+ */
 export function conflictsWith<T extends Identified>(newValue: Storable<T>, oldValue?: Storable<T>): boolean {
   if (!oldValue) {
     return true
@@ -51,43 +75,35 @@ export function conflictsWith<T extends Identified>(newValue: Storable<T>, oldVa
   if (entityId(oldValue) !== entityId(newValue)) {
     return true
   }
-  return oldValue.__meta.version >= newValue.__meta.version && hashStorable(oldValue) !== hashStorable(newValue)
+  const oldMeta = storableMeta(oldValue)
+  const newMeta = storableMeta(newValue)
+  return oldMeta.version >= newMeta.version && hashStorable(oldValue) !== hashStorable(newValue)
 }
 
-export function markModified<T extends Identified>(entity: Storable<T>): Storable<T> {
-  return {
-    ...entity,
-    __meta: {
-      ...entity.__meta,
-      modified: Date.now(),
-    },
-  }
-}
-
-export function markDeleted<T extends Identified>(entity: Storable<T>): Storable<T> {
-  return {
-    ...entity,
-    __meta: {
-      ...entity.__meta,
-      deleted: Date.now(),
-    },
-  }
-}
-
+/**
+ * Checks if a storable entity is deleted
+ */
 export function isDeleted<T extends Identified>(entity: Storable<T>): boolean {
-  return entity.__meta.deleted !== undefined
+  return storableMeta(entity).deleted !== undefined
 }
 
+/**
+ * Returns the version of a storable entity
+ */
 export function getVersion<T extends Identified>(entity: Storable<T>): number {
-  return entity.__meta.version
+  return storableMeta(entity).version
 }
 
+/**
+ * Increments the version of a storable entity
+ */
 export function incrementVersion<T extends Identified>(entity: Storable<T>): Storable<T> {
+  const meta = storableMeta(entity)
   return {
     ...entity,
     __meta: {
-      ...entity.__meta,
-      version: entity.__meta.version + 1,
+      ...meta,
+      version: meta.version + 1,
       modified: Date.now(),
     },
   }
@@ -162,24 +178,24 @@ export const meta = {
     if (!isStorable(storable)) {
       return undefined
     }
-    return storable.__meta.created
+    return storableMeta(storable).created
   },
   modified<T extends Identified>(storable: unknown | Storable<T>): number | undefined {
     if (!isStorable(storable)) {
       return undefined
     }
-    return storable.__meta.modified
+    return storableMeta(storable).modified
   },
   deleted<T extends Identified>(storable: unknown | Storable<T>): number | undefined {
     if (!isStorable(storable)) {
       return undefined
     }
-    return storable.__meta.deleted
+    return storableMeta(storable).deleted
   },
   version<T extends Identified>(storable: unknown | Storable<T>): number | undefined {
     if (!isStorable(storable)) {
       return undefined
     }
-    return storable.__meta.version
+    return storableMeta(storable).version
   },
 }

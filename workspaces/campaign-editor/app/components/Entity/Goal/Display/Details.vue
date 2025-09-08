@@ -128,16 +128,7 @@
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span class="font-medium text-foreground">Created:</span>
-            <span class="text-muted-foreground ml-2">{{ formatDate(goal.__meta?.created) }}</span>
-          </div>
-          <div>
-            <span class="font-medium text-foreground">Last Modified:</span>
-            <span class="text-muted-foreground ml-2">{{ formatDate(goal.__meta?.modified) }}</span>
-          </div>
-        </div>
+        <DomainMetadataDisplayDetails :entity="goal" />
       </CardContent>
     </Card>
   </div>

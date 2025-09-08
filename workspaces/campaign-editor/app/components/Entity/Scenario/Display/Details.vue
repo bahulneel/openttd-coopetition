@@ -79,9 +79,8 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div
-v-for="(goal, index) in scenario.goals" :key="index" 
-               class="flex items-center justify-between p-3 border border-border rounded-lg">
+          <div v-for="(goal, index) in scenario.goals" :key="index"
+            class="flex items-center justify-between p-3 border border-border rounded-lg">
             <div class="flex-1">
               <div class="flex items-center space-x-3">
                 <span class="font-medium">{{ goal.name || `Goal ${index + 1}` }}</span>
@@ -107,16 +106,7 @@ v-for="(goal, index) in scenario.goals" :key="index"
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span class="font-medium text-foreground">Created:</span>
-            <span class="text-muted-foreground ml-2">{{ formatDate(scenario.__meta?.created) }}</span>
-          </div>
-          <div>
-            <span class="font-medium text-foreground">Last Modified:</span>
-            <span class="text-muted-foreground ml-2">{{ formatDate(scenario.__meta?.modified) }}</span>
-          </div>
-        </div>
+        <DomainMetadataDisplayDetails :entity="scenario" />
       </CardContent>
     </Card>
   </div>
