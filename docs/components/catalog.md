@@ -238,7 +238,7 @@ All Domain and Entity Card components now support the `asPartial` prop for compo
 
 ```vue
 <!-- Domain/ScenarioGoal/Display/Card.vue -->
-<WithEntity :ref="scenarioGoal.include">
+<WithEntity :entity="scenarioGoal.include">
   <template #default="{ value: resolvedGoal }">
     <EntityGoalDisplayCard :goal="resolvedGoal" :as-partial="asPartial" />
   </template>

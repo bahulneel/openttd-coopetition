@@ -15,7 +15,7 @@
     </div>
 
     <!-- Entity component -->
-    <WithEntity :ref="scenarioGoal.include">
+    <WithEntity :entity="scenarioGoal.include">
       <template #default="{ value: resolvedGoal }">
         <EntityGoalDisplayItem :goal="resolvedGoal" @edit="handleGoalEdit" />
       </template>

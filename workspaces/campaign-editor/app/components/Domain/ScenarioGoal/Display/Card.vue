@@ -18,7 +18,7 @@
       </div>
 
       <!-- Entity component -->
-      <WithEntity :ref="scenarioGoal.include">
+      <WithEntity :entity="scenarioGoal.include">
         <template #default="{ value: resolvedGoal }">
           <EntityGoalDisplayCard :goal="resolvedGoal" :as-partial="asPartial" />
         </template>

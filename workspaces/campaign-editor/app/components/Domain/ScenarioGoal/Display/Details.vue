@@ -1,5 +1,5 @@
 <template>
-  <WithEntity :ref="scenarioGoal.include">
+  <WithEntity :entity="scenarioGoal.include">
     <template #default="{ value: resolvedGoal }">
       <div class="space-y-4">
         <!-- Basic Info -->

@@ -2,10 +2,10 @@
 import type { ModelTypes, TypeMap, AnyEntity, EntityReference } from '~/types'
 
 const props = defineProps<{
-  ref: EntityReference<E>
+  entity: EntityReference<E>
 }>()
 
-const entity = computed(() => useResolveEntity<T, E>(props.ref))
+const entity = computed(() => useResolveEntity<T, E>(props.entity))
 </script>
 
 <template>
