@@ -10,9 +10,7 @@
         <Badge v-else variant="secondary" class="text-xs">
           Optional
         </Badge>
-        <Badge v-if="scenario.meta?.difficulty" :class="getDifficultyClasses(scenario.meta.difficulty)" class="text-xs">
-          {{ scenario.meta.difficulty }}
-        </Badge>
+        <DomainMetaInfoDisplayCard v-if="scenario.meta" :meta-info="scenario.meta" as-partial />
       </div>
       <p class="text-sm text-muted-foreground mt-1">
         Order: {{ scenario.order }} • {{ scenario.goals?.length || 0 }} goals
@@ -44,22 +42,4 @@ defineProps<Props>()
 defineEmits<{
   edit: [scenario: Scenario]
 }>()
-
-
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
 </script>

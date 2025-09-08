@@ -25,9 +25,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <span class="font-medium text-foreground">Type:</span>
-            <Badge :class="getGoalTypeBadgeClass(goal.type)" class="ml-2">
-              {{ goal.type || 'player' }}
-            </Badge>
+            <EntityGoalDisplayBadge :goal="goal" class="ml-2" />
           </div>
         </div>
         <DomainMetaInfoDisplayCard :meta-info="goal.meta" as-partial />

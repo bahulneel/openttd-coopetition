@@ -24,38 +24,12 @@
       <CardContent class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <span class="font-medium text-foreground">Difficulty:</span>
-            <Badge :class="getDifficultyClasses(campaign.meta?.difficulty)" class="ml-2">
-              {{ campaign.meta?.difficulty || 'Unknown' }}
-            </Badge>
-          </div>
-          <div v-if="campaign.meta?.estimated_time">
-            <span class="font-medium text-foreground">Estimated Time:</span>
-            <span class="text-muted-foreground ml-2">{{ campaign.meta.estimated_time }}</span>
-          </div>
-          <div v-if="campaign.meta?.author">
-            <span class="font-medium text-foreground">Author:</span>
-            <span class="text-muted-foreground ml-2">{{ campaign.meta.author }}</span>
-          </div>
-          <div>
             <span class="font-medium text-foreground">Scenarios:</span>
             <span class="text-muted-foreground ml-2">{{ campaign.scenarios?.length || 0 }}</span>
           </div>
         </div>
 
-        <div v-if="campaign.meta?.description">
-          <span class="font-medium text-foreground">Description:</span>
-          <p class="text-muted-foreground mt-1">{{ campaign.meta.description }}</p>
-        </div>
-
-        <div v-if="campaign.meta?.tags && campaign.meta.tags.length > 0">
-          <span class="font-medium text-foreground">Tags:</span>
-          <div class="flex flex-wrap gap-2 mt-1">
-            <Badge v-for="tag in campaign.meta.tags" :key="tag" variant="secondary">
-              {{ tag }}
-            </Badge>
-          </div>
-        </div>
+        <DomainMetaInfoDisplayCard :meta-info="campaign.meta" as-partial />
       </CardContent>
     </Card>
 
@@ -69,8 +43,7 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div
-v-for="(scenario, index) in campaign.scenarios" :key="index"
+          <div v-for="(scenario, index) in campaign.scenarios" :key="index"
             class="flex items-center justify-between p-3 border border-border rounded-lg">
             <div class="flex-1">
               <div class="flex items-center space-x-3">
@@ -122,22 +95,4 @@ defineProps<Props>()
 defineEmits<{
   edit: [campaign: Campaign]
 }>()
-
-
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
 </script>

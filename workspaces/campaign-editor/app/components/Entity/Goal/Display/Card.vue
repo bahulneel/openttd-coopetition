@@ -9,8 +9,9 @@
           </div>
 
           <p class="text-muted-foreground mb-3">
-            {{ goal.meta?.description || goal.comment || 'No description available' }}
+            {{ goal.comment || 'No description available' }}
           </p>
+          <DomainMetaInfoDisplayCard :meta-info="goal.meta" as-partial />
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
@@ -35,8 +36,7 @@
           <Button variant="outline" size="sm" class="openttd-button" @click="$emit('duplicate', goal)">
             📋 Copy
           </Button>
-          <Button
-variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+          <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
             @click="$emit('delete', goal)">
             🗑️ Delete
           </Button>

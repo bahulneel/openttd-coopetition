@@ -14,23 +14,14 @@
           </div>
 
           <p class="text-muted-foreground mb-3">
-            {{ scenario.meta?.description || scenario.comment || 'No description available' }}
+            {{ scenario.comment || 'No description available' }}
           </p>
+          <DomainMetaInfoDisplayCard :meta-info="scenario.meta" as-partial />
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
               <span class="font-medium text-foreground">Order:</span>
               <p class="text-muted-foreground">{{ scenario.order }}</p>
-            </div>
-            <div v-if="scenario.meta?.difficulty">
-              <span class="font-medium text-foreground">Difficulty:</span>
-              <Badge :class="getDifficultyClasses(scenario.meta.difficulty)" class="ml-1 text-xs">
-                {{ scenario.meta.difficulty }}
-              </Badge>
-            </div>
-            <div v-if="scenario.meta?.estimated_time">
-              <span class="font-medium text-foreground">Time:</span>
-              <p class="text-muted-foreground">{{ scenario.meta.estimated_time }}</p>
             </div>
             <div v-if="scenario.goals && scenario.goals.length > 0">
               <span class="font-medium text-foreground">Goals:</span>
@@ -46,8 +37,7 @@
           <Button variant="outline" size="sm" class="openttd-button" @click="$emit('duplicate', scenario)">
             📋 Copy
           </Button>
-          <Button
-variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+          <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
             @click="$emit('delete', scenario)">
             🗑️ Delete
           </Button>
@@ -89,21 +79,4 @@ defineEmits<{
 }>()
 
 const [DefineContent, Content] = createReusableTemplate()
-
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
 </script>

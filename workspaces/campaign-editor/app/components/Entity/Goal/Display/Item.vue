@@ -7,8 +7,9 @@
         <EntityGoalDisplayBadge :goal="goal" />
       </div>
       <p class="text-sm text-muted-foreground mt-1">
-        {{ goal.meta?.description || goal.comment || 'No description available' }}
+        {{ goal.comment || 'No description available' }}
       </p>
+      <DomainMetaInfoDisplayCard :meta-info="goal.meta" as-partial />
     </div>
 
     <div class="flex items-center space-x-2">

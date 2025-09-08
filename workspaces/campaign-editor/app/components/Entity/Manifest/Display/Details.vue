@@ -53,15 +53,12 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div
-v-for="(campaign, index) in manifest.campaigns" :key="index"
+          <div v-for="(campaign, index) in manifest.campaigns" :key="index"
             class="flex items-center justify-between p-3 border border-border rounded-lg">
             <div class="flex-1">
               <div class="flex items-center space-x-3">
                 <span class="font-medium">{{ campaign.name || `Campaign ${index + 1}` }}</span>
-                <Badge v-if="campaign.difficulty" :class="getDifficultyClasses(campaign.difficulty)" class="text-xs">
-                  {{ campaign.difficulty }}
-                </Badge>
+                <DomainMetaInfoDisplayCard v-if="campaign.meta" :meta-info="campaign.meta" as-partial />
               </div>
               <p v-if="campaign.description" class="text-sm text-muted-foreground mt-1">
                 {{ campaign.description }}
@@ -103,22 +100,4 @@ defineProps<Props>()
 defineEmits<{
   edit: [manifest: Manifest]
 }>()
-
-
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
 </script>
