@@ -1,6 +1,5 @@
 <template>
-  <TemplateScreenDashboard
-title="Campaign Editor Dashboard"
+  <TemplateScreenDashboard title="Campaign Editor Dashboard"
     subtitle="Create, edit, and manage OpenTTD Coopetition campaigns">
     <template #actions>
       <Button size="sm" class="openttd-button bg-openttd-green text-white" @click="createNewCampaign">
@@ -33,29 +32,9 @@ title="Campaign Editor Dashboard"
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <div
-v-for="campaign in recentCampaigns" :key="entityId(campaign)"
-                class="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
-                @click="editCampaign(entityId(campaign))">
-                <div class="flex items-center space-x-3">
-                  <div class="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Folder class="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p class="font-medium">{{ campaign.name }}</p>
-                    <p class="text-sm text-muted-foreground">
-                      {{ campaign.scenarios?.length || 0 }} scenarios •
-                      {{ campaign.meta?.difficulty || 'Unknown' }} difficulty
-                    </p>
-                  </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <Badge :class="getDifficultyClasses(campaign.meta?.difficulty)">
-                    {{ campaign.meta?.difficulty || 'Unknown' }}
-                  </Badge>
-                  <span class="text-muted-foreground">→</span>
-                </div>
-              </div>
+              <EntityCampaignDisplayCard v-for="campaign in recentCampaigns" :key="entityId(campaign)"
+                :campaign="campaign" as-partial class="cursor-pointer hover:bg-accent/50 transition-colors"
+                @click="editCampaign(entityId(campaign))" />
 
               <div v-if="recentCampaigns.length === 0" class="text-center py-8 text-muted-foreground">
                 <div class="text-lg mb-2">🚂</div>
@@ -74,8 +53,7 @@ v-for="campaign in recentCampaigns" :key="entityId(campaign)"
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <Button
-class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
+              <Button class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
                 @click="createNewCampaign">
                 ➕ New Campaign
               </Button>
@@ -199,33 +177,6 @@ async function refreshData() {
   }
 }
 
-function _getDifficultyColor(difficulty: string) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy': return 'green'
-    case 'medium': return 'yellow'
-    case 'hard': return 'orange'
-    case 'expert': return 'red'
-    case 'legendary': return 'purple'
-    default: return 'gray'
-  }
-}
-
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
 
 // Navigation methods
 function createNewCampaign() {
