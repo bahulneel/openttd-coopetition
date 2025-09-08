@@ -6,21 +6,26 @@ import { isEntityType } from '../entities'
 const defaults = {
   tags: [],
   structure: {
-    goals: 'goals/',
-    scenarios: 'scenarios/',
-    campaigns: 'campaigns/',
+    goalPath: 'goals/',
+    scenarioPath: 'scenarios/',
+    campaignPath: 'campaigns/',
   },
   meta: {},
   dependencies: {
     coopetition_version: '1.0.0',
+  },
+  contents: {
+    goals: [],
+    scenarios: [],
+    campaigns: [],
   },
 } satisfies EntityOptions<Manifest>
 
 export const manifestTemplate = {
   defaults,
   newItem: {
-    name: 'New Campaign Pack',
     ...defaults,
+    name: 'New Campaign Pack',
     meta: {
       description: 'A new campaign pack created with the editor',
       author: 'Unknown',

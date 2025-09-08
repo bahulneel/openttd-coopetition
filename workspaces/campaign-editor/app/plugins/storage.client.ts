@@ -87,13 +87,13 @@ export default defineNuxtPlugin(() => {
     let directory: string
     switch (type) {
       case 'Campaign':
-        directory = manifest.structure.campaigns
+        directory = manifest.structure.campaignPath
         break
       case 'Goal':
-        directory = manifest.structure.goals
+        directory = manifest.structure.goalPath
         break
       case 'Scenario':
-        directory = manifest.structure.scenarios
+        directory = manifest.structure.scenarioPath
         break
       case 'Manifest':
         directory = '.' // Manifest is at root

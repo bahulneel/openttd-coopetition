@@ -137,8 +137,9 @@ export interface CampaignScenarioOverrides extends Commentable {
   constraints?: Partial<Constraints>
 }
 
+export type ScenarioReference = EntityReference<Scenario>
 export interface CampaignScenario extends Commentable {
-  include: string
+  include: ScenarioReference
   order?: number
   required?: boolean
   branch?: string
@@ -153,7 +154,7 @@ export interface CampaignBranch extends Named, Commentable {
 }
 
 export interface CampaignProgressionRequirement extends Commentable {
-  scenario: string
+  scenario: ScenarioReference
   completion_threshold: number
   unlocks?: string
 }
@@ -221,8 +222,9 @@ export interface GoalOverrides extends Commentable {
   constraints?: Partial<Constraints>
 }
 
+export type GoalReference = EntityReference<Goal>
 export interface ScenarioGoal extends Commentable {
-  include: EntityReference<Goal>
+  include: GoalReference
   order?: number
   required?: boolean
   branch?: string
@@ -244,11 +246,17 @@ export interface Scenario extends BaseItem<'Scenario'> {
 }
 
 export interface PackageStructure extends Commentable {
-  goals: string
-  scenarios: string
-  campaigns: string
+  goalPath: string
+  scenarioPath: string
+  campaignPath: string
 }
 
+export type CampaignReference = EntityReference<Campaign>
+
+export interface FileReference<T extends AnyEntity> {
+  filename: string
+  entity: EntityReference<T>
+}
 export interface Manifest extends BaseItem<'Manifest'> {
   tags: string[]
   structure: PackageStructure
@@ -260,14 +268,12 @@ export interface Manifest extends BaseItem<'Manifest'> {
     copy_to: string
     requires: string[]
   }
+  contents: {
+    goals: FileReference<Goal>[]
+    scenarios: FileReference<Scenario>[]
+    campaigns: FileReference<Campaign>[]
+  }
 }
-
-// Entity file for storage
-export interface EntityFile<T extends AnyEntity> {
-  path: string
-  storable: Storable<T>
-}
-
 export interface TypeMap {
   Manifest: Manifest
   Campaign: Campaign
