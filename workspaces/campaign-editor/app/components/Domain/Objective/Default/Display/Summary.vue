@@ -14,6 +14,7 @@ defineOptions({
 
 interface Props {
   objective?: Objective
+  asPartial?: boolean
 }
 
 defineProps<Props>()

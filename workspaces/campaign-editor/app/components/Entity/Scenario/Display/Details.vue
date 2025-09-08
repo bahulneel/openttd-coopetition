@@ -2,10 +2,6 @@
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex items-start justify-between">
-      <div>
-        <h1 class="text-2xl font-bold text-foreground">{{ scenario.name }}</h1>
-        <p class="text-muted-foreground">Order: {{ scenario.order }}</p>
-      </div>
       <div class="flex items-center space-x-2">
         <Button variant="outline" class="openttd-button" @click="$emit('edit', scenario)">
           ✏️ Edit Scenario
@@ -23,16 +19,6 @@
       </CardHeader>
       <CardContent class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <span class="font-medium text-foreground">Include File:</span>
-            <span class="text-muted-foreground ml-2">{{ scenario.include }}</span>
-          </div>
-          <div>
-            <span class="font-medium text-foreground">Required:</span>
-            <Badge :variant="scenario.required ? 'default' : 'secondary'" class="ml-2">
-              {{ scenario.required ? 'Yes' : 'No' }}
-            </Badge>
-          </div>
           <div v-if="scenario.meta?.difficulty">
             <span class="font-medium text-foreground">Difficulty:</span>
             <Badge :class="getDifficultyClasses(scenario.meta.difficulty)" class="ml-2">
@@ -80,7 +66,7 @@
       <CardContent>
         <div class="space-y-3">
           <DomainScenarioGoalDisplayItem v-for="(goal, index) in scenario.goals" :key="index" :scenario-goal="goal"
-            @edit="editGoal" />
+            @edit="$emit('edit', goal)" />
         </div>
       </CardContent>
     </Card>
@@ -101,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Scenario } from '~/types'
+import type { Scenario, ScenarioGoal } from '~/types'
 
 defineOptions({
   name: 'EntityScenarioDisplayDetails'
@@ -114,7 +100,7 @@ interface Props {
 defineProps<Props>()
 
 defineEmits<{
-  edit: [scenario: Scenario]
+  edit: [scenario: Scenario | ScenarioGoal]
 }>()
 
 function formatDate(timestamp: number | undefined) {

@@ -1,7 +1,6 @@
 <template>
-  <Card class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
-    @click="$emit('edit', campaign)">
-    <CardContent class="space-y-4 p-6">
+  <DefineContent>
+    <div class="space-y-4 p-6">
       <!-- Header -->
       <div class="flex items-start justify-between">
         <div class="flex-1 min-w-0">
@@ -13,7 +12,7 @@
           </p>
         </div>
 
-        <DropdownMenu>
+        <DropdownMenu v-if="!asPartial">
           <DropdownMenuTrigger as-child @click.stop>
             <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
               ⋮
@@ -63,12 +62,24 @@
       </div>
 
       <!-- Footer -->
-      <DomainMetadataDisplayCard :entity="campaign" />
+      <DomainMetadataDisplayCard :entity="campaign" :as-partial="asPartial" />
+    </div>
+  </DefineContent>
+
+  <!-- Standalone mode (default) -->
+  <Card v-if="!asPartial" class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+    @click="$emit('edit', campaign)">
+    <CardContent>
+      <Content />
     </CardContent>
   </Card>
+
+  <!-- Partial mode (for composition) -->
+  <Content v-else />
 </template>
 
 <script setup lang="ts">
+import { createReusableTemplate } from '@vueuse/core'
 import type { Campaign } from '~/types'
 
 defineOptions({
@@ -77,6 +88,7 @@ defineOptions({
 
 interface Props {
   campaign: Campaign
+  asPartial?: boolean
 }
 
 defineProps<Props>()
@@ -87,6 +99,7 @@ defineEmits<{
   delete: [campaign: Campaign]
 }>()
 
+const [DefineContent, Content] = createReusableTemplate()
 
 function getDifficultyClasses(difficulty: string | undefined) {
   switch (difficulty?.toLowerCase()) {

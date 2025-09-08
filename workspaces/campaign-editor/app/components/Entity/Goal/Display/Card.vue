@@ -1,6 +1,6 @@
 <template>
-  <Card class="openttd-titlebar">
-    <CardContent class="pt-6">
+  <DefineContent>
+    <div class="pt-6">
       <div class="flex items-start justify-between">
         <div class="flex-1">
           <div class="flex items-center space-x-3 mb-2">
@@ -36,23 +36,35 @@
           </div>
         </div>
 
-        <div class="flex items-center space-x-2 ml-4">
+        <div v-if="!asPartial" class="flex items-center space-x-2 ml-4">
           <Button variant="outline" size="sm" class="openttd-button" @click="$emit('edit', goal)">
             ✏️ Edit
           </Button>
           <Button variant="outline" size="sm" class="openttd-button" @click="$emit('duplicate', goal)">
             📋 Copy
           </Button>
-          <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700" @click="$emit('delete', goal)">
+          <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+            @click="$emit('delete', goal)">
             🗑️ Delete
           </Button>
         </div>
       </div>
+    </div>
+  </DefineContent>
+
+  <!-- Standalone mode (default) -->
+  <Card v-if="!asPartial" class="openttd-titlebar">
+    <CardContent>
+      <Content />
     </CardContent>
   </Card>
+
+  <!-- Partial mode (for composition) -->
+  <Content v-else />
 </template>
 
 <script setup lang="ts">
+import { createReusableTemplate } from '@vueuse/core'
 import type { Goal } from '~/types'
 
 defineOptions({
@@ -61,6 +73,7 @@ defineOptions({
 
 interface Props {
   goal: Goal
+  asPartial?: boolean
 }
 
 defineProps<Props>()
@@ -70,4 +83,6 @@ defineEmits<{
   duplicate: [goal: Goal]
   delete: [goal: Goal]
 }>()
+
+const [DefineContent, Content] = createReusableTemplate()
 </script>

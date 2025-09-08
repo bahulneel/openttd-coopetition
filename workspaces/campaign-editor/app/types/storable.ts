@@ -1,5 +1,5 @@
 // Storage metadata and storable type definitions
-import type { Identified } from './entity'
+import type { AnyEntity, Identified } from './entity'
 
 export interface StorageMeta {
   created: number
@@ -11,4 +11,9 @@ export interface StorageMeta {
 
 export type Storable<T extends Identified> = T & {
   __meta: StorageMeta
+}
+
+export interface EntityFile<T extends AnyEntity> {
+  path: string
+  storable: Storable<T>
 }

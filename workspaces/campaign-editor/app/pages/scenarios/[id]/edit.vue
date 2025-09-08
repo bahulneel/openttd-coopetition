@@ -176,7 +176,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Scenario, ScenarioFormData } from '~/types'
+import type { GoalReference, Scenario, ScenarioFormData } from '~/types'
 
 const route = useRoute()
 const entityStore = useEntityStore()
@@ -188,7 +188,7 @@ const form = ref<ScenarioFormData | undefined>(undefined)
 const { isLoading: loading, start, finish } = useLoadingIndicator()
 
 // Track selected goals
-const selectedGoals = ref<string[]>([])
+const selectedGoals = ref<GoalReference[]>([])
 
 // Available goals for selection
 const availableGoals = computed(() => entityStore.select('Goal').value)

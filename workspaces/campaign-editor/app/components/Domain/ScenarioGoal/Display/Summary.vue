@@ -21,6 +21,7 @@ defineOptions({
 
 interface Props {
   scenarioGoal: ScenarioGoal
+  asPartial?: boolean
 }
 
 defineProps<Props>()

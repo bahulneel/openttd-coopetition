@@ -22,6 +22,7 @@ defineOptions({
 
 interface Props {
   entity: Storable<T>
+  asPartial?: boolean
 }
 
 const props = defineProps<Props>()

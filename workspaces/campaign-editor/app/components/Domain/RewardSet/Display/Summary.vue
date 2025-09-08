@@ -14,14 +14,15 @@ defineOptions({
 
 interface Props {
   rewardSet?: RewardSet
+  asPartial?: boolean
 }
 
 const props = defineProps<Props>()
 
 const hasRewards = computed(() => {
   if (!props.rewardSet) return false
-  return !!(props.rewardSet.cash || props.rewardSet.score || props.rewardSet.reputation || 
-           (props.rewardSet.unlocks && props.rewardSet.unlocks.length > 0))
+  return !!(props.rewardSet.cash || props.rewardSet.score || props.rewardSet.reputation ||
+    (props.rewardSet.unlocks && props.rewardSet.unlocks.length > 0))
 })
 
 function getRewardDescription(rewardSet: RewardSet): string {
@@ -30,7 +31,7 @@ function getRewardDescription(rewardSet: RewardSet): string {
   if (rewardSet.score) parts.push(`${rewardSet.score} points`)
   if (rewardSet.reputation) parts.push(`${rewardSet.reputation} reputation`)
   if (rewardSet.unlocks && rewardSet.unlocks.length > 0) parts.push(`Unlock: ${rewardSet.unlocks.join(', ')}`)
-  
+
   return parts.length > 0 ? parts.join(', ') : 'No rewards'
 }
 </script>
