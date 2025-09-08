@@ -112,24 +112,8 @@
         </div>
       </CardHeader>
       <CardContent>
-        <div class="space-y-4">
-          <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
-            <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
-              {{ tag }}
-              <Button variant="ghost" size="sm" class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive"
-                @click="removeTag(index)">
-                ✕
-              </Button>
-            </Badge>
-          </div>
-
-          <div class="flex space-x-2">
-            <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
-            <Button type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button" @click="addTag">
-              ➕ Add
-            </Button>
-          </div>
-        </div>
+        <MoleculeFormInputTags name="meta.tags" label="Tags" placeholder="Add tags..."
+          description="Add relevant tags for categorization" />
       </CardContent>
     </Card>
 
@@ -211,35 +195,7 @@ defineOptions({
 
 const formData = defineModel<ScenarioFormData>({ required: true })
 
-const newTag = ref('')
-
 // Form methods
-function addTag() {
-  const tag = newTag.value.trim()
-  if (tag && !formData.value.meta?.tags?.includes(tag)) {
-    const currentTags = formData.value.meta?.tags || []
-    formData.value = {
-      ...formData.value,
-      meta: {
-        ...formData.value.meta,
-        tags: [...currentTags, tag]
-      }
-    }
-    newTag.value = ''
-  }
-}
-
-function removeTag(index: number) {
-  const currentTags = formData.value.meta?.tags || []
-  const newTags = currentTags.filter((_: string, i: number) => i !== index)
-  formData.value = {
-    ...formData.value,
-    meta: {
-      ...formData.value.meta,
-      tags: newTags
-    }
-  }
-}
 
 function addGoal() {
   const currentGoals = formData.value.goals || []
