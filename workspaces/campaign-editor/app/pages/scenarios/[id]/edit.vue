@@ -1,119 +1,182 @@
 <template>
-  <div class="space-y-6">
+  <div v-if="loading" class="flex justify-center py-12">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+      <p class="text-muted-foreground">Loading scenario...</p>
+    </div>
+  </div>
+
+  <div v-else-if="error" class="space-y-6">
+    <Alert class="border-destructive bg-destructive/10">
+      <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
+      <AlertDescription class="text-destructive">
+        {{ error }}
+        <Button variant="ghost" size="sm" class="ml-2 text-destructive" @click="error = undefined">
+          ✕ Dismiss
+        </Button>
+      </AlertDescription>
+    </Alert>
+
+    <div class="flex justify-center">
+      <Button variant="outline" class="openttd-button" @click="navigateTo('/scenarios')">
+        ← Back to Scenarios
+      </Button>
+    </div>
+  </div>
+
+  <div v-else class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-foreground">
-          Edit Scenario
-        </h1>
-        <p class="text-muted-foreground">
-          Modify the scenario configuration
-        </p>
+      <div class="flex items-center space-x-4">
+        <Button variant="ghost" size="sm" class="openttd-button" @click="navigateTo('/scenarios')">
+          ← Back to Scenarios
+        </Button>
+
+        <div>
+          <h1 class="text-2xl font-bold text-foreground">
+            {{ scenario?.name }}
+          </h1>
+          <p class="text-muted-foreground">
+            Edit scenario details and configuration
+          </p>
+        </div>
       </div>
 
       <div class="flex items-center space-x-2">
-        <Button variant="outline" class="openttd-button" @click="navigateTo('/scenarios')">
-          ← Back to Scenarios
+        <Button variant="outline" class="openttd-button" @click="duplicateScenario">
+          📄 Duplicate
+        </Button>
+
+        <Button variant="outline" class="openttd-button" @click="previewScenario">
+          👁️ Preview
         </Button>
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center py-12">
-      <div class="text-center">
-        <div class="text-4xl mb-4">🔄</div>
-        <p class="text-muted-foreground">Loading scenario...</p>
-      </div>
-    </div>
-
-    <!-- Scenario Not Found -->
-    <Card v-else-if="!scenario" class="openttd-titlebar">
-      <CardContent class="pt-12 pb-12">
-        <div class="text-center">
-          <div class="text-6xl mb-4">❌</div>
-          <CardTitle class="text-lg font-semibold text-foreground mb-2">
-            Scenario Not Found
-          </CardTitle>
-          <p class="text-muted-foreground mb-6">
-            The scenario you're looking for doesn't exist or has been deleted.
-          </p>
-          <Button class="openttd-button bg-openttd-purple text-white" @click="navigateTo('/scenarios')">
-            ← Back to Scenarios
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-
     <!-- Scenario Form -->
-    <Form v-else-if="form" @submit="saveScenario">
-      <EntityScenarioInputDetails v-model="form">
-        <template #actions>
-          <div class="flex justify-end space-x-4 pt-6 border-t">
-            <Button type="button" variant="outline" class="openttd-button" @click="navigateTo('/scenarios')">
-              Cancel
+    <EntityScenarioInputDetails v-if="scenario" v-model="scenario">
+      <template #actions>
+        <div class="flex items-center justify-between pt-6 border-t border-border">
+          <div class="flex items-center space-x-4">
+            <div class="text-sm text-muted-foreground">
+              {{ hasChanges ? '📝 Unsaved changes' : '✅ All changes saved' }}
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <Button type="button" variant="outline" class="openttd-button" @click="resetScenario">
+              ↺ Reset
             </Button>
-            <Button type="submit" :disabled="loading" class="openttd-button bg-openttd-purple text-white">
-              {{ loading ? 'Saving...' : 'Save Changes' }}
+
+            <Button type="button" :disabled="saving" class="openttd-button bg-openttd-purple text-white"
+              @click="saveScenario">
+              {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
             </Button>
           </div>
-        </template>
-      </EntityScenarioInputDetails>
-    </Form>
+        </div>
+      </template>
+    </EntityScenarioInputDetails>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Scenario, ScenarioFormData } from '~/types'
+import cloneDeep from 'lodash.clonedeep'
+import type { Scenario } from '~/types'
+import { entityId } from '~/utils/entities'
 
 const route = useRoute()
+const router = useRouter()
 const entityStore = useEntityStore()
-const toast = useToast()
 
-const scenarioId = route.params.id as string
+// Simple state
+const loading = ref(false)
+const error = ref<string | undefined>(undefined)
+const saving = ref(false)
 const scenario = ref<Scenario | undefined>(undefined)
-const form = ref<ScenarioFormData | undefined>(undefined)
-const { isLoading: loading, start, finish } = useLoadingIndicator()
 
-// Load scenario data
-onMounted(async () => {
-  const scenarioData = entityStore.get(scenarioId, 'Scenario')
-  if (scenarioData) {
-    const entity = toStorableValue(scenarioData)
-    scenario.value = entity
-    form.value = scenarioToFormData(entity) // Convert to FormData for form handling
-  }
+// Computed
+const scenarioId = computed(() => route.params.id as string)
+const hasChanges = computed(() => {
+  if (!scenario.value) return false
+  const storeScenario = entityStore.get(scenarioId.value, 'Scenario')
+  return storeScenario ? JSON.stringify(scenario.value) !== JSON.stringify(storeScenario) : false
 })
 
+// Load scenario on mount
+onMounted(async () => {
+  await loadScenario()
+})
+
+// Methods
+async function loadScenario() {
+  loading.value = true
+  error.value = undefined
+
+  try {
+    const scenarioData = await entityStore.get(scenarioId.value, 'Scenario')
+    if (scenarioData) {
+      scenario.value = cloneDeep(scenarioData) // Deep copy
+    } else {
+      error.value = 'Scenario not found'
+    }
+  } catch {
+    error.value = 'Failed to load scenario'
+  } finally {
+    loading.value = false
+  }
+}
 
 async function saveScenario() {
-  if (!form.value) return
+  if (!scenario.value) return
 
-  start()
+  saving.value = true
   try {
-    // Convert FormData back to Entity
-    const entity = asScenario(form.value)
+    await entityStore.assert(scenario.value)
 
-    // Update the entity in the store
-    entityStore.assert(entity)
-
-    // Save to backend
-    await $fetch('/api/scenarios', {
-      method: 'POST',
-      body: { scenario: entity }
-    })
-
+    const toast = useToast()
     toast.add({
-      title: '✅ Scenario Updated',
-      description: `Scenario "${form.value.name}" has been updated successfully`,
+      title: '💾 Scenario Saved',
+      description: `Scenario "${scenario.value.name}" has been saved.`,
       color: 'green'
     })
-    finish()
-    navigateTo('/scenarios')
   } catch {
-    finish({ error: true })
+    const toast = useToast()
     toast.add({
       title: '❌ Error',
-      description: 'Failed to update scenario',
+      description: 'Failed to save scenario',
+      color: 'red'
+    })
+  } finally {
+    saving.value = false
+  }
+}
+
+function resetScenario() {
+  loadScenario() // Just reload from store
+}
+
+function previewScenario() {
+  const toast = useToast()
+  toast.add({ title: 'Preview functionality coming soon!', color: 'blue' })
+}
+
+async function duplicateScenario() {
+  if (!scenario.value) return
+
+  try {
+    const duplicate = entityStore.copy(scenarioId.value, { name: `${scenario.value.name} (Copy)` })
+    const toast = useToast()
+    toast.add({
+      title: '📄 Scenario Duplicated',
+      description: `Scenario "${duplicate.name}" has been created.`,
+      color: 'green'
+    })
+    router.push(`/scenarios/${entityId(duplicate)}`)
+  } catch {
+    const toast = useToast()
+    toast.add({
+      title: '❌ Error',
+      description: 'Failed to duplicate scenario',
       color: 'red'
     })
   }

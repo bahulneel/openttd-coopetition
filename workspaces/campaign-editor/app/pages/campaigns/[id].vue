@@ -34,7 +34,7 @@
 
         <div>
           <h1 class="text-2xl font-bold text-foreground">
-            {{ formData.name }}
+            {{ campaign?.name }}
           </h1>
           <p class="text-muted-foreground">
             Edit campaign details and configuration
@@ -50,85 +50,56 @@
         <Button variant="outline" class="openttd-button" @click="previewCampaign">
           👁️ Preview
         </Button>
-
-        <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
-          @click="saveCampaign">
-          {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
-        </Button>
       </div>
     </div>
 
-    <!-- Form -->
-    <form class="space-y-6" @submit.prevent="saveCampaign">
-      <EntityCampaignInputDetails v-model="formData">
-        <template #actions>
-          <div class="flex items-center justify-between pt-6 border-t border-border">
-            <div class="flex items-center space-x-4">
-              <div class="text-sm text-muted-foreground">
-                {{ hasChanges ? '📝 Unsaved changes' : '✅ All changes saved' }}
-              </div>
-
-              <div v-if="customValidationErrors.length > 0" class="flex items-center space-x-2">
-                <span class="text-destructive text-sm">⚠️ {{ customValidationErrors.length }} validation errors</span>
-              </div>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <Button type="button" variant="outline" class="openttd-button" @click="resetForm">
-                ↺ Reset
-              </Button>
-
-              <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
-                @click="saveCampaign">
-                {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
-              </Button>
+    <!-- Campaign Form -->
+    <EntityCampaignInputDetails v-if="campaign" v-model="campaign">
+      <template #actions>
+        <div class="flex items-center justify-between pt-6 border-t border-border">
+          <div class="flex items-center space-x-4">
+            <div class="text-sm text-muted-foreground">
+              {{ hasChanges ? '📝 Unsaved changes' : '✅ All changes saved' }}
             </div>
           </div>
-        </template>
-      </EntityCampaignInputDetails>
-    </form>
+
+          <div class="flex items-center space-x-2">
+            <Button type="button" variant="outline" class="openttd-button" @click="resetCampaign">
+              ↺ Reset
+            </Button>
+
+            <Button type="button" :disabled="saving" class="openttd-button bg-openttd-green text-white"
+              @click="saveCampaign">
+              {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
+            </Button>
+          </div>
+        </div>
+      </template>
+    </EntityCampaignInputDetails>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useForm } from 'vee-validate'
-import type { Campaign, EntityValue } from '~/types'
+import cloneDeep from 'lodash.clonedeep'
+import type { Campaign } from '~/types'
 import { entityId } from '~/utils/entities'
 
 const route = useRoute()
 const router = useRouter()
 const campaignStore = useEntityStore()
 
-// Reactive data
+// Simple state
 const loading = ref(false)
 const error = ref<string | undefined>(undefined)
 const saving = ref(false)
-
-// Form setup
-const form = useForm({
-  validationSchema: campaignSchema,
-  initialValues: {
-    name: '',
-    meta: {
-      description: '',
-      difficulty: 'medium' as const,
-      tags: [],
-    },
-    scenarios: [],
-  } satisfies EntityValue<Campaign>
-})
-
-const { values: formData, meta, setValues } = form
+const campaign = ref<Campaign | undefined>(undefined)
 
 // Computed
 const campaignId = computed(() => route.params.id as string)
-const hasChanges = computed(() => meta.value.dirty)
-
-// Custom validation errors
-const customValidationErrors = computed(() => {
-  const errors: string[] = []
-  // Add custom validation logic here if needed
-  return errors
+const hasChanges = computed(() => {
+  if (!campaign.value) return false
+  const storeCampaign = campaignStore.get(campaignId.value, 'Campaign')
+  return storeCampaign ? JSON.stringify(campaign.value) !== JSON.stringify(storeCampaign) : false
 })
 
 // Load campaign on mount
@@ -142,13 +113,9 @@ async function loadCampaign() {
   error.value = undefined
 
   try {
-    const campaign = await campaignStore.get(campaignId.value, 'Campaign')
-    if (campaign) {
-      // Transform Campaign type to form schema
-      form.setValues({
-        id: entityId(campaign),
-        ...toEntityValue(campaign),
-      })
+    const campaignData = await campaignStore.get(campaignId.value, 'Campaign')
+    if (campaignData) {
+      campaign.value = cloneDeep(campaignData) // Deep copy
     } else {
       error.value = 'Campaign not found'
     }
@@ -159,21 +126,19 @@ async function loadCampaign() {
   }
 }
 
-const saveCampaign = form.handleSubmit(async (values) => {
-  saving.value = true
+async function saveCampaign() {
+  if (!campaign.value) return
 
+  saving.value = true
   try {
-    await campaignStore.assert(asCampaign(values))
+    await campaignStore.assert(campaign.value)
 
     const toast = useToast()
     toast.add({
       title: '💾 Campaign Saved',
-      description: `Campaign "${values.name}" has been saved.`,
+      description: `Campaign "${campaign.value.name}" has been saved.`,
       color: 'green'
     })
-
-    // Reload the campaign to get updated data
-    await loadCampaign()
   } catch {
     const toast = useToast()
     toast.add({
@@ -184,29 +149,28 @@ const saveCampaign = form.handleSubmit(async (values) => {
   } finally {
     saving.value = false
   }
-})
+}
 
-
-function resetForm() {
-  loadCampaign()
+function resetCampaign() {
+  loadCampaign() // Just reload from store
 }
 
 function previewCampaign() {
-  // TODO: Implement preview functionality
   const toast = useToast()
   toast.add({ title: 'Preview functionality coming soon!', color: 'blue' })
 }
 
 async function duplicateCampaign() {
+  if (!campaign.value) return
+
   try {
-    const duplicate = campaignStore.copy(campaignId.value, { name: `${formData.name} (Copy)` })
+    const duplicate = campaignStore.copy(campaignId.value, { name: `${campaign.value.name} (Copy)` })
     const toast = useToast()
     toast.add({
       title: '📄 Campaign Duplicated',
       description: `Campaign "${duplicate.name}" has been created.`,
       color: 'green'
     })
-    // Navigate to the duplicated campaign
     router.push(`/campaigns/${entityId(duplicate)}`)
   } catch {
     const toast = useToast()
