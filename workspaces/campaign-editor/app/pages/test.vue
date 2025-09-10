@@ -65,8 +65,8 @@
       <AlertDescription>
         Successfully migrated to Nuxt 4 + Tailwind CSS 4 + shadcn-vue with OpenTTD theming. All official installation
         steps from shadcn-vue.com have been completed:
-        <br>• ✅ @nuxtjs/color-mode for dark/light mode <br>• ✅ lucide-vue-next with comprehensive icon set <br>•
-        ✅ tw-animate-css for animations <br>• ✅ Proper @theme inline configuration <br>• ✅ CSS variables and dark
+        <br />• ✅ @nuxtjs/color-mode for dark/light mode <br />• ✅ lucide-vue-next with comprehensive icon set <br />•
+        ✅ tw-animate-css for animations <br />• ✅ Proper @theme inline configuration <br />• ✅ CSS variables and dark
         mode support
       </AlertDescription>
     </Alert>
