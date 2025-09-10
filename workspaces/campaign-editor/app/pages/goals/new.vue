@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import type { Goal, GoalValue } from '~/types'
-import { createGoal, goalTemplate } from '~/utils/model/goals'
+import { createGoal } from '~/utils/model/goals'
 import { goalSchema } from '~/utils/schemas'
 
 const store = useEntityStore()

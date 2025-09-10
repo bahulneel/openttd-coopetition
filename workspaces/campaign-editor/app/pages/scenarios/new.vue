@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import type { Scenario, ScenarioValue } from '~/types'
-import { createScenario, scenarioTemplate } from '~/utils/model/scenarios'
+import { createScenario } from '~/utils/model/scenarios'
 import { scenarioSchema } from '~/utils/schemas'
 
 const store = useEntityStore()
