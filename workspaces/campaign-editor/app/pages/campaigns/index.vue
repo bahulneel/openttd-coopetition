@@ -173,6 +173,7 @@ import { useForm } from 'vee-validate'
 import type { Campaign, CampaignValue } from '~/types'
 import { storableMeta } from '~/utils/storable'
 import { asCampaign } from '~/utils/model/campaigns'
+import { campaignSchema } from '~/utils/schemas'
 
 const entityStore = useEntityStore()
 const route = useRoute()
@@ -194,9 +195,9 @@ const saving = ref(false)
 const form = useForm({
   validationSchema: campaignSchema,
   initialValues: {
-    name: '',
+    name: 'New Campaign',
     meta: {
-      description: '',
+      description: 'A new campaign created with the editor',
       difficulty: 'medium' as const,
       tags: [],
     },
@@ -315,10 +316,10 @@ const totalPages = computed(() => {
 // Form methods
 function initializeNewCampaign() {
   form.setValues({
-    name: '',
+    name: 'New Campaign',
     meta: {
       author: '',
-      description: '',
+      description: 'A new campaign created with the editor',
       difficulty: 'medium' as const,
       tags: [],
     },

@@ -52,17 +52,32 @@ const toast = useToast()
 const form = useForm({
   validationSchema: goalSchema,
   initialValues: {
-    name: '',
+    name: 'New Goal',
     meta: {
-      description: '',
+      description: 'A new goal created with the editor',
       difficulty: 'medium' as const,
       tags: [],
     },
     type: 'player' as const,
-    objective: undefined,
-    constraints: {},
-    shared: {},
-    result: {},
+    objective: {
+      type: 'profit' as const,
+      amount: 100000,
+      comment: 'Basic profit objective',
+    },
+    constraints: {
+      players: { min: 1, max: 8 },
+    },
+    shared: {
+      track: false,
+      stations: false,
+      vehicles: false,
+      depots: false,
+    },
+    result: {
+      cash: 50000,
+      score: 10,
+      reputation: 5,
+    },
   } as GoalValue,
 })
 

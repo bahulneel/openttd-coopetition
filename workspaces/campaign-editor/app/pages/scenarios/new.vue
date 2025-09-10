@@ -58,14 +58,16 @@ const toast = useToast()
 const form = useForm({
   validationSchema: scenarioSchema,
   initialValues: {
-    name: '',
+    name: 'New Scenario',
     meta: {
-      description: '',
+      description: 'A new scenario created with the editor',
       difficulty: 'medium' as const,
       tags: [],
     },
     goals: [],
-    constraints: {},
+    constraints: {
+      players: { min: 2, max: 6 },
+    },
     defaults: {},
     settings: {},
   } as ScenarioValue,
