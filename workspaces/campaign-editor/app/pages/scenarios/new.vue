@@ -59,15 +59,9 @@ const form = useForm({
   validationSchema: scenarioSchema,
   initialValues: {
     name: 'New Scenario',
-    meta: {
-      description: 'A new scenario created with the editor',
-      difficulty: 'medium' as const,
-      tags: [],
-    },
+    meta: {},
     goals: [],
-    constraints: {
-      players: { min: 2, max: 6 },
-    },
+    constraints: {},
     defaults: {},
     settings: {},
   } as ScenarioValue,

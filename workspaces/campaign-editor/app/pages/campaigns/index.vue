@@ -197,8 +197,6 @@ const form = useForm({
   initialValues: {
     name: 'New Campaign',
     meta: {
-      description: 'A new campaign created with the editor',
-      difficulty: 'medium' as const,
       tags: [],
     },
     scenarios: [],
@@ -318,9 +316,6 @@ function initializeNewCampaign() {
   form.setValues({
     name: 'New Campaign',
     meta: {
-      author: '',
-      description: 'A new campaign created with the editor',
-      difficulty: 'medium' as const,
       tags: [],
     },
     scenarios: [],
