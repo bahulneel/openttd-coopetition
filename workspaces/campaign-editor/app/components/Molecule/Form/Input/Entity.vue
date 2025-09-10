@@ -48,7 +48,7 @@ defineOptions({
 })
 
 interface Props<T extends AnyEntity = AnyEntity> {
-  entities: T[]
+  entities?: T[]
   placeholder?: string
 }
 

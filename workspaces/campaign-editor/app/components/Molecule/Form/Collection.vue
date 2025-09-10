@@ -72,9 +72,9 @@ defineOptions({
 })
 
 interface Props {
-  label: string
-  addLabel: string
-  emptyMessage: string
+  label?: string
+  addLabel?: string
+  emptyMessage?: string
   items: unknown[]
 }
 
