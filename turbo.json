@@ -23,7 +23,9 @@
       "dependsOn": [
         "^dev:prepare"
       ],
-      "outputs": []
+      "outputs": [
+        ".nuxt/**"
+      ]
     },
     "start": {
       "dependsOn": [

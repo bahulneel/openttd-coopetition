@@ -1,4 +1,4 @@
-import type { Storable, AnyEntity, PackageManifest } from '~/types'
+import type { Storable, AnyEntity, Manifest } from '~/types'
 
 export default defineNuxtPlugin(() => {
   const store = useEntityStore()
@@ -80,20 +80,20 @@ export default defineNuxtPlugin(() => {
   }
 
   // Helper function to get entity path from entity and manifest
-  function getEntityPath<T extends AnyEntity>(entity: Storable<T>, manifest: Storable<PackageManifest>): string {
+  function getEntityPath<T extends AnyEntity>(entity: Storable<T>, manifest: Storable<Manifest>): string {
     const filename = entity.__meta.filename
     const type = entityType(entity)
 
     let directory: string
     switch (type) {
       case 'Campaign':
-        directory = manifest.structure.campaigns
+        directory = manifest.structure.campaignPath
         break
       case 'Goal':
-        directory = manifest.structure.goals
+        directory = manifest.structure.goalPath
         break
       case 'Scenario':
-        directory = manifest.structure.scenarios
+        directory = manifest.structure.scenarioPath
         break
       case 'Manifest':
         directory = '.' // Manifest is at root

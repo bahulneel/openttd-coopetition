@@ -1,13 +1,10 @@
 {
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "squirrel"
-  ],
-  "eslint.workingDirectories": ["."],
-  "files.associations": {
-    "*.nut": "squirrel"
-  }
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "prettier.singleAttributePerLine": true
 }

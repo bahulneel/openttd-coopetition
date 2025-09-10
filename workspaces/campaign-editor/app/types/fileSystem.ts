@@ -1,7 +1,6 @@
 // File system type definitions
 import type { AnyEntity } from './entity'
-import type { EntityFile } from './model'
-import type { Storable } from './storable'
+import type { Storable, EntityFile } from './storable'
 
 export enum FileSystemFeature {
   ZIP_IMPORT = 'zip_import',

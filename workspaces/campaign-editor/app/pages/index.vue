@@ -1,85 +1,20 @@
 <template>
-  <div class="space-y-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-3xl font-bold text-foreground">
-          Campaign Editor Dashboard
-        </h1>
-        <p class="text-muted-foreground mt-2">
-          Create, edit, and manage OpenTTD Coopetition campaigns
-        </p>
-      </div>
+  <TemplateScreenDashboard
+title="Campaign Editor Dashboard"
+    subtitle="Create, edit, and manage OpenTTD Coopetition campaigns">
+    <template #actions>
+      <Button size="sm" class="openttd-button bg-openttd-green text-white" @click="createNewCampaign">
+        ➕ New Campaign
+      </Button>
 
-      <div class="flex items-center space-x-2">
-        <Button size="sm" class="openttd-button bg-openttd-green text-white" @click="createNewCampaign">
-          ➕ New Campaign
-        </Button>
+      <Button variant="outline" size="sm" :disabled="refreshing" class="openttd-button" @click="refreshData">
+        {{ refreshing ? '🔄' : '↻' }} Refresh
+      </Button>
+    </template>
 
-        <Button variant="outline" size="sm" :disabled="refreshing" class="openttd-button" @click="refreshData">
-          {{ refreshing ? '🔄' : '↻' }} Refresh
-        </Button>
-      </div>
-    </div>
-
-    <!-- Stats Cards - OpenTTD Style -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Campaigns Card - OpenTTD Brown Theme -->
-      <div class="campaign-card bg-openttd-brown/20 border-openttd-brown/40">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-openttd-brown">📁 Campaigns</p>
-            <p class="text-2xl font-bold text-foreground">{{ campaignStats.total }}</p>
-          </div>
-          <div
-            class="h-12 w-12 bg-openttd-brown rounded border-2 border-border flex items-center justify-center openttd-button">
-            <span class="text-lg">📂</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Goals Card - OpenTTD Green Theme -->
-      <div class="campaign-card bg-openttd-green/20 border-openttd-green/40">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-openttd-green">🎯 Goals</p>
-            <p class="text-2xl font-bold text-foreground">{{ goalStats.total }}</p>
-          </div>
-          <div
-            class="h-12 w-12 bg-openttd-green rounded border-2 border-border flex items-center justify-center openttd-button">
-            <span class="text-lg text-white">🎯</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scenarios Card - OpenTTD Purple Theme -->
-      <div class="campaign-card bg-openttd-purple/20 border-openttd-purple/40">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-openttd-purple">🗺️ Scenarios</p>
-            <p class="text-2xl font-bold text-foreground">{{ scenarioStats.total }}</p>
-          </div>
-          <div
-            class="h-12 w-12 bg-openttd-purple rounded border-2 border-border flex items-center justify-center openttd-button">
-            <span class="text-lg text-white">🗺️</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modified Card - OpenTTD Blue Theme -->
-      <div class="campaign-card bg-openttd-blue/20 border-openttd-blue/40">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium text-openttd-blue">⚡ Modified</p>
-            <p class="text-2xl font-bold text-foreground">{{ modifiedStats.count }}</p>
-          </div>
-          <div
-            class="h-12 w-12 bg-openttd-blue rounded border-2 border-border flex items-center justify-center openttd-button">
-            <span class="text-lg text-white">⚡</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <template #stats>
+      <MoleculeCardDashboard v-for="stat in stats" :key="stat.label" v-bind="stat" />
+    </template>
 
     <!-- Recent Activity / Quick Actions -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -98,29 +33,10 @@
           </CardHeader>
           <CardContent>
             <div class="space-y-3">
-              <div
+              <EntityCampaignDisplayCard
 v-for="campaign in recentCampaigns" :key="entityId(campaign)"
-                class="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
-                @click="editCampaign(entityId(campaign))">
-                <div class="flex items-center space-x-3">
-                  <div class="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Folder class="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p class="font-medium">{{ campaign.name }}</p>
-                    <p class="text-sm text-muted-foreground">
-                      {{ campaign.scenarios?.length || 0 }} scenarios •
-                      {{ campaign.meta?.difficulty || 'Unknown' }} difficulty
-                    </p>
-                  </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <Badge :class="getDifficultyClasses(campaign.meta?.difficulty)">
-                    {{ campaign.meta?.difficulty || 'Unknown' }}
-                  </Badge>
-                  <span class="text-muted-foreground">→</span>
-                </div>
-              </div>
+                :campaign="campaign" as-partial class="cursor-pointer hover:bg-accent/50 transition-colors"
+                @click="editCampaign(entityId(campaign))" />
 
               <div v-if="recentCampaigns.length === 0" class="text-center py-8 text-muted-foreground">
                 <div class="text-lg mb-2">🚂</div>
@@ -167,12 +83,11 @@ class="w-full justify-start openttd-button bg-openttd-green text-white" variant=
         </Card>
       </div>
     </div>
-  </div>
+  </TemplateScreenDashboard>
 </template>
 
 <script setup lang="ts">
-import type { Campaign, Goal, Scenario } from '~/types'
-import { Folder } from 'lucide-vue-next'
+import type { Campaign, Goal, Scenario, Action } from '~/types'
 
 // Reactive data
 const refreshing = ref(false)
@@ -201,6 +116,40 @@ const scenarioStats = computed(() => ({
 const modifiedStats = computed(() => ({
   count: campaigns.value.filter(c => meta.modified(c)).length
 }))
+type StatTone = 'brown' | 'green' | 'purple' | 'blue'
+interface DashboardStat {
+  label: string
+  value: string | number
+  tone: StatTone
+  action?: Action
+}
+
+const stats = computed<DashboardStat[]>(() => [
+  {
+    label: '📁 Campaigns',
+    value: campaignStats.value.total,
+    tone: 'brown',
+    action: { label: '📁', variant: 'brown', type: 'link', to: '/campaigns' }
+  },
+  {
+    label: '🎯 Goals',
+    value: goalStats.value.total,
+    tone: 'green',
+    action: { label: '🎯', variant: 'green', type: 'link', to: '/goals' }
+  },
+  {
+    label: '🗺️ Scenarios',
+    value: scenarioStats.value.total,
+    tone: 'purple',
+    action: { label: '🗺️', variant: 'purple', type: 'link', to: '/scenarios' }
+  },
+  {
+    label: '⚡ Modified',
+    value: modifiedStats.value.count,
+    tone: 'blue',
+    action: { label: '⚡', variant: 'blue', type: 'link', to: '/campaigns' }
+  }
+])
 
 const recentCampaigns = computed(() =>
   [...campaigns.value]
@@ -216,8 +165,8 @@ async function loadData() {
     campaigns.value = []
     // goals.value = [] // This should be handled by the store
     scenarios.value = []
-  } catch (error) {
-    console.error('Failed to load data:', error)
+  } catch {
+    // Error handling is done by individual store operations
   }
 }
 
@@ -230,33 +179,6 @@ async function refreshData() {
   }
 }
 
-function _getDifficultyColor(difficulty: string) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy': return 'green'
-    case 'medium': return 'yellow'
-    case 'hard': return 'orange'
-    case 'expert': return 'red'
-    case 'legendary': return 'purple'
-    default: return 'gray'
-  }
-}
-
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
 
 // Navigation methods
 function createNewCampaign() {

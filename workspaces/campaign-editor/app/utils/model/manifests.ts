@@ -1,26 +1,31 @@
 import defu from 'defu'
-import type { PackageManifest, EntityOptions, ModelOptions } from '~/types'
+import type { Manifest, EntityOptions, ModelOptions } from '~/types'
 
 import { isEntityType } from '../entities'
 
 const defaults = {
   tags: [],
   structure: {
-    goals: 'goals/',
-    scenarios: 'scenarios/',
-    campaigns: 'campaigns/',
+    goalPath: 'goals/',
+    scenarioPath: 'scenarios/',
+    campaignPath: 'campaigns/',
   },
   meta: {},
   dependencies: {
     coopetition_version: '1.0.0',
   },
-} satisfies EntityOptions<PackageManifest>
+  contents: {
+    goals: [],
+    scenarios: [],
+    campaigns: [],
+  },
+} satisfies EntityOptions<Manifest>
 
 export const manifestTemplate = {
   defaults,
   newItem: {
-    name: 'New Campaign Pack',
     ...defaults,
+    name: 'New Campaign Pack',
     meta: {
       description: 'A new campaign pack created with the editor',
       author: 'Unknown',
@@ -30,10 +35,10 @@ export const manifestTemplate = {
       copy_to: 'campaigns/',
       requires: [],
     },
-  } satisfies EntityOptions<PackageManifest>,
+  } satisfies EntityOptions<Manifest>,
 }
 
-export function createManifest(name: string, data: EntityOptions<PackageManifest> = {}): PackageManifest {
+export function createManifest(name: string, data: EntityOptions<Manifest> = {}): Manifest {
   return {
     __id: useIdentifier('manifest'),
     __type: 'Manifest',
@@ -42,10 +47,10 @@ export function createManifest(name: string, data: EntityOptions<PackageManifest
   }
 }
 
-export function isManifest(value: unknown): value is PackageManifest {
+export function isManifest(value: unknown): value is Manifest {
   return isEntityType(value, 'Manifest')
 }
 
-export function asManifest<T extends ModelOptions<PackageManifest>>(value: T): PackageManifest {
+export function asManifest<T extends ModelOptions<Manifest>>(value: T): Manifest {
   return asEntity('Manifest', defu(manifestTemplate.defaults, value))
 }

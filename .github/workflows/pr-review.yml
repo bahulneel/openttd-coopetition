@@ -3,7 +3,7 @@ name: PR Code Review
 # Trigger on pull requests
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
     types: [opened, synchronize, reopened]
 
 # Define permissions needed for reviewdog
@@ -125,6 +125,36 @@ jobs:
           # Check markdown links and pipe to reviewdog
           find docs -name "*.md" -exec npx markdown-link-check {} \; 2>&1 | reviewdog -efm="%f:%l %m" -name="Markdown Link Checker" -reporter=github-pr-review -fail-on-error=false
 
+  # TypeScript type checking
+  typecheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
+      - name: TypeScript type checking with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Run TypeScript type checking and pipe to reviewdog
+          npm run typecheck 2>&1 | reviewdog -f=tsc -name="TypeScript Type Checker" -reporter=github-pr-review -fail-on-error=false
+
   # Compile and validate campaign content
   validate-content:
     runs-on: ubuntu-22.04
@@ -160,17 +190,17 @@ jobs:
             echo "::error::Campaign compilation failed - build directory not found"
             exit 1
           fi
-          
+
           # Check for any compilation errors in the build output
           find build -name "*.nut" -exec echo "Compiled: {}" \;
-          
+
           # If we get here, compilation was successful
           echo "✅ Campaign content compiled successfully"
 
   # Summary job
   pr-review-summary:
     runs-on: ubuntu-22.04
-    needs: [lint-nut, lint-workspaces, validate-yaml, validate-docs, validate-content]
+    needs: [lint-nut, lint-workspaces, validate-yaml, validate-docs, typecheck, validate-content]
     if: always()
     steps:
       - name: PR Review Summary
@@ -182,8 +212,8 @@ jobs:
           echo "- **Workspace Linting**: ${{ needs.lint-workspaces.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- **YAML Validation**: ${{ needs.validate-yaml.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Documentation Check**: ${{ needs.validate-docs.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **TypeScript Type Checking**: ${{ needs.typecheck.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Content Compilation**: ${{ needs.validate-content.result }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📋 Review Details:" >> $GITHUB_STEP_SUMMARY
           echo "All checks have been completed. Review the individual job results above for detailed feedback." >> $GITHUB_STEP_SUMMARY
-      

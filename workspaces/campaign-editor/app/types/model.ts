@@ -1,6 +1,5 @@
 // Model type definitions - the core domain entities
-import type { AnyEntity, Entity, EntityOptions } from './entity'
-import type { Storable } from './storable'
+import type { AnyEntity, Entity, EntityOptions, EntityReference } from './entity'
 
 export interface Named {
   name: string
@@ -61,28 +60,63 @@ export interface RewardSet extends Commentable {
   unlocks?: string[]
 }
 
-export type ObjectiveType =
-  | 'cargo_delivered'
-  | 'network_length'
-  | 'profit'
-  | 'station_built'
-  | 'company_value'
-  | 'town_growth'
-
-export interface Objective extends Commentable {
-  type: ObjectiveType
-  amount?: number
-  cargo?: string
-  cargo_types?: string[]
+// Base objective interface with common fields
+export interface BaseObjective extends Commentable {
   time_limit?: number
-  track_type?: string
-  target?: string
-  min_value?: number
-  town_id?: string
-  target_population?: number
-  location?: string
-  count?: number
 }
+
+// Cargo delivery objective - requires cargo type and amount
+export interface CargoDeliveredObjective extends BaseObjective {
+  type: 'cargo_delivered'
+  amount: number
+  cargo: string
+  cargo_types?: string[]
+}
+
+// Network length objective - requires amount (in tiles)
+export interface NetworkLengthObjective extends BaseObjective {
+  type: 'network_length'
+  amount: number
+  track_type?: string
+}
+
+// Profit objective - requires amount (in currency)
+export interface ProfitObjective extends BaseObjective {
+  type: 'profit'
+  amount: number
+}
+
+// Station building objective - requires count
+export interface StationBuiltObjective extends BaseObjective {
+  type: 'station_built'
+  count: number
+  location?: string
+}
+
+// Company value objective - requires min_value
+export interface CompanyValueObjective extends BaseObjective {
+  type: 'company_value'
+  min_value: number
+}
+
+// Town growth objective - requires target_population and town_id
+export interface TownGrowthObjective extends BaseObjective {
+  type: 'town_growth'
+  target_population: number
+  town_id: string
+}
+
+// Discriminated union of all objective types
+export type Objective =
+  | CargoDeliveredObjective
+  | NetworkLengthObjective
+  | ProfitObjective
+  | StationBuiltObjective
+  | CompanyValueObjective
+  | TownGrowthObjective
+
+// Legacy type for backward compatibility (deprecated)
+export type ObjectiveType = Objective['type']
 
 export interface Rewards extends Commentable {
   completion?: RewardSet
@@ -102,8 +136,9 @@ export interface CampaignScenarioOverrides extends Commentable {
   constraints?: Partial<Constraints>
 }
 
+export type ScenarioReference = EntityReference<Scenario>
 export interface CampaignScenario extends Commentable {
-  include: string
+  include: ScenarioReference
   order?: number
   required?: boolean
   branch?: string
@@ -118,7 +153,7 @@ export interface CampaignBranch extends Named, Commentable {
 }
 
 export interface CampaignProgressionRequirement extends Commentable {
-  scenario: string
+  scenario: ScenarioReference
   completion_threshold: number
   unlocks?: string
 }
@@ -158,10 +193,11 @@ export interface CampaignSettings extends Commentable {
   disasters?: boolean
   breakdowns?: boolean
   inflation?: boolean
+  seasons?: boolean
 }
 
 export interface Campaign extends BaseItem<'Campaign'> {
-  scenarios?: CampaignScenario[]
+  scenarios: CampaignScenario[]
   branches?: CampaignBranch
   progression?: CampaignProgression
   constraints?: Constraints
@@ -185,8 +221,9 @@ export interface GoalOverrides extends Commentable {
   constraints?: Partial<Constraints>
 }
 
+export type GoalReference = EntityReference<Goal>
 export interface ScenarioGoal extends Commentable {
-  include: string
+  include: GoalReference
   order?: number
   required?: boolean
   branch?: string
@@ -201,18 +238,25 @@ export interface ScenarioDefaults extends Commentable {
 }
 
 export interface Scenario extends BaseItem<'Scenario'> {
-  goals?: ScenarioGoal[]
+  goals: ScenarioGoal[]
   constraints?: Constraints
   defaults?: ScenarioDefaults
+  settings?: CampaignSettings
 }
 
 export interface PackageStructure extends Commentable {
-  goals: string
-  scenarios: string
-  campaigns: string
+  goalPath: string
+  scenarioPath: string
+  campaignPath: string
 }
 
-export interface PackageManifest extends BaseItem<'Manifest'> {
+export type CampaignReference = EntityReference<Campaign>
+
+export interface FileReference<T extends AnyEntity> {
+  filename: string
+  entity: EntityReference<T>
+}
+export interface Manifest extends BaseItem<'Manifest'> {
   tags: string[]
   structure: PackageStructure
   main_campaign?: string
@@ -223,20 +267,20 @@ export interface PackageManifest extends BaseItem<'Manifest'> {
     copy_to: string
     requires: string[]
   }
+  contents: {
+    goals: FileReference<Goal>[]
+    scenarios: FileReference<Scenario>[]
+    campaigns: FileReference<Campaign>[]
+  }
 }
-
-// Entity file for storage
-export interface EntityFile<T extends AnyEntity> {
-  path: string
-  storable: Storable<T>
-}
-
 export interface TypeMap {
-  Manifest: PackageManifest
+  Manifest: Manifest
   Campaign: Campaign
   Goal: Goal
   Scenario: Scenario
 }
 
+export type ModelTypes = keyof TypeMap
 export type AnyItem = BaseItem<string>
 export type ModelOptions<T extends AnyItem> = EntityOptions<T> & Pick<T, 'name'>
+export type ModelEntity = Entity<ModelTypes>
