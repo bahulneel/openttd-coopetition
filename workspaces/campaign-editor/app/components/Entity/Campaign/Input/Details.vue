@@ -12,31 +12,14 @@
         <MoleculeFormGroup>
           <FormField
             v-slot="{ componentField }"
-            name="id"
+            name="name"
           >
             <FormItem>
-              <FormLabel>Campaign ID *</FormLabel>
+              <FormLabel>Campaign Name *</FormLabel>
               <FormControl>
                 <Input
                   v-bind="componentField"
-                  placeholder="campaign_unique_id"
-                />
-              </FormControl>
-              <FormDescription>Unique identifier for this campaign</FormDescription>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-
-          <FormField
-            v-slot="{ componentField }"
-            name="meta.title"
-          >
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input
-                  v-bind="componentField"
-                  placeholder="Campaign Title"
+                  placeholder="Campaign Name"
                 />
               </FormControl>
               <FormDescription>Display name for the campaign</FormDescription>

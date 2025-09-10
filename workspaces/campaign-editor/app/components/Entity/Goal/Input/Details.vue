@@ -10,18 +10,18 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
           v-slot="{ componentField }"
-          name="id"
+          name="name"
         >
           <FormItem>
-            <FormLabel>Goal ID</FormLabel>
+            <FormLabel>Goal Name *</FormLabel>
             <FormControl>
               <Input
                 v-bind="componentField"
-                placeholder="e.g., coal_delivery_goal"
+                placeholder="e.g., Coal Delivery Challenge"
                 class="openttd-input"
               />
             </FormControl>
-            <FormDescription> Unique identifier for this goal </FormDescription>
+            <FormDescription>Display name for this goal</FormDescription>
             <FormMessage />
           </FormItem>
         </FormField>
@@ -49,23 +49,6 @@
           </FormItem>
         </FormField>
       </div>
-
-      <FormField
-        v-slot="{ componentField }"
-        name="name"
-      >
-        <FormItem>
-          <FormLabel>Name</FormLabel>
-          <FormControl>
-            <Input
-              v-bind="componentField"
-              placeholder="e.g., Coal Delivery Challenge"
-              class="openttd-input"
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
 
       <DomainMetaInfoInputDetails name="meta" />
     </div>
