@@ -1,14 +1,15 @@
 <template>
-  <TemplateLayoutList>
-    <EntityScenarioDisplayCard 
-      v-for="scenario in scenarios" 
-      :key="entityId(scenario)" 
-      :scenario="scenario"
-      @edit="$emit('edit', $event)"
-      @duplicate="$emit('duplicate', $event)"
-      @delete="$emit('delete', $event)"
-    />
-  </TemplateLayoutList>
+  <div class="space-y-4">
+    <TemplateLayoutList>
+      <EntityScenarioDisplayCard v-for="scenario in scenarios" :key="entityId(scenario)" :scenario="scenario"
+        @edit="$emit('edit', $event)" @duplicate="$emit('duplicate', $event)" @delete="$emit('delete', $event)" />
+    </TemplateLayoutList>
+
+    <!-- Action Slot -->
+    <div v-if="$slots.actions" class="flex justify-end">
+      <slot name="actions" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -3,8 +3,7 @@
     <FormItem>
       <FormLabel>{{ label }}</FormLabel>
       <FormControl>
-        <TagsInput v-bind="componentField" :placeholder="placeholder"
-          :class="cn('openttd-input', componentField.class)" />
+        <TagsInput v-bind="componentField" :placeholder="placeholder" class="openttd-input" />
       </FormControl>
       <FormDescription v-if="description">{{ description }}</FormDescription>
       <FormMessage />
@@ -13,8 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
-
 defineOptions({
   name: 'MoleculeFormInputTags'
 })

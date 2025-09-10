@@ -107,6 +107,10 @@ export function toEntityRef<T extends AnyEntity>(entity: T): EntityReference<T> 
   return entityRef<T>(entity.__id, entity.__type)
 }
 
+export function isEntityReference<T extends AnyEntity>(value: unknown | T): value is EntityReference<T> {
+  return typeof value === 'object' && value !== null && '__ref' in value
+}
+
 /**
  * Gets the ID from an EntityReference
  */
@@ -119,4 +123,21 @@ export function referenceId<T extends AnyEntity>(ref: EntityReference<T>): strin
  */
 export function referenceType<T extends AnyEntity>(ref: EntityReference<T>): EntityType<T> {
   return ref.__ref.type
+}
+
+export function idOf<A extends AnyEntity>(a: A | EntityReference<A>): string {
+  return isEntityReference(a) ? referenceId(a) : entityId(a)
+}
+export function typeOf<A extends AnyEntity>(a: A | EntityReference<A>): EntityType<A> {
+  return isEntityReference(a) ? referenceType(a) : entityType(a)
+}
+
+export function enttiyEq<A extends AnyEntity, B extends AnyEntity>(
+  a?: A | EntityReference<A>,
+  b?: B | EntityReference<B>,
+): boolean {
+  if (!a || !b) {
+    return false
+  }
+  return idOf(a) === idOf(b) && typeOf(a) === typeOf(b)
 }

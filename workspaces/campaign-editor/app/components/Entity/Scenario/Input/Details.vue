@@ -120,64 +120,69 @@
     <!-- Goals -->
     <Card class="openttd-titlebar">
       <CardHeader>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="text-lg">🎯</span>
-            <CardTitle class="text-lg font-semibold">Goals</CardTitle>
-          </div>
-          <Button type="button" variant="outline" class="openttd-button" @click="addGoal">
-            ➕ Add Goal
-          </Button>
+        <div class="flex items-center space-x-2">
+          <span class="text-lg">🎯</span>
+          <CardTitle class="text-lg font-semibold">Goals</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
-        <div v-if="formData.goals && formData.goals.length > 0" class="space-y-4">
-          <div v-for="(goal, index) in formData.goals" :key="index" class="p-4 border border-border rounded-lg">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="font-medium">Goal {{ index + 1 }}</h4>
-              <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
-                @click="removeGoal(index)">
-                🗑️ Remove
-              </Button>
+        <AggregateInput v-model="formData.goals" @add-item="addGoal">
+          <template #collection="{ items, remove }">
+            <div v-for="(goal, index) in items" :key="index" class="space-y-4">
+              <div class="p-4 border border-border rounded-lg">
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="font-medium">Goal {{ index + 1 }}</h4>
+                  <Button type="button" variant="ghost" size="sm"
+                    class="text-destructive hover:text-destructive-foreground" @click="remove(index)">
+                    🗑️ Remove
+                  </Button>
+                </div>
+
+                <MoleculeFormGroup>
+                  <FormField v-slot="{ componentField }" :name="`goals.${index}.name`">
+                    <FormItem>
+                      <FormLabel>Goal Name</FormLabel>
+                      <FormControl>
+                        <Input v-bind="componentField" placeholder="Goal Name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+
+                  <FormField v-slot="{ componentField }" :name="`goals.${index}.type`">
+                    <FormItem>
+                      <FormLabel>Type</FormLabel>
+                      <Select v-bind="componentField">
+                        <FormControl>
+                          <SelectTrigger class="openttd-button">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="player">Player Goal</SelectItem>
+                          <SelectItem value="company">Company Goal</SelectItem>
+                          <SelectItem value="scenario">Scenario Goal</SelectItem>
+                          <SelectItem value="campaign">Campaign Goal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </MoleculeFormGroup>
+              </div>
             </div>
+          </template>
 
-            <MoleculeFormGroup>
-              <FormField v-slot="{ componentField }" :name="`goals.${index}.name`">
-                <FormItem>
-                  <FormLabel>Goal Name</FormLabel>
-                  <FormControl>
-                    <Input v-bind="componentField" placeholder="Goal Name" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
+          <template #empty>
+            <p>No goals added yet. Click "Add Goal" to get started.</p>
+          </template>
 
-              <FormField v-slot="{ componentField }" :name="`goals.${index}.type`">
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select v-bind="componentField">
-                    <FormControl>
-                      <SelectTrigger class="openttd-button">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="player">Player Goal</SelectItem>
-                      <SelectItem value="company">Company Goal</SelectItem>
-                      <SelectItem value="scenario">Scenario Goal</SelectItem>
-                      <SelectItem value="campaign">Campaign Goal</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </MoleculeFormGroup>
-          </div>
-        </div>
-
-        <div v-else class="text-center py-8 text-muted-foreground">
-          <p>No goals added yet. Click "Add Goal" to get started.</p>
-        </div>
+          <template #new-item="{ add }">
+            <Button type="button" variant="outline" class="openttd-button" @click="add">
+              ➕ Add Goal
+            </Button>
+          </template>
+        </AggregateInput>
       </CardContent>
     </Card>
 
@@ -200,8 +205,14 @@ const formData = defineModel<ScenarioFormData>({ required: true })
 function addGoal() {
   const currentGoals = formData.value.goals || []
   const newGoal = {
-    name: '',
-    type: 'player'
+    include: {
+      __ref: {
+        id: '',
+        type: 'Goal' as const
+      }
+    },
+    order: currentGoals.length + 1,
+    required: true
   }
   formData.value = {
     ...formData.value,
