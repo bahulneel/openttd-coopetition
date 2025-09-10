@@ -12,7 +12,10 @@
       </div>
       <div>
         <span class="font-medium text-foreground">Required:</span>
-        <Badge :variant="campaignScenario.required ? 'default' : 'secondary'" class="ml-2">
+        <Badge
+          :variant="campaignScenario.required ? 'default' : 'secondary'"
+          class="ml-2"
+        >
           {{ campaignScenario.required ? 'Yes' : 'No' }}
         </Badge>
       </div>
@@ -23,13 +26,19 @@
     </div>
 
     <!-- Comment -->
-    <div v-if="campaignScenario.comment" class="text-sm">
+    <div
+      v-if="campaignScenario.comment"
+      class="text-sm"
+    >
       <span class="font-medium text-foreground">Comment:</span>
       <p class="text-muted-foreground mt-1">{{ campaignScenario.comment }}</p>
     </div>
 
     <!-- Condition -->
-    <div v-if="campaignScenario.condition" class="text-sm">
+    <div
+      v-if="campaignScenario.condition"
+      class="text-sm"
+    >
       <span class="font-medium text-foreground">Condition:</span>
       <div class="text-muted-foreground mt-1">
         <p>Type: {{ campaignScenario.condition.type }}</p>
@@ -40,7 +49,10 @@
     </div>
 
     <!-- Overrides -->
-    <div v-if="campaignScenario.overrides" class="text-sm">
+    <div
+      v-if="campaignScenario.overrides"
+      class="text-sm"
+    >
       <span class="font-medium text-foreground">Overrides:</span>
       <div class="text-muted-foreground mt-1">
         <div v-if="campaignScenario.overrides.shared">
@@ -57,8 +69,9 @@
           <ul class="ml-4 list-disc">
             <li v-if="campaignScenario.overrides.result.cash">Cash: {{ campaignScenario.overrides.result.cash }}</li>
             <li v-if="campaignScenario.overrides.result.score">Score: {{ campaignScenario.overrides.result.score }}</li>
-            <li v-if="campaignScenario.overrides.result.reputation">Reputation: {{
-              campaignScenario.overrides.result.reputation }}</li>
+            <li v-if="campaignScenario.overrides.result.reputation">
+              Reputation: {{ campaignScenario.overrides.result.reputation }}
+            </li>
           </ul>
         </div>
       </div>
@@ -70,7 +83,7 @@
 import type { CampaignScenario } from '~/types'
 
 defineOptions({
-  name: 'DomainCampaignScenarioDisplayDetails'
+  name: 'DomainCampaignScenarioDisplayDetails',
 })
 
 interface Props {

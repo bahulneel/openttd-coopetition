@@ -130,7 +130,7 @@ export class BackendFileSystemAdapter implements FileSystemAdapter {
 
   private parsePattern(pattern: string): Set<string> {
     const entityTypes = new Set<string>()
-    
+
     // Handle wildcard patterns
     if (pattern === '*' || pattern === '**/*') {
       entityTypes.add('campaigns')
@@ -139,7 +139,7 @@ export class BackendFileSystemAdapter implements FileSystemAdapter {
       entityTypes.add('manifest')
       return entityTypes
     }
-    
+
     // Parse specific patterns
     if (pattern.includes('campaigns') || pattern.includes('campaign')) {
       entityTypes.add('campaigns')
@@ -153,7 +153,7 @@ export class BackendFileSystemAdapter implements FileSystemAdapter {
     if (pattern.includes('manifest')) {
       entityTypes.add('manifest')
     }
-    
+
     // If no specific patterns matched, default to all
     if (entityTypes.size === 0) {
       entityTypes.add('campaigns')
@@ -161,7 +161,7 @@ export class BackendFileSystemAdapter implements FileSystemAdapter {
       entityTypes.add('scenarios')
       entityTypes.add('manifest')
     }
-    
+
     return entityTypes
   }
 

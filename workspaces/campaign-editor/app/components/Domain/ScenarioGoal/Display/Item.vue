@@ -2,14 +2,25 @@
   <div class="space-y-2">
     <!-- Join-specific details -->
     <div class="flex items-center space-x-2 text-sm">
-      <Badge v-if="scenarioGoal.required" variant="default" class="text-xs">
+      <Badge
+        v-if="scenarioGoal.required"
+        variant="default"
+        class="text-xs"
+      >
         Required
       </Badge>
-      <Badge v-else variant="secondary" class="text-xs">
+      <Badge
+        v-else
+        variant="secondary"
+        class="text-xs"
+      >
         Optional
       </Badge>
       <span class="text-muted-foreground">Order: {{ scenarioGoal.order || 0 }}</span>
-      <span v-if="scenarioGoal.branch" class="text-muted-foreground">
+      <span
+        v-if="scenarioGoal.branch"
+        class="text-muted-foreground"
+      >
         Branch: {{ scenarioGoal.branch }}
       </span>
     </div>
@@ -17,7 +28,10 @@
     <!-- Entity component -->
     <WithEntity :entity="scenarioGoal.include">
       <template #default="{ value: resolvedGoal }">
-        <EntityGoalDisplayItem :goal="resolvedGoal" @edit="handleGoalEdit" />
+        <EntityGoalDisplayItem
+          :goal="resolvedGoal"
+          @edit="handleGoalEdit"
+        />
       </template>
       <template #fallback>
         <div class="p-3 border border-dashed border-muted-foreground rounded-lg text-center text-muted-foreground">
@@ -27,7 +41,10 @@
     </WithEntity>
 
     <!-- Join-specific comment -->
-    <p v-if="scenarioGoal.comment" class="text-sm text-muted-foreground italic">
+    <p
+      v-if="scenarioGoal.comment"
+      class="text-sm text-muted-foreground italic"
+    >
       {{ scenarioGoal.comment }}
     </p>
   </div>
@@ -37,7 +54,7 @@
 import type { ScenarioGoal, Goal } from '~/types'
 
 defineOptions({
-  name: 'DomainScenarioGoalDisplayItem'
+  name: 'DomainScenarioGoalDisplayItem',
 })
 
 interface Props {
@@ -56,5 +73,4 @@ function handleGoalEdit(_goal: Goal) {
   // even though the edit was triggered from the entity component
   emit('edit', props.scenarioGoal)
 }
-
 </script>

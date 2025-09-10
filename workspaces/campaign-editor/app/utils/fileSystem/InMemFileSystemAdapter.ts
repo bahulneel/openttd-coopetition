@@ -30,12 +30,12 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
   async loadAll<T extends AnyEntity>(pattern: string): Promise<Storable<T>[]> {
     // Parse pattern to filter entities
     const entityTypes = this.parsePattern(pattern)
-    
+
     if (entityTypes.has('*')) {
       // Return all entities for wildcard pattern
       return Array.from(this.store.values()) as Storable<T>[]
     }
-    
+
     // Filter entities by type based on pattern
     const filteredEntities: Storable<T>[] = []
     for (const entity of this.store.values()) {
@@ -43,7 +43,7 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
         filteredEntities.push(entity as Storable<T>)
       }
     }
-    
+
     return filteredEntities
   }
 
@@ -168,13 +168,13 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
 
   private parsePattern(pattern: string): Set<string> {
     const entityTypes = new Set<string>()
-    
+
     // Handle wildcard patterns
     if (pattern === '*' || pattern === '**/*') {
       entityTypes.add('*')
       return entityTypes
     }
-    
+
     // Parse specific patterns
     if (pattern.includes('campaigns') || pattern.includes('campaign')) {
       entityTypes.add('Campaign')
@@ -188,12 +188,12 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
     if (pattern.includes('manifest')) {
       entityTypes.add('Manifest')
     }
-    
+
     // If no specific patterns matched, default to all
     if (entityTypes.size === 0) {
       entityTypes.add('*')
     }
-    
+
     return entityTypes
   }
 
@@ -201,7 +201,7 @@ export class InMemFileSystemAdapter implements FileSystemAdapter, FeatureZipImpo
     if (entityTypes.has('*')) {
       return true
     }
-    
+
     return entityTypes.has(entity.__type)
   }
 

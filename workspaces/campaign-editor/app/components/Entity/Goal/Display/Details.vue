@@ -7,7 +7,11 @@
         <p class="text-muted-foreground">ID: {{ entityId(goal) }}</p>
       </div>
       <div class="flex items-center space-x-2">
-        <Button variant="outline" class="openttd-button" @click="$emit('edit', goal)">
+        <Button
+          variant="outline"
+          class="openttd-button"
+          @click="$emit('edit', goal)"
+        >
           ✏️ Edit Goal
         </Button>
       </div>
@@ -25,10 +29,16 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <span class="font-medium text-foreground">Type:</span>
-            <EntityGoalDisplayBadge :goal="goal" class="ml-2" />
+            <EntityGoalDisplayBadge
+              :goal="goal"
+              class="ml-2"
+            />
           </div>
         </div>
-        <DomainMetaInfoDisplayCard :meta-info="goal.meta" as-partial />
+        <DomainMetaInfoDisplayCard
+          :meta-info="goal.meta"
+          as-partial
+        />
       </CardContent>
     </Card>
 
@@ -46,7 +56,10 @@
     </Card>
 
     <!-- Constraints -->
-    <Card v-if="goal.constraints" class="openttd-titlebar">
+    <Card
+      v-if="goal.constraints"
+      class="openttd-titlebar"
+    >
       <CardHeader>
         <CardTitle class="flex items-center space-x-2">
           <span>⚙️</span>
@@ -54,12 +67,18 @@
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <DomainConstraintsDisplayCard :constraints="goal.constraints" as-partial />
+        <DomainConstraintsDisplayCard
+          :constraints="goal.constraints"
+          as-partial
+        />
       </CardContent>
     </Card>
 
     <!-- Rewards -->
-    <Card v-if="goal.result" class="openttd-titlebar">
+    <Card
+      v-if="goal.result"
+      class="openttd-titlebar"
+    >
       <CardHeader>
         <CardTitle class="flex items-center space-x-2">
           <span>🏆</span>
@@ -90,7 +109,7 @@
 import type { Goal } from '~/types'
 
 defineOptions({
-  name: 'EntityGoalDisplayDetails'
+  name: 'EntityGoalDisplayDetails',
 })
 
 interface Props {
@@ -102,5 +121,4 @@ defineProps<Props>()
 defineEmits<{
   edit: [goal: Goal]
 }>()
-
 </script>

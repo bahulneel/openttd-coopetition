@@ -7,7 +7,11 @@
         <p class="text-muted-foreground">ID: {{ entityId(campaign) }}</p>
       </div>
       <div class="flex items-center space-x-2">
-        <Button variant="outline" class="openttd-button" @click="$emit('edit', campaign)">
+        <Button
+          variant="outline"
+          class="openttd-button"
+          @click="$emit('edit', campaign)"
+        >
           ✏️ Edit Campaign
         </Button>
       </div>
@@ -29,12 +33,18 @@
           </div>
         </div>
 
-        <DomainMetaInfoDisplayCard :meta-info="campaign.meta" as-partial />
+        <DomainMetaInfoDisplayCard
+          :meta-info="campaign.meta"
+          as-partial
+        />
       </CardContent>
     </Card>
 
     <!-- Scenarios -->
-    <Card v-if="campaign.scenarios && campaign.scenarios.length > 0" class="openttd-titlebar">
+    <Card
+      v-if="campaign.scenarios && campaign.scenarios.length > 0"
+      class="openttd-titlebar"
+    >
       <CardHeader>
         <CardTitle class="flex items-center space-x-2">
           <span>🗺️</span>
@@ -44,21 +54,29 @@
       <CardContent>
         <div class="space-y-3">
           <div
-v-for="(scenario, index) in campaign.scenarios" :key="index"
-            class="flex items-center justify-between p-3 border border-border rounded-lg">
+            v-for="(scenario, index) in campaign.scenarios"
+            :key="index"
+            class="flex items-center justify-between p-3 border border-border rounded-lg"
+          >
             <div class="flex-1">
               <div class="flex items-center space-x-3">
                 <span class="font-medium">{{ scenario.include }}</span>
-                <Badge v-if="scenario.required" variant="default" class="text-xs">
+                <Badge
+                  v-if="scenario.required"
+                  variant="default"
+                  class="text-xs"
+                >
                   Required
                 </Badge>
-                <Badge v-else variant="secondary" class="text-xs">
+                <Badge
+                  v-else
+                  variant="secondary"
+                  class="text-xs"
+                >
                   Optional
                 </Badge>
               </div>
-              <p class="text-sm text-muted-foreground mt-1">
-                Order: {{ scenario.order }}
-              </p>
+              <p class="text-sm text-muted-foreground mt-1">Order: {{ scenario.order }}</p>
             </div>
           </div>
         </div>
@@ -84,7 +102,7 @@ v-for="(scenario, index) in campaign.scenarios" :key="index"
 import type { Campaign } from '~/types'
 
 defineOptions({
-  name: 'EntityCampaignDisplayDetails'
+  name: 'EntityCampaignDisplayDetails',
 })
 
 interface Props {

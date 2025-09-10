@@ -1,14 +1,20 @@
 <template>
   <div class="flex items-center space-x-2">
-    <Badge v-if="scenarioGoal.required" variant="default" class="text-xs">
+    <Badge
+      v-if="scenarioGoal.required"
+      variant="default"
+      class="text-xs"
+    >
       Required
     </Badge>
-    <Badge v-else variant="secondary" class="text-xs">
+    <Badge
+      v-else
+      variant="secondary"
+      class="text-xs"
+    >
       Optional
     </Badge>
-    <span class="text-sm text-muted-foreground">
-      Order: {{ scenarioGoal.order || 0 }}
-    </span>
+    <span class="text-sm text-muted-foreground"> Order: {{ scenarioGoal.order || 0 }} </span>
   </div>
 </template>
 
@@ -16,7 +22,7 @@
 import type { ScenarioGoal } from '~/types'
 
 defineOptions({
-  name: 'DomainScenarioGoalDisplaySummary'
+  name: 'DomainScenarioGoalDisplaySummary',
 })
 
 interface Props {

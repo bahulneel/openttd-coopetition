@@ -2,12 +2,20 @@
   <div class="space-y-4">
     <TemplateLayoutList>
       <EntityScenarioDisplayCard
-v-for="scenario in scenarios" :key="entityId(scenario)" :scenario="scenario"
-        @edit="$emit('edit', $event)" @duplicate="$emit('duplicate', $event)" @delete="$emit('delete', $event)" />
+        v-for="scenario in scenarios"
+        :key="entityId(scenario)"
+        :scenario="scenario"
+        @edit="$emit('edit', $event)"
+        @duplicate="$emit('duplicate', $event)"
+        @delete="$emit('delete', $event)"
+      />
     </TemplateLayoutList>
 
     <!-- Action Slot -->
-    <div v-if="$slots.actions" class="flex justify-end">
+    <div
+      v-if="$slots.actions"
+      class="flex justify-end"
+    >
       <slot name="actions" />
     </div>
   </div>
@@ -17,7 +25,7 @@ v-for="scenario in scenarios" :key="entityId(scenario)" :scenario="scenario"
 import type { Scenario } from '~/types'
 
 defineOptions({
-  name: 'AggregateScenarios'
+  name: 'AggregateScenarios',
 })
 
 interface Props {

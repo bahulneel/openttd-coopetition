@@ -78,7 +78,7 @@ function saveScenario(values: ScenarioValue) {
     // Create scenario entity manually
     const scenario: Scenario = createScenario(values.name, values)
     store.assert(scenario)
-    
+
     toast.add({
       title: '✅ Scenario Created',
       description: `Scenario "${values.name}" has been created successfully`,

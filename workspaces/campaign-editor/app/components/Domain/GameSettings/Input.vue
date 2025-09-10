@@ -33,7 +33,7 @@
             name="disasters"
             type="checkbox"
             class="openttd-checkbox"
-          >
+          />
           <label
             for="disasters"
             class="text-sm"
@@ -48,7 +48,7 @@
             name="breakdowns"
             type="checkbox"
             class="openttd-checkbox"
-          >
+          />
           <label
             for="breakdowns"
             class="text-sm"
@@ -63,7 +63,7 @@
             name="inflation"
             type="checkbox"
             class="openttd-checkbox"
-          >
+          />
           <label
             for="inflation"
             class="text-sm"
@@ -78,7 +78,7 @@
             name="seasons"
             type="checkbox"
             class="openttd-checkbox"
-          >
+          />
           <label
             for="seasons"
             class="text-sm"

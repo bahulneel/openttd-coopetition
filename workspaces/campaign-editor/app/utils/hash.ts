@@ -7,5 +7,5 @@ export function hash<T>(value: T): string {
   if (typeof value === 'object' && value !== null) {
     return objectHash(value)
   }
-  return objectHash({[valueKey]: value})
+  return objectHash({ [valueKey]: value })
 }

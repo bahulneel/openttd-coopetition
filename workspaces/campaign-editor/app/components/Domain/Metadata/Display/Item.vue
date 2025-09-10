@@ -1,5 +1,8 @@
 <template>
-  <div v-if="metadata" class="text-xs text-muted-foreground">
+  <div
+    v-if="metadata"
+    class="text-xs text-muted-foreground"
+  >
     {{ formatDate(metadata?.modified) }}
   </div>
 </template>
@@ -9,7 +12,7 @@ import type { AnyEntity } from '~/types'
 import { storableMeta } from '~/utils/storable'
 
 defineOptions({
-  name: 'DomainMetadataDisplayItem'
+  name: 'DomainMetadataDisplayItem',
 })
 
 interface Props {
@@ -18,7 +21,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const metadata = computed(() => isStorable(props.entity) ? storableMeta(props.entity) : undefined)
+const metadata = computed(() => (isStorable(props.entity) ? storableMeta(props.entity) : undefined))
 
 function formatDate(timestamp: number | undefined) {
   if (!timestamp) return 'Unknown'

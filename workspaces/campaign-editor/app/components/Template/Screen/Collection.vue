@@ -12,7 +12,7 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <slot name="actions"/>
+        <slot name="actions" />
       </div>
     </div>
 
@@ -38,7 +38,7 @@
           <p class="text-muted-foreground mb-6">
             <slot name="empty-description">{{ _props.emptyDescription }}</slot>
           </p>
-          <slot name="empty-actions"/>
+          <slot name="empty-actions" />
         </div>
       </CardContent>
     </Card>

@@ -1,7 +1,14 @@
 <template>
-  <TemplateScreenArticle title="Create New Goal" subtitle="Define a new goal that can be used in scenarios">
+  <TemplateScreenArticle
+    title="Create New Goal"
+    subtitle="Define a new goal that can be used in scenarios"
+  >
     <template #actions>
-      <Button variant="outline" class="openttd-button" @click="navigateTo('/goals')">
+      <Button
+        variant="outline"
+        class="openttd-button"
+        @click="navigateTo('/goals')"
+      >
         ← Back to Goals
       </Button>
     </template>
@@ -10,10 +17,19 @@
       <EntityGoalInputDetails>
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">
-            <Button type="button" variant="outline" class="openttd-button" @click="navigateTo('/goals')">
+            <Button
+              type="button"
+              variant="outline"
+              class="openttd-button"
+              @click="navigateTo('/goals')"
+            >
               Cancel
             </Button>
-            <Button type="submit" :disabled="!meta.valid" class="openttd-button bg-openttd-green text-white">
+            <Button
+              type="submit"
+              :disabled="!meta.valid"
+              class="openttd-button bg-openttd-green text-white"
+            >
               Create Goal
             </Button>
           </div>
@@ -57,7 +73,7 @@ function saveGoal(values: GoalValue) {
     // Create goal entity manually
     const goal: Goal = createGoal(values.name, values)
     store.assert(goal)
-    
+
     toast.add({
       title: '✅ Goal Created',
       description: `Goal "${values.name}" has been created successfully`,

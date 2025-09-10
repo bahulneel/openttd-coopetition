@@ -10,8 +10,9 @@
           </div>
           <div>
             <span class="font-medium text-foreground">Goal Type:</span>
-            <span class="text-muted-foreground ml-2">{{ resolvedGoal?.type || referenceType(scenarioGoal.include)
-              }}</span>
+            <span class="text-muted-foreground ml-2">{{
+              resolvedGoal?.type || referenceType(scenarioGoal.include)
+            }}</span>
           </div>
           <div>
             <span class="font-medium text-foreground">Order:</span>
@@ -19,32 +20,47 @@
           </div>
           <div>
             <span class="font-medium text-foreground">Required:</span>
-            <Badge :variant="scenarioGoal.required ? 'default' : 'secondary'" class="ml-2">
+            <Badge
+              :variant="scenarioGoal.required ? 'default' : 'secondary'"
+              class="ml-2"
+            >
               {{ scenarioGoal.required ? 'Yes' : 'No' }}
             </Badge>
           </div>
         </div>
 
         <!-- Goal Details -->
-        <div v-if="resolvedGoal" class="text-sm">
+        <div
+          v-if="resolvedGoal"
+          class="text-sm"
+        >
           <span class="font-medium text-foreground">Goal Name:</span>
           <span class="text-muted-foreground ml-2">{{ resolvedGoal.name }}</span>
         </div>
 
         <!-- Branch Info -->
-        <div v-if="scenarioGoal.branch" class="text-sm">
+        <div
+          v-if="scenarioGoal.branch"
+          class="text-sm"
+        >
           <span class="font-medium text-foreground">Branch:</span>
           <span class="text-muted-foreground ml-2">{{ scenarioGoal.branch }}</span>
         </div>
 
         <!-- Comment -->
-        <div v-if="scenarioGoal.comment" class="text-sm">
+        <div
+          v-if="scenarioGoal.comment"
+          class="text-sm"
+        >
           <span class="font-medium text-foreground">Comment:</span>
           <p class="text-muted-foreground mt-1">{{ scenarioGoal.comment }}</p>
         </div>
 
         <!-- Condition -->
-        <div v-if="scenarioGoal.condition" class="text-sm">
+        <div
+          v-if="scenarioGoal.condition"
+          class="text-sm"
+        >
           <span class="font-medium text-foreground">Condition:</span>
           <div class="text-muted-foreground mt-1">
             <p>Type: {{ scenarioGoal.condition.type }}</p>
@@ -55,7 +71,10 @@
         </div>
 
         <!-- Overrides -->
-        <div v-if="scenarioGoal.overrides" class="text-sm">
+        <div
+          v-if="scenarioGoal.overrides"
+          class="text-sm"
+        >
           <span class="font-medium text-foreground">Overrides:</span>
           <div class="text-muted-foreground mt-1">
             <div v-if="scenarioGoal.overrides.shared">
@@ -72,8 +91,9 @@
               <ul class="ml-4 list-disc">
                 <li v-if="scenarioGoal.overrides.result.cash">Cash: {{ scenarioGoal.overrides.result.cash }}</li>
                 <li v-if="scenarioGoal.overrides.result.score">Score: {{ scenarioGoal.overrides.result.score }}</li>
-                <li v-if="scenarioGoal.overrides.result.reputation">Reputation: {{
-                  scenarioGoal.overrides.result.reputation }}</li>
+                <li v-if="scenarioGoal.overrides.result.reputation">
+                  Reputation: {{ scenarioGoal.overrides.result.reputation }}
+                </li>
               </ul>
             </div>
             <p v-if="scenarioGoal.overrides.comment">{{ scenarioGoal.overrides.comment }}</p>
@@ -93,7 +113,7 @@
 import type { ScenarioGoal } from '~/types'
 
 defineOptions({
-  name: 'DomainScenarioGoalDisplayDetails'
+  name: 'DomainScenarioGoalDisplayDetails',
 })
 
 interface Props {

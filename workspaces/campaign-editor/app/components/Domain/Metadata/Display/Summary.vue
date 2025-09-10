@@ -6,7 +6,11 @@
     </div>
 
     <div class="flex items-center space-x-1">
-      <span v-if="metadata?.modified" class="text-orange-500">✏️</span>
+      <span
+        v-if="metadata?.modified"
+        class="text-orange-500"
+        >✏️</span
+      >
       <span class="text-muted-foreground">→</span>
     </div>
   </div>
@@ -17,7 +21,7 @@ import type { Storable, AnyEntity } from '~/types'
 import { storableMeta } from '~/utils/storable'
 
 defineOptions({
-  name: 'DomainMetadataDisplaySummary'
+  name: 'DomainMetadataDisplaySummary',
 })
 
 interface Props {
