@@ -55,7 +55,7 @@
     "lodash.clonedeep": "^4.5.0",
     "lucide-vue-next": "^0.543.0",
     "nanoid": "^5.1.5",
-    "nuxt": "^4.1.1",
+    "nuxt-nightly": "latest",
     "object-hash": "^3.0.0",
     "pinia": "^3.0.3",
     "reka-ui": "^2.5.0",
