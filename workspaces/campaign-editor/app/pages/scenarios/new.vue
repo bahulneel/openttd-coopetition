@@ -19,11 +19,8 @@
     </div>
 
     <!-- Scenario Form -->
-    <Form
-      :validation-schema="scenarioSchema"
-      @submit="saveScenario"
-    >
-      <EntityScenarioInputDetails v-model="form">
+    <Form @submit="form.handleSubmit(saveScenario)">
+      <EntityScenarioInputDetails>
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">
             <Button
@@ -36,6 +33,7 @@
             </Button>
             <Button
               type="submit"
+              :disabled="!meta.valid"
               class="openttd-button bg-openttd-purple text-white"
             >
               Create Scenario
@@ -48,23 +46,52 @@
 </template>
 
 <script setup lang="ts">
-import type { Scenario } from '~/types'
+import { useForm } from 'vee-validate'
+import type { Scenario, ScenarioValue } from '~/types'
 import { createScenario, scenarioTemplate } from '~/utils/model/scenarios'
 import { scenarioSchema } from '~/utils/schemas'
 
 const store = useEntityStore()
 const toast = useToast()
 
-// Initialize form with empty scenario
-const form = ref<Scenario>(createScenario('New Scenario', scenarioTemplate.newItem))
+// Initialize form with validation
+const form = useForm({
+  validationSchema: scenarioSchema,
+  initialValues: {
+    name: '',
+    meta: {
+      description: '',
+      difficulty: 'medium' as const,
+      tags: [],
+    },
+    goals: [],
+    constraints: {},
+    defaults: {},
+    settings: {},
+  } as ScenarioValue,
+})
 
-function saveScenario() {
-  store.assert(form.value)
-  toast.add({
-    title: '✅ Scenario Created',
-    description: `Scenario "${form.value.name}" has been created successfully`,
-    color: 'green',
-  })
-  navigateTo('/scenarios')
+const { meta } = form
+
+function saveScenario(values: ScenarioValue) {
+  try {
+    // Create scenario entity manually
+    const scenario: Scenario = createScenario(values.name, values)
+    store.assert(scenario)
+    
+    toast.add({
+      title: '✅ Scenario Created',
+      description: `Scenario "${values.name}" has been created successfully`,
+      color: 'green',
+    })
+    navigateTo('/scenarios')
+  } catch (error) {
+    console.error('Failed to save scenario:', error)
+    toast.add({
+      title: '❌ Error',
+      description: 'Failed to save scenario',
+      color: 'red',
+    })
+  }
 }
 </script>
