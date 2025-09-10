@@ -5,9 +5,9 @@
   "version": "0.0.0",
   "description": "OpenTTD Coopetition GameScript with development tools",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
-  "packageManager": "npm@10.0.0",
+  "packageManager": "npm@11.6.0",
   "workspaces": [
     "@types/*",
     "workspaces/*",
@@ -20,7 +20,7 @@
     "lint:fix": "turbo run lint:fix",
     "typecheck": "turbo run typecheck",
     "compile": "node workspaces/compile-authoring/compile-authoring.mjs",
-    "clean": "turbo run clean && rm -rf .turbo",
+    "clean": "turbo run clean; rm -rf .turbo; rm -rf package-lock.json node_modules */*/.output */*/.nuxt */*/.turbo */*/node_modules",
     "validate:yaml": "find campaigns -name '*.yaml' -exec echo 'Validating {}' \\; -exec npx yaml-lint {} \\;",
     "validate:docs": "find docs -name '*.md' -exec echo 'Checking {}' \\;",
     "validate:all": "npm run validate:yaml && npm run validate:docs",
@@ -41,14 +41,14 @@
     "github:pages": "cd workspaces/campaign-editor && NUXT_SPA_MODE=true NUXT_BASE_URL=/openttd-coopetition/ npx nuxt generate"
   },
   "dependencies": {
-    "cheerio": "^1.1.2",
-    "globby": "^14.0.1",
-    "yaml": "^2.5.1"
+    "cheerio": "*",
+    "globby": "*",
+    "yaml": "*"
   },
   "devDependencies": {
-    "eslint": "^9.34.0",
-    "markdown-link-check": "^3.13.7",
-    "turbo": "^2.3.0",
-    "yaml-lint": "^1.7.0"
+    "eslint": "*",
+    "markdown-link-check": "*",
+    "turbo": "*",
+    "yaml-lint": "*"
   }
 }

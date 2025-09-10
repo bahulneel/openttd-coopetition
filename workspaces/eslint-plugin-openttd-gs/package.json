@@ -30,7 +30,7 @@
     "eslint": ">=8.0.0"
   },
   "devDependencies": {
-    "eslint": "^9.34.0"
+    "eslint": "^9.35.0"
   },
   "files": [
     "index.mjs",

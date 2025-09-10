@@ -29,11 +29,11 @@
   },
   "homepage": "https://github.com/bahulneel/openttd-coopetition#readme",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
-    "globby": "^14.0.1"
+    "cheerio": "^1.1.2",
+    "globby": "^14.1.0"
   },
   "devDependencies": {
-    "eslint": "^9.34.0"
+    "eslint": "^9.35.0"
   },
   "files": [
     "verify-gs-api.mjs",
