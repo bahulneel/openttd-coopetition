@@ -1,400 +1,177 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-foreground">
-          {{ showNewForm ? 'New Campaign' : 'Campaigns' }}
-        </h1>
-        <p class="text-muted-foreground">
-          {{ showNewForm ? 'Create a new campaign' : 'Manage and edit your OpenTTD Coopetition campaigns' }}
-        </p>
-      </div>
-
-      <div class="flex items-center space-x-2">
-        <Button v-if="!showNewForm" class="openttd-button bg-openttd-green text-white" @click="newCampaign">
+  <div v-if="!showNewForm">
+    <TemplateScreenCollection
+      title="Campaigns"
+      subtitle="Manage and edit your OpenTTD Coopetition campaigns"
+      :has-content="filteredCampaigns.length > 0"
+      empty-title="No campaigns yet"
+      empty-description="Create your first campaign to get started"
+    >
+      <template #actions>
+        <Button
+          class="openttd-button bg-openttd-green text-white"
+          @click="newCampaign"
+        >
           ➕ New Campaign
         </Button>
 
-        <Button v-if="!showNewForm" variant="outline" class="openttd-button" @click="refreshCampaigns">
+        <Button
+          variant="outline"
+          class="openttd-button"
+          @click="refreshCampaigns"
+        >
           ↻ Refresh
         </Button>
+      </template>
 
-        <template v-if="showNewForm">
-          <Button
-:disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
-            @click="saveCampaign">
-            {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
-          </Button>
+      <template #empty-actions>
+        <Button
+          class="openttd-button bg-openttd-green text-white"
+          @click="newCampaign"
+        >
+          ➕ Create Campaign
+        </Button>
+      </template>
 
-          <Button variant="outline" class="openttd-button" @click="closeNewForm">
-            ← Back to List
-          </Button>
-        </template>
-      </div>
-    </div>
+      <!-- Search and Filters -->
+      <Card class="openttd-titlebar">
+        <CardContent class="pt-6">
+          <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+              <Input
+                v-model="searchQuery"
+                placeholder="🔍 Search campaigns..."
+                class="w-full"
+              />
+            </div>
 
-    <!-- Search and Filters -->
-    <Card v-if="!showNewForm" class="openttd-titlebar">
-      <CardContent class="pt-6">
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div class="flex-1">
-            <Input v-model="searchQuery" placeholder="🔍 Search campaigns..." class="w-full" />
-          </div>
+            <div class="flex items-center space-x-2">
+              <Select v-model="difficultyFilter">
+                <SelectTrigger class="w-48 openttd-button">
+                  <SelectValue placeholder="All Difficulties" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Difficulties</SelectItem>
+                  <SelectItem value="easy">🟢 Easy</SelectItem>
+                  <SelectItem value="medium">🟡 Medium</SelectItem>
+                  <SelectItem value="hard">🟠 Hard</SelectItem>
+                  <SelectItem value="expert">🔴 Expert</SelectItem>
+                  <SelectItem value="legendary">🟣 Legendary</SelectItem>
+                </SelectContent>
+              </Select>
 
-          <div class="flex items-center space-x-2">
-            <Select v-model="difficultyFilter">
-              <SelectTrigger class="w-48 openttd-button">
-                <SelectValue placeholder="All Difficulties" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Difficulties</SelectItem>
-                <SelectItem value="easy">🟢 Easy</SelectItem>
-                <SelectItem value="medium">🟡 Medium</SelectItem>
-                <SelectItem value="hard">🟠 Hard</SelectItem>
-                <SelectItem value="expert">🔴 Expert</SelectItem>
-                <SelectItem value="legendary">🟣 Legendary</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select v-model="sortBy">
-              <SelectTrigger class="w-48 openttd-button">
-                <SelectValue placeholder="Sort by..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="lastModified">🕒 Last Modified</SelectItem>
-                <SelectItem value="title">📝 Title</SelectItem>
-                <SelectItem value="id">🏷️ ID</SelectItem>
-                <SelectItem value="difficulty">⚡ Difficulty</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-
-    <!-- Campaign List -->
-    <div v-if="!showNewForm">
-      <!-- Empty State -->
-      <Card v-if="filteredCampaigns.length === 0" class="openttd-titlebar">
-        <CardContent class="pt-12 pb-12">
-          <div class="text-center">
-            <div class="text-6xl mb-4">📁</div>
-            <CardTitle class="text-lg font-semibold text-foreground mb-2">
-              {{ searchQuery ? 'No campaigns found' : 'No campaigns yet' }}
-            </CardTitle>
-            <p class="text-muted-foreground mb-6">
-              {{ searchQuery ? 'Try adjusting your search or filters' : 'Create your first campaign to get started' }}
-            </p>
-            <Button v-if="!searchQuery" class="openttd-button bg-openttd-green text-white" @click="newCampaign">
-              ➕ Create Campaign
-            </Button>
+              <Select v-model="sortBy">
+                <SelectTrigger class="w-48 openttd-button">
+                  <SelectValue placeholder="Sort by..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="lastModified">🕒 Last Modified</SelectItem>
+                  <SelectItem value="title">📝 Title</SelectItem>
+                  <SelectItem value="id">🏷️ ID</SelectItem>
+                  <SelectItem value="difficulty">⚡ Difficulty</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       <!-- Campaigns Grid -->
-      <div v-if="filteredCampaigns.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card
-v-for="campaign in filteredCampaigns" :key="entityId(campaign)"
-          class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
-          @click="editCampaign(entityId(campaign))">
-          <CardContent class="space-y-4 p-6">
-            <!-- Header -->
-            <div class="flex items-start justify-between">
-              <div class="flex-1 min-w-0">
-                <CardTitle class="font-semibold text-foreground truncate text-base">
-                  {{ campaign.name }}
-                </CardTitle>
-                <p class="text-sm text-muted-foreground">
-                  ID: {{ entityId(campaign) }}
-                </p>
-              </div>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child @click.stop>
-                  <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
-                    ⋮
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem @click="editCampaign(entityId(campaign))">
-                    ✏️ Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem @click="handleDuplicate(entityId(campaign))">
-                    📄 Duplicate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-class="text-destructive focus:text-destructive"
-                    @click="handleDelete(entityId(campaign))">
-                    🗑️ Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            <!-- Description -->
-            <p v-if="campaign.meta?.description" class="text-sm text-muted-foreground line-clamp-2">
-              {{ campaign.meta.description }}
-            </p>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span class="text-muted-foreground">Scenarios:</span>
-                <span class="font-medium ml-1">{{ campaign.scenarios?.length || 0 }}</span>
-              </div>
-              <div>
-                <span class="text-muted-foreground">Difficulty:</span>
-                <Badge :class="getDifficultyClasses(campaign.meta?.difficulty)" class="ml-1 text-xs">
-                  {{ campaign.meta?.difficulty || 'Unknown' }}
-                </Badge>
-              </div>
-            </div>
-
-            <!-- Tags -->
-            <div v-if="campaign.meta?.tags && campaign.meta.tags.length > 0" class="flex flex-wrap gap-1">
-              <Badge v-for="tag in campaign.meta.tags.slice(0, 3)" :key="tag" variant="secondary" class="text-xs">
-                {{ tag }}
-              </Badge>
-              <Badge v-if="campaign.meta.tags.length > 3" variant="secondary" class="text-xs text-muted-foreground">
-                +{{ campaign.meta.tags.length - 3 }}
-              </Badge>
-            </div>
-
-            <!-- Footer -->
-            <div class="flex items-center justify-between pt-2 border-t border-border">
-              <div class="text-xs text-muted-foreground">
-                {{ campaign.__meta?.modified ? 'Modified' : 'Saved' }}
-                {{ formatDate(campaign.__meta?.modified) }}
-              </div>
-
-              <div class="flex items-center space-x-1">
-                <span v-if="campaign.__meta?.modified" class="text-orange-500">✏️</span>
-                <span class="text-muted-foreground">→</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <AggregateCampaigns
+        v-if="filteredCampaigns.length > 0"
+        :campaigns="filteredCampaigns"
+        @edit="editCampaignHandler"
+        @duplicate="handleDuplicate"
+        @delete="handleDelete"
+      />
 
       <!-- Pagination -->
-      <div v-if="totalPages > 1" class="flex justify-center">
+      <div
+        v-if="totalPages > 1"
+        class="flex justify-center"
+      >
         <div class="flex items-center space-x-2">
           <Button
-variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
-            @click="currentPage--">
+            variant="outline"
+            size="sm"
+            :disabled="currentPage === 1"
+            class="openttd-button"
+            @click="currentPage--"
+          >
             ← Previous
           </Button>
 
           <div class="flex items-center space-x-1">
-            <span class="text-sm text-muted-foreground">
-              Page {{ currentPage }} of {{ totalPages }}
-            </span>
+            <span class="text-sm text-muted-foreground"> Page {{ currentPage }} of {{ totalPages }} </span>
           </div>
 
           <Button
-variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
-            @click="currentPage++">
+            variant="outline"
+            size="sm"
+            :disabled="currentPage === totalPages"
+            class="openttd-button"
+            @click="currentPage++"
+          >
             Next →
           </Button>
         </div>
       </div>
-    </div>
-
-    <!-- New Campaign Form -->
-    <div v-else-if="showNewForm" class="space-y-6">
-      <form class="space-y-6" @submit.prevent="saveCampaign">
-        <!-- Basic Information -->
-        <Card class="openttd-titlebar">
-          <CardHeader>
-            <div class="flex items-center space-x-2">
-              <span class="text-lg">ℹ️</span>
-              <CardTitle class="text-lg font-semibold">Basic Information</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField v-slot="{ componentField }" name="id">
-                <FormItem>
-                  <FormLabel>Campaign ID *</FormLabel>
-                  <FormControl>
-                    <Input v-bind="componentField" placeholder="campaign_unique_id" />
-                  </FormControl>
-                  <FormDescription>Unique identifier for this campaign</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
-              <FormField v-slot="{ componentField }" name="meta.title">
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input v-bind="componentField" placeholder="Campaign Title" />
-                  </FormControl>
-                  <FormDescription>Display name for the campaign</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
-              <FormField v-slot="{ componentField }" name="meta.difficulty">
-                <FormItem>
-                  <FormLabel>Difficulty</FormLabel>
-                  <Select v-bind="componentField">
-                    <FormControl>
-                      <SelectTrigger class="openttd-button">
-                        <SelectValue placeholder="Select difficulty" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="easy">🟢 Easy</SelectItem>
-                      <SelectItem value="medium">🟡 Medium</SelectItem>
-                      <SelectItem value="hard">🟠 Hard</SelectItem>
-                      <SelectItem value="expert">🔴 Expert</SelectItem>
-                      <SelectItem value="legendary">🟣 Legendary</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>Difficulty level for this campaign</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
-              <FormField v-slot="{ componentField }" name="meta.estimated_time">
-                <FormItem>
-                  <FormLabel>Estimated Time</FormLabel>
-                  <FormControl>
-                    <Input v-bind="componentField" placeholder="e.g., 2-3 hours" />
-                  </FormControl>
-                  <FormDescription>Expected time to complete</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </div>
-
-            <div class="mt-6">
-              <FormField v-slot="{ componentField }" name="meta.description">
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea v-bind="componentField" placeholder="Describe your campaign..." class="min-h-24" />
-                  </FormControl>
-                  <FormDescription>Detailed description of the campaign</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </div>
-          </CardContent>
-        </Card>
-
-        <!-- Tags -->
-        <Card class="openttd-titlebar">
-          <CardHeader>
-            <div class="flex items-center space-x-2">
-              <span class="text-lg">🏷️</span>
-              <CardTitle class="text-lg font-semibold">Tags</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-4">
-              <div v-if="formData.meta?.tags && formData.meta.tags.length > 0" class="flex flex-wrap gap-2">
-                <Badge v-for="(tag, index) in formData.meta.tags" :key="index" variant="secondary" class="text-sm">
-                  {{ tag }}
-                  <Button
-variant="ghost" size="sm"
-                    class="ml-2 h-4 w-4 p-0 text-muted-foreground hover:text-destructive" @click="removeTag(index)">
-                    ✕
-                  </Button>
-                </Badge>
-              </div>
-
-              <div class="flex space-x-2">
-                <Input v-model="newTag" placeholder="Add tag..." class="flex-1" @keyup.enter="addTag" />
-                <Button
-type="button" variant="outline" :disabled="!newTag.trim()" class="openttd-button"
-                  @click="addTag">
-                  ➕ Add
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <!-- Scenarios -->
-        <Card class="openttd-titlebar">
-          <CardHeader>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <span class="text-lg">🗺️</span>
-                <CardTitle class="text-lg font-semibold">Scenarios</CardTitle>
-              </div>
-              <Button type="button" variant="outline" class="openttd-button" @click="addScenario">
-                ➕ Add Scenario
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div v-if="formData.scenarios && formData.scenarios.length > 0" class="space-y-4">
-              <div
-v-for="(scenario, index) in formData.scenarios" :key="index"
-                class="p-4 border border-border rounded-lg">
-                <div class="flex items-center justify-between mb-4">
-                  <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
-                  <Button
-type="button" variant="ghost" size="sm"
-                    class="text-destructive hover:text-destructive-foreground" @click="removeScenario(index)">
-                    🗑️ Remove
-                  </Button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField v-slot="{ componentField }" :name="`scenarios.${index}.include`">
-                    <FormItem>
-                      <FormLabel>Include</FormLabel>
-                      <FormControl>
-                        <Input v-bind="componentField" placeholder="scenario_file.nut" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-
-                  <FormField v-slot="{ componentField }" :name="`scenarios.${index}.order`">
-                    <FormItem>
-                      <FormLabel>Order</FormLabel>
-                      <FormControl>
-                        <Input
-v-bind="componentField" type="number" :value="scenario.order"
-                          @input="updateScenarioOrder(index, $event)" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-
-                  <FormField v-slot="{ componentField }" :name="`scenarios.${index}.required`">
-                    <FormItem class="flex items-center space-x-2">
-                      <FormControl>
-                        <Toggle v-bind="componentField" :pressed="scenario.required" />
-                      </FormControl>
-                      <FormLabel class="text-sm">Required</FormLabel>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-                </div>
-              </div>
-            </div>
-
-            <div v-else class="text-center py-8 text-muted-foreground">
-              <p>No scenarios added yet. Click "Add Scenario" to get started.</p>
-            </div>
-          </CardContent>
-        </Card>
-      </form>
-    </div>
+    </TemplateScreenCollection>
   </div>
+
+  <TemplateScreenArticle
+    v-else
+    title="New Campaign"
+    subtitle="Create a new campaign"
+  >
+    <template #actions>
+      <Button
+        :disabled="!meta.valid || saving"
+        class="openttd-button bg-openttd-green text-white"
+        @click="saveCampaign"
+      >
+        {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
+      </Button>
+
+      <Button
+        variant="outline"
+        class="openttd-button"
+        @click="closeNewForm"
+      >
+        ← Back to List
+      </Button>
+    </template>
+
+    <Form @submit="form.handleSubmit(saveCampaign)">
+      <EntityCampaignInputDetails>
+        <template #actions>
+          <div class="flex justify-end space-x-4 pt-6 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              class="openttd-button"
+              @click="closeNewForm"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              :disabled="!meta.valid || saving"
+              class="openttd-button bg-openttd-green text-white"
+            >
+              {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
+            </Button>
+          </div>
+        </template>
+      </EntityCampaignInputDetails>
+    </Form>
+  </TemplateScreenArticle>
 </template>
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
-import type { Campaign, CampaignScenario } from '~/types'
+import type { Campaign, CampaignValue } from '~/types'
+import { storableMeta } from '~/utils/storable'
 
 const entityStore = useEntityStore()
 const route = useRoute()
@@ -410,13 +187,12 @@ const pageSize = 12
 // View state
 const showNewForm = ref(false)
 const saving = ref(false)
-const newTag = ref('')
+// const newTag = ref('') // TODO: Implement tag functionality
 
 // Form setup
 const form = useForm({
   validationSchema: campaignSchema,
   initialValues: {
-    id: '',
     name: '',
     meta: {
       description: '',
@@ -424,10 +200,10 @@ const form = useForm({
       tags: [],
     },
     scenarios: [],
-  }
+  },
 })
 
-const { values: formData, meta } = form
+const { meta } = form
 
 // Hash-based routing
 const handleHashChange = () => {
@@ -455,18 +231,18 @@ const _difficultyOptions = [
   { value: 'medium', label: 'Medium' },
   { value: 'hard', label: 'Hard' },
   { value: 'expert', label: 'Expert' },
-  { value: 'legendary', label: 'Legendary' }
+  { value: 'legendary', label: 'Legendary' },
 ]
 
 const _sortOptions = [
   { value: 'lastModified', label: 'Last Modified' },
   { value: 'title', label: 'Title' },
   { value: 'id', label: 'ID' },
-  { value: 'difficulty', label: 'Difficulty' }
+  { value: 'difficulty', label: 'Difficulty' },
 ]
 
 // Computed
-const campaigns = computed(() => entityStore.select<Campaign>('Campaign').value)
+const campaigns = computed(() => entityStore.select('Campaign').value)
 
 const filteredCampaigns = computed(() => {
   let filtered = campaigns.value
@@ -474,11 +250,12 @@ const filteredCampaigns = computed(() => {
   // Search filter
   if (searchQuery.value) {
     const lowerQuery = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(campaign =>
-      entityId(campaign).toLowerCase().includes(lowerQuery) ||
-      campaign.name.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery))
+    filtered = filtered.filter(
+      (campaign) =>
+        entityId(campaign).toLowerCase().includes(lowerQuery) ||
+        campaign.name.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery)),
     )
   }
 
@@ -502,7 +279,7 @@ const filteredCampaigns = computed(() => {
       }
       case 'lastModified':
       default:
-        return (b.__meta?.modified || 0) - (a.__meta?.modified || 0)
+        return (storableMeta(b).modified || 0) - (storableMeta(a).modified || 0)
     }
   })
 
@@ -516,11 +293,12 @@ const totalPages = computed(() => {
 
   if (searchQuery.value) {
     const lowerQuery = searchQuery.value.toLowerCase()
-    totalCount = campaigns.value.filter(campaign =>
-      entityId(campaign).toLowerCase().includes(lowerQuery) ||
-      campaign.name?.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery))
+    totalCount = campaigns.value.filter(
+      (campaign) =>
+        entityId(campaign).toLowerCase().includes(lowerQuery) ||
+        campaign.name?.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery)),
     ).length
   }
 
@@ -532,54 +310,10 @@ const totalPages = computed(() => {
 })
 
 // Methods
-function _getDifficultyColor(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy': return 'green'
-    case 'medium': return 'yellow'
-    case 'hard': return 'orange'
-    case 'expert': return 'red'
-    case 'legendary': return 'purple'
-    default: return 'gray'
-  }
-}
-
-function formatDate(timestamp: number | undefined) {
-  if (!timestamp) return 'Unknown'
-
-  const date = new Date(timestamp)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  if (days < 7) return `${days} days ago`
-
-  return date.toLocaleDateString()
-}
-
-// Helper function for difficulty classes
-function getDifficultyClasses(difficulty: string | undefined) {
-  switch (difficulty?.toLowerCase()) {
-    case 'easy':
-      return 'bg-openttd-green/20 border-openttd-green/40 text-openttd-green'
-    case 'medium':
-      return 'bg-openttd-cream/40 border-openttd-brown/40 text-openttd-brown'
-    case 'hard':
-      return 'bg-openttd-blue/20 border-openttd-blue/40 text-openttd-blue'
-    case 'expert':
-      return 'bg-destructive/20 border-destructive/40 text-destructive'
-    case 'legendary':
-      return 'bg-openttd-purple/20 border-openttd-purple/40 text-openttd-purple'
-    default:
-      return 'bg-openttd-grey/20 border-openttd-grey/40 text-openttd-grey'
-  }
-}
 
 // Form methods
 function initializeNewCampaign() {
   form.setValues({
-    id: '',
     name: '',
     meta: {
       author: '',
@@ -591,7 +325,7 @@ function initializeNewCampaign() {
   })
 }
 
-const saveCampaign = form.handleSubmit(async (values) => {
+function saveCampaign(values: CampaignValue) {
   saving.value = true
 
   try {
@@ -603,78 +337,25 @@ const saveCampaign = form.handleSubmit(async (values) => {
     toast.add({
       title: '✨ Campaign Created',
       description: `Campaign "${values.name}" has been created.`,
-      color: 'green'
+      color: 'green',
     })
 
     // Return to list view
     closeNewForm()
-  } catch (err) {
-    console.error('Failed to save campaign:', err)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
       description: 'Failed to save campaign',
-      color: 'red'
+      color: 'red',
     })
   } finally {
     saving.value = false
   }
-})
+}
 
 function closeNewForm() {
   router.push('/campaigns')
-}
-
-function addTag() {
-  const tag = newTag.value.trim()
-  if (tag && !formData.meta?.tags?.includes(tag)) {
-    const currentTags = formData.meta?.tags || []
-    form.setFieldValue('meta.tags', [...currentTags, tag])
-    newTag.value = ''
-  }
-}
-
-function removeTag(index: number) {
-  const currentTags = formData.meta?.tags || []
-  const newTags = currentTags.filter((_: string, i: number) => i !== index)
-  form.setFieldValue('meta.tags', newTags)
-}
-
-function addScenario() {
-  const currentScenarios = formData.scenarios || []
-  const newScenario = {
-    include: '',
-    order: currentScenarios.length + 1,
-    required: true
-  }
-  form.setFieldValue('scenarios', [...currentScenarios, newScenario])
-}
-
-function removeScenario(index: number) {
-  const currentScenarios = formData.scenarios || []
-  const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
-  // Reorder remaining scenarios
-  newScenarios.forEach((scenario: CampaignScenario, idx: number) => {
-    scenario.order = idx + 1
-  })
-  form.setFieldValue('scenarios', newScenarios)
-}
-
-function updateScenarioOrder(index: number, event: Event) {
-  const target = event.target as HTMLInputElement
-  const newOrder = parseInt(target.value) || 1
-  const currentScenarios = formData.scenarios || []
-  const updatedScenarios = [...currentScenarios]
-  const currentScenario = updatedScenarios[index]
-  if (currentScenario) {
-    updatedScenarios[index] = {
-      ...currentScenario,
-      order: newOrder,
-      include: currentScenario.include || '',
-      required: currentScenario.required ?? true
-    }
-  }
-  form.setFieldValue('scenarios', updatedScenarios)
 }
 
 // Navigation and actions
@@ -686,13 +367,18 @@ function editCampaign(id: string) {
   router.push(`/campaigns/${id}`)
 }
 
+function editCampaignHandler(campaign: Campaign) {
+  editCampaign(entityId(campaign))
+}
+
 async function refreshCampaigns() {
   // No need to refresh as entity store is reactive
   // This could be used to trigger a reload from file system if needed
 }
 
-async function handleDuplicate(id: string) {
+async function handleDuplicate(campaign: Campaign) {
   try {
+    const id = entityId(campaign)
     const original = entityStore.get(id, 'Campaign')
     if (!original) {
       throw new Error('Campaign not found')
@@ -709,27 +395,23 @@ async function handleDuplicate(id: string) {
     toast.add({
       title: '📄 Campaign Duplicated',
       description: `Campaign "${duplicate.name}" has been created.`,
-      color: 'green'
+      color: 'green',
     })
-  } catch (error) {
-    console.error('Failed to duplicate campaign:', error)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate campaign',
-      color: 'red'
+      color: 'red',
     })
   }
 }
 
-async function handleDelete(id: string) {
-  const campaign = entityStore.get(id, 'Campaign')
-  if (!campaign) return
+async function handleDelete(campaign: Campaign) {
+  const id = entityId(campaign)
 
   // Show confirmation dialog
-  const confirmed = confirm(
-    `Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`
-  )
+  const confirmed = confirm(`Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`)
 
   if (!confirmed) return
 
@@ -739,15 +421,14 @@ async function handleDelete(id: string) {
     toast.add({
       title: '🗑️ Campaign Deleted',
       description: `Campaign "${campaign.name}" has been deleted.`,
-      color: 'green'
+      color: 'green',
     })
-  } catch (error) {
-    console.error('Failed to delete campaign:', error)
+  } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
       description: 'Failed to delete campaign',
-      color: 'red'
+      color: 'red',
     })
   }
 }

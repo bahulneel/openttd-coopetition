@@ -1,44 +1,8 @@
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import type { EntityValue } from '~/types'
-import type {
-  MetaInfo,
-  Range,
-  Constraints,
-  ConditionalConstraint,
-  SharedInfrastructure,
-  RewardSet,
-  Objective,
-  Rewards,
-  Condition,
-  CampaignScenarioOverrides,
-  CampaignScenario,
-  CampaignBranch,
-  CampaignProgressionRequirement,
-  CampaignProgression,
-  CampaignMilestone,
-  ScalingFactor,
-  DifficultyScalingAdaptation,
-  DifficultyScaling,
-  CampaignSettings,
-  Campaign,
-  Goal,
-  GoalOverrides,
-  ScenarioGoal,
-  ScenarioDefaults,
-  Scenario,
-  PackageStructure,
-  PackageManifest,
-  AnyItem,
-} from '~/types/model'
+import type * as Types from '~/types'
 
-// Form data utility type and aliases
-type FormData<T extends AnyItem> = EntityValue<T> & { id: string }
-
-export type GoalFormData = FormData<Goal>
-export type ScenarioFormData = FormData<Scenario>
-export type CampaignFormData = FormData<Campaign>
-export type CampaignManifestFormData = FormData<PackageManifest>
+// Form data utility type and aliases - just use EntityValue directly
 
 // Common field schemas - reusable patterns
 const optionalString = z.string().optional()
@@ -48,6 +12,27 @@ const optionalStringArray = z.array(z.string()).optional()
 
 // Semantic field names
 const commentField = optionalString
+
+const scenarioRefSchema = z.object({
+  __ref: z.object({
+    id: z.string(),
+    type: z.literal('Scenario'),
+  }),
+})
+
+const goalRefSchema = z.object({
+  __ref: z.object({
+    id: z.string(),
+    type: z.literal('Goal'),
+  }),
+})
+
+const campaignRefSchema = z.object({
+  __ref: z.object({
+    id: z.string(),
+    type: z.literal('Campaign'),
+  }),
+})
 
 // Common object patterns - removed unused helper functions
 
@@ -59,6 +44,9 @@ const sharedInfrastructureShape = {
   depots: optionalBoolean,
   comment: commentField,
 } as const
+
+// Common validation ranges
+const nonNegativeNumber = z.number().min(0, 'Value must be non-negative')
 
 const rewardSetShape = {
   cash: nonNegativeNumber.optional(),
@@ -83,7 +71,7 @@ const constraintsShape = () =>
         },
         {
           message: 'Player count must be between 1 and 8',
-        }
+        },
       )
       .optional(),
     date: rangeSchema
@@ -99,7 +87,7 @@ const constraintsShape = () =>
         },
         {
           message: 'Date must be between 1920 and 2100',
-        }
+        },
       )
       .optional(),
     map_size: rangeSchema
@@ -115,7 +103,7 @@ const constraintsShape = () =>
         },
         {
           message: 'Map size must be between 64 and 2048',
-        }
+        },
       )
       .optional(),
     difficulty: rangeSchema.optional(),
@@ -126,12 +114,10 @@ const constraintsShape = () =>
 // Note: Since SharedInfrastructure, RewardSet, and Constraints already have all optional fields,
 // Partial<T> is identical to T, so we can use the base schemas directly with .optional()
 
-// Common validation ranges
-const nonNegativeNumber = z.number().min(0, 'Value must be non-negative')
 const difficultySchema = z.enum(['easy', 'medium', 'hard', 'expert', 'legendary'] as const)
 
 // Base schemas that match model types exactly
-const metaInfoSchema: z.ZodType<MetaInfo> = z.object({
+const metaInfoSchema: z.ZodType<Types.MetaInfo> = z.object({
   author: optionalString,
   description: optionalString,
   difficulty: difficultySchema.optional(),
@@ -142,25 +128,27 @@ const metaInfoSchema: z.ZodType<MetaInfo> = z.object({
   comment: commentField,
 })
 
-const rangeSchema: z.ZodType<Range> = z.object({
-  min: optionalNumber,
-  max: optionalNumber,
-}).refine(
-  (range) => {
-    if (range.min !== undefined && range.max !== undefined) {
-      return range.min <= range.max
-    }
-    return true
-  },
-  {
-    message: 'Minimum value must be less than or equal to maximum value',
-  }
-)
+const rangeSchema: z.ZodType<Types.Range> = z
+  .object({
+    min: optionalNumber,
+    max: optionalNumber,
+  })
+  .refine(
+    (range) => {
+      if (range.min !== undefined && range.max !== undefined) {
+        return range.min <= range.max
+      }
+      return true
+    },
+    {
+      message: 'Minimum value must be less than or equal to maximum value',
+    },
+  )
 
 // Use lazy evaluation to handle circular reference in Constraints
-const constraintsSchema: z.ZodType<Constraints> = z.lazy(() => z.object(constraintsShape()))
+const constraintsSchema: z.ZodType<Types.Constraints> = z.lazy(() => z.object(constraintsShape()))
 
-const conditionalConstraintSchema: z.ZodType<ConditionalConstraint> = z.object({
+const conditionalConstraintSchema: z.ZodType<Types.ConditionalConstraint> = z.object({
   condition: z.object({
     type: z.string(),
     operator: optionalString,
@@ -169,51 +157,78 @@ const conditionalConstraintSchema: z.ZodType<ConditionalConstraint> = z.object({
   constraint: constraintsSchema,
 })
 
-const sharedInfrastructureSchema: z.ZodType<SharedInfrastructure> = z.object(sharedInfrastructureShape)
+const sharedInfrastructureSchema: z.ZodType<Types.SharedInfrastructure> = z.object(sharedInfrastructureShape)
 
-const rewardSetSchema: z.ZodType<RewardSet> = z.object(rewardSetShape)
+const rewardSetSchema: z.ZodType<Types.RewardSet> = z.object(rewardSetShape)
 
-const objectiveTypeSchema = z.enum([
-  'cargo_delivered',
-  'network_length',
-  'profit',
-  'station_built',
-  'company_value',
-  'town_growth',
-] as const)
-
-const objectiveSchema: z.ZodType<Objective> = z.object({
-  type: objectiveTypeSchema,
-  amount: nonNegativeNumber.optional(),
-  cargo: optionalString,
-  cargo_types: optionalStringArray,
+// Base objective schema with common fields
+const baseObjectiveSchema = z.object({
   time_limit: nonNegativeNumber.optional(),
-  track_type: optionalString,
-  target: optionalString,
-  min_value: nonNegativeNumber.optional(),
-  town_id: optionalString,
-  target_population: nonNegativeNumber.optional(),
-  location: optionalString,
-  count: nonNegativeNumber.optional(),
   comment: commentField,
 })
 
-const conditionSchema: z.ZodType<Condition> = z.object({
+// Individual objective type schemas
+const cargoDeliveredObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('cargo_delivered'),
+  amount: nonNegativeNumber,
+  cargo: z.string().min(1, 'Cargo type is required'),
+  cargo_types: optionalStringArray,
+})
+
+const networkLengthObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('network_length'),
+  amount: nonNegativeNumber,
+  track_type: optionalString,
+})
+
+const profitObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('profit'),
+  amount: nonNegativeNumber,
+})
+
+const stationBuiltObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('station_built'),
+  count: nonNegativeNumber,
+  location: optionalString,
+})
+
+const companyValueObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('company_value'),
+  min_value: nonNegativeNumber,
+})
+
+const townGrowthObjectiveSchema = baseObjectiveSchema.extend({
+  type: z.literal('town_growth'),
+  target_population: nonNegativeNumber,
+  town_id: z.string().min(1, 'Town ID is required'),
+})
+
+// Discriminated union schema for objectives
+const objectiveSchema = z.discriminatedUnion('type', [
+  cargoDeliveredObjectiveSchema,
+  networkLengthObjectiveSchema,
+  profitObjectiveSchema,
+  stationBuiltObjectiveSchema,
+  companyValueObjectiveSchema,
+  townGrowthObjectiveSchema,
+])
+
+const conditionSchema: z.ZodType<Types.Condition> = z.object({
   type: z.string(),
   threshold: nonNegativeNumber.optional(),
   target: optionalString,
   comment: commentField,
 })
 
-const campaignScenarioOverridesSchema: z.ZodType<CampaignScenarioOverrides> = z.object({
+const campaignScenarioOverridesSchema: z.ZodType<Types.CampaignScenarioOverrides> = z.object({
   shared: sharedInfrastructureSchema.optional(),
   result: rewardSetSchema.optional(),
   constraints: constraintsSchema.optional(),
   comment: commentField,
 })
 
-const campaignScenarioSchema: z.ZodType<CampaignScenario> = z.object({
-  include: z.string(),
+const campaignScenarioSchema: z.ZodType<Types.CampaignScenario> = z.object({
+  include: scenarioRefSchema,
   order: nonNegativeNumber.optional(),
   required: optionalBoolean,
   branch: optionalString,
@@ -222,7 +237,7 @@ const campaignScenarioSchema: z.ZodType<CampaignScenario> = z.object({
   comment: commentField,
 })
 
-const campaignBranchSchema: z.ZodType<CampaignBranch> = z.object({
+const campaignBranchSchema: z.ZodType<Types.CampaignBranch> = z.object({
   name: z.string(),
   description: optionalString,
   unlock_condition: conditionSchema.optional(),
@@ -230,21 +245,21 @@ const campaignBranchSchema: z.ZodType<CampaignBranch> = z.object({
   comment: commentField,
 })
 
-const campaignProgressionRequirementSchema: z.ZodType<CampaignProgressionRequirement> = z.object({
-  scenario: z.string(),
+const campaignProgressionRequirementSchema: z.ZodType<Types.CampaignProgressionRequirement> = z.object({
+  scenario: scenarioRefSchema,
   completion_threshold: z.number(),
   unlocks: optionalString,
   comment: commentField,
 })
 
-const campaignProgressionSchema: z.ZodType<CampaignProgression> = z.object({
+const campaignProgressionSchema: z.ZodType<Types.CampaignProgression> = z.object({
   type: z.enum(['linear', 'branching'] as const),
   unlock_requirements: z.array(campaignProgressionRequirementSchema).optional(),
   unlock_order: optionalStringArray,
   comment: commentField,
 })
 
-const campaignMilestoneSchema: z.ZodType<CampaignMilestone> = z.object({
+const campaignMilestoneSchema: z.ZodType<Types.CampaignMilestone> = z.object({
   name: z.string(),
   description: z.string(),
   reward: rewardSetSchema,
@@ -252,19 +267,19 @@ const campaignMilestoneSchema: z.ZodType<CampaignMilestone> = z.object({
   comment: commentField,
 })
 
-const scalingFactorSchema: z.ZodType<ScalingFactor> = z.object({
+const scalingFactorSchema: z.ZodType<Types.ScalingFactor> = z.object({
   factor: z.string(),
   adjustment: z.number(),
 })
 
-const difficultyScalingAdaptationSchema: z.ZodType<DifficultyScalingAdaptation> = z.object({
+const difficultyScalingAdaptationSchema: z.ZodType<Types.DifficultyScalingAdaptation> = z.object({
   enabled: z.boolean(),
   adjustment_rate: z.number(),
   max_adjustment: z.number(),
   comment: commentField,
 })
 
-const difficultyScalingSchema: z.ZodType<DifficultyScaling> = z.object({
+const difficultyScalingSchema: z.ZodType<Types.DifficultyScaling> = z.object({
   enabled: z.boolean(),
   base_difficulty: z.string(),
   scaling_factors: z.array(scalingFactorSchema).optional(),
@@ -272,32 +287,33 @@ const difficultyScalingSchema: z.ZodType<DifficultyScaling> = z.object({
   comment: z.string().optional(),
 })
 
-const rewardsSchema: z.ZodType<Rewards> = z.object({
+const rewardsSchema: z.ZodType<Types.Rewards> = z.object({
   completion: rewardSetSchema.optional(),
   milestones: z.array(campaignMilestoneSchema).optional(),
   scaling: difficultyScalingSchema.optional(),
   comment: z.string().optional(),
 })
 
-const campaignSettingsSchema: z.ZodType<CampaignSettings> = z.object({
+const campaignSettingsSchema: z.ZodType<Types.CampaignSettings> = z.object({
   economy: z.string().optional(),
   disasters: z.boolean().optional(),
   breakdowns: z.boolean().optional(),
   inflation: z.boolean().optional(),
+  seasons: z.boolean().optional(),
   comment: z.string().optional(),
 })
 
 const goalTypeSchema = z.enum(['player', 'company', 'scenario', 'campaign'] as const)
 
-const goalOverridesSchema: z.ZodType<GoalOverrides> = z.object({
+const goalOverridesSchema: z.ZodType<Types.GoalOverrides> = z.object({
   shared: sharedInfrastructureSchema.optional(),
   result: rewardSetSchema.optional(),
   constraints: constraintsSchema.optional(),
   comment: commentField,
 })
 
-const scenarioGoalSchema: z.ZodType<ScenarioGoal> = z.object({
-  include: z.string(),
+const scenarioGoalSchema: z.ZodType<Types.ScenarioGoal> = z.object({
+  include: goalRefSchema,
   order: z.number().optional(),
   required: z.boolean().optional(),
   branch: z.string().optional(),
@@ -306,23 +322,22 @@ const scenarioGoalSchema: z.ZodType<ScenarioGoal> = z.object({
   comment: z.string().optional(),
 })
 
-const scenarioDefaultsSchema: z.ZodType<ScenarioDefaults> = z.object({
+const scenarioDefaultsSchema: z.ZodType<Types.ScenarioDefaults> = z.object({
   shared: sharedInfrastructureSchema.optional(),
   result: rewardSetSchema.optional(),
   constraints: constraintsSchema.optional(),
   comment: z.string().optional(),
 })
 
-const packageStructureSchema: z.ZodType<PackageStructure> = z.object({
-  goals: z.string(),
-  scenarios: z.string(),
-  campaigns: z.string(),
+const packageStructureSchema: z.ZodType<Types.PackageStructure> = z.object({
+  goalPath: z.string(),
+  scenarioPath: z.string(),
+  campaignPath: z.string(),
   comment: z.string().optional(),
 })
 
-// Main entity schemas - using FormData types for form validation
-const goalSchemaBase: z.ZodType<GoalFormData> = z.object({
-  id: z.string(),
+// Main entity schemas - using EntityValue types for form validation
+const goalSchemaBase: z.ZodType<Types.GoalValue> = z.object({
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
@@ -333,22 +348,21 @@ const goalSchemaBase: z.ZodType<GoalFormData> = z.object({
   result: rewardSetSchema.optional(),
 })
 
-const scenarioSchemaBase: z.ZodType<ScenarioFormData> = z.object({
-  id: z.string(),
+const scenarioSchemaBase: z.ZodType<Types.ScenarioValue> = z.object({
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
-  goals: z.array(scenarioGoalSchema).optional(),
+  goals: z.array(scenarioGoalSchema),
   constraints: constraintsSchema.optional(),
   defaults: scenarioDefaultsSchema.optional(),
+  settings: campaignSettingsSchema.optional(),
 })
 
-const campaignSchemaBase: z.ZodType<CampaignFormData> = z.object({
-  id: z.string(),
+const campaignSchemaBase: z.ZodType<Types.CampaignValue> = z.object({
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
-  scenarios: z.array(campaignScenarioSchema).optional(),
+  scenarios: z.array(campaignScenarioSchema),
   branches: campaignBranchSchema.optional(),
   progression: campaignProgressionSchema.optional(),
   constraints: constraintsSchema.optional(),
@@ -356,8 +370,7 @@ const campaignSchemaBase: z.ZodType<CampaignFormData> = z.object({
   settings: campaignSettingsSchema.optional(),
 })
 
-const campaignManifestSchemaBase: z.ZodType<CampaignManifestFormData> = z.object({
-  id: z.string(),
+const campaignManifestSchemaBase: z.ZodType<Types.ManifestValue> = z.object({
   name: z.string(),
   comment: z.string().optional(),
   meta: metaInfoSchema,
@@ -366,6 +379,26 @@ const campaignManifestSchemaBase: z.ZodType<CampaignManifestFormData> = z.object
   main_campaign: z.string().optional(),
   dependencies: z.object({
     coopetition_version: z.string(),
+  }),
+  contents: z.object({
+    goals: z.array(
+      z.object({
+        filename: z.string(),
+        entity: goalRefSchema,
+      }),
+    ),
+    scenarios: z.array(
+      z.object({
+        filename: z.string(),
+        entity: scenarioRefSchema,
+      }),
+    ),
+    campaigns: z.array(
+      z.object({
+        filename: z.string(),
+        entity: campaignRefSchema,
+      }),
+    ),
   }),
   install: z
     .object({
@@ -388,5 +421,3 @@ export const schemas = {
   campaign: campaignSchemaBase,
   campaignManifest: campaignManifestSchemaBase,
 } as const
-
-// Type exports are now at the top of the file with the utility type

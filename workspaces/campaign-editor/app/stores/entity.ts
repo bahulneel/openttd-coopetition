@@ -1,9 +1,9 @@
-import type { TypeMap, PackageManifest, AnyEntity, EntityOptions, Storable } from '~/types'
+import type { TypeMap, Manifest, AnyEntity, EntityOptions, Storable, ModelTypes, FileReference } from '~/types'
 
 export const useEntityStore = defineStore('entity', () => {
   // State - type => id => entity
   const index = ref<Map<string, Map<string, Storable<AnyEntity>>>>(new Map())
-  const manifest = ref<Storable<PackageManifest> | undefined>(undefined)
+  const manifest = ref<Storable<Manifest> | undefined>(undefined)
 
   function has(id: string): boolean {
     if (manifest.value && id === entityId(manifest.value)) {
@@ -29,6 +29,23 @@ export const useEntityStore = defineStore('entity', () => {
       storable = ops.modified(storable)
     } else {
       storable = ops.created(storable)
+      if (manifest.value) {
+        const contents: FileReference<T>[] =
+          manifest.value.contents[entityType(entity) as keyof Manifest['contents']] || []
+        if (!contents.some((content) => referenceId(content.entity) === entityId(entity))) {
+          const fileRef: FileReference<T> = {
+            entity: toEntityRef(entity),
+            filename: storable.__meta.filename,
+          }
+          manifest.value = ops.modified({
+            ...manifest.value,
+            contents: {
+              ...manifest.value.contents,
+              [entityType(entity)]: [...contents, fileRef],
+            },
+          })
+        }
+      }
     }
 
     if (isManifest(storable)) {
@@ -39,7 +56,7 @@ export const useEntityStore = defineStore('entity', () => {
     index.value.set(entityType(entity), typeMap)
   }
 
-  function get<T extends keyof TypeMap, S = Storable<TypeMap[T]>>(id: string, type?: T): S | undefined {
+  function get<T extends ModelTypes, S = Storable<TypeMap[T]>>(id: string, type?: T): S | undefined {
     if (type) {
       if (type === 'Manifest') {
         return manifest.value as S | undefined
@@ -75,7 +92,7 @@ export const useEntityStore = defineStore('entity', () => {
     }
   }
 
-  function copy<T extends keyof TypeMap, E extends AnyEntity = TypeMap[T]>(
+  function copy<T extends ModelTypes, E extends AnyEntity = TypeMap[T]>(
     id: string,
     changes: EntityOptions<E> = {},
   ): Storable<E> {
@@ -90,11 +107,11 @@ export const useEntityStore = defineStore('entity', () => {
     return stored
   }
 
-  function select<T extends AnyEntity>(type: string): ComputedRef<Storable<T>[]> {
+  function select<T extends ModelTypes, E extends AnyEntity = TypeMap[T]>(type: T): ComputedRef<Storable<E>[]> {
     return computed(() =>
       Array.from(index.value.get(type)?.values() || [])
         .filter((entity) => !isDeleted(entity))
-        .map((entity) => entity as Storable<T>),
+        .map((entity) => entity as Storable<E>),
     )
   }
 

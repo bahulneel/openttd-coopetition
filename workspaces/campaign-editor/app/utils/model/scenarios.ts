@@ -4,6 +4,7 @@ import type { Scenario, EntityOptions, ModelOptions } from '~/types'
 export const scenarioTemplate = {
   defaults: {
     meta: {},
+    goals: [],
   },
   newItem: {
     comment: 'New scenario created with the editor',
