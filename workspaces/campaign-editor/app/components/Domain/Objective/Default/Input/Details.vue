@@ -1,7 +1,10 @@
 <template>
-  <FormField v-slot="{ componentField }" :name="name">
+  <FormField :name="name">
     <MoleculeFormGroup>
-      <FormField v-slot="{ componentField: typeField }" name="type">
+      <FormField
+        v-slot="{ componentField: typeField }"
+        name="type"
+      >
         <FormItem>
           <FormLabel>Objective Type</FormLabel>
           <FormControl>
@@ -23,11 +26,19 @@
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField: timeLimitField }" name="time_limit">
+      <FormField
+        v-slot="{ componentField: timeLimitField }"
+        name="time_limit"
+      >
         <FormItem>
           <FormLabel>Time Limit (Optional)</FormLabel>
           <FormControl>
-            <Input v-bind="timeLimitField" type="number" placeholder="e.g., 365 (days)" class="openttd-input" />
+            <Input
+              v-bind="timeLimitField"
+              type="number"
+              placeholder="e.g., 365 (days)"
+              class="openttd-input"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -38,7 +49,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'DomainObjectiveDefaultInputDetails'
+  name: 'DomainObjectiveDefaultInputDetails',
 })
 
 interface Props {

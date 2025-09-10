@@ -7,25 +7,29 @@
           <CardTitle class="font-semibold text-foreground truncate text-base">
             {{ campaign.name }}
           </CardTitle>
-          <p class="text-sm text-muted-foreground">
-            ID: {{ entityId(campaign) }}
-          </p>
+          <p class="text-sm text-muted-foreground">ID: {{ entityId(campaign) }}</p>
         </div>
 
         <DropdownMenu v-if="!asPartial">
-          <DropdownMenuTrigger as-child @click.stop>
-            <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
+          <DropdownMenuTrigger
+            as-child
+            @click.stop
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              class="h-8 w-8 p-0"
+            >
               ⋮
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem @click="$emit('edit', campaign)">
-              ✏️ Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="$emit('duplicate', campaign)">
-              📄 Duplicate
-            </DropdownMenuItem>
-            <DropdownMenuItem class="text-destructive focus:text-destructive" @click="$emit('delete', campaign)">
+            <DropdownMenuItem @click="$emit('edit', campaign)"> ✏️ Edit </DropdownMenuItem>
+            <DropdownMenuItem @click="$emit('duplicate', campaign)"> 📄 Duplicate </DropdownMenuItem>
+            <DropdownMenuItem
+              class="text-destructive focus:text-destructive"
+              @click="$emit('delete', campaign)"
+            >
               🗑️ Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -33,7 +37,10 @@
       </div>
 
       <!-- Description -->
-      <DomainMetaInfoDisplayCard :meta-info="campaign.meta" as-partial />
+      <DomainMetaInfoDisplayCard
+        :meta-info="campaign.meta"
+        as-partial
+      />
 
       <!-- Stats -->
       <div class="grid grid-cols-2 gap-4 text-sm">
@@ -43,20 +50,28 @@
         </div>
         <div>
           <span class="text-muted-foreground">Difficulty:</span>
-          <DomainMetaInfoDisplayCard :meta-info="campaign.meta" as-partial class="ml-1" />
+          <DomainMetaInfoDisplayCard
+            :meta-info="campaign.meta"
+            as-partial
+            class="ml-1"
+          />
         </div>
       </div>
 
-
       <!-- Footer -->
-      <DomainMetadataDisplayCard :entity="campaign" :as-partial="asPartial" />
+      <DomainMetadataDisplayCard
+        :entity="campaign"
+        :as-partial="asPartial"
+      />
     </div>
   </DefineContent>
 
   <!-- Standalone mode (default) -->
   <Card
-v-if="!asPartial" class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
-    @click="$emit('edit', campaign)">
+    v-if="!asPartial"
+    class="campaign-card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+    @click="$emit('edit', campaign)"
+  >
     <CardContent>
       <Content />
     </CardContent>
@@ -71,7 +86,7 @@ import { createReusableTemplate } from '@vueuse/core'
 import type { Campaign } from '~/types'
 
 defineOptions({
-  name: 'EntityCampaignDisplayCard'
+  name: 'EntityCampaignDisplayCard',
 })
 
 interface Props {

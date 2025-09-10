@@ -8,7 +8,7 @@ v-for="scenario in scenarios" :key="entityId(scenario)" :scenario="scenario"
 
     <!-- Action Slot -->
     <div v-if="$slots.actions" class="flex justify-end">
-      <slot name="actions" ></slot>
+      <slot name="actions" />
     </div>
   </div>
 </template>

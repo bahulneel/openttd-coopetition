@@ -9,7 +9,7 @@ v-for="campaignScenario in campaignScenarios"
 
     <!-- Action Slot -->
     <div v-if="$slots.actions" class="flex justify-end">
-      <slot name="actions" ></slot>
+      <slot name="actions" />
     </div>
   </div>
 </template>

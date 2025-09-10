@@ -2,7 +2,7 @@
 import type { Action } from '~/types'
 
 interface SectionProps {
-  title: string
+  title?: string
   subtitle?: string
   actions?: Action[]
 }
@@ -10,6 +10,7 @@ interface SectionProps {
 defineOptions({ name: 'TemplateLayoutSection' })
 
 const props = withDefaults(defineProps<SectionProps>(), {
+  title: undefined,
   subtitle: undefined,
   actions: undefined,
 })

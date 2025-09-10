@@ -68,7 +68,8 @@
               ↺ Reset
             </Button>
 
-            <Button type="button" :disabled="saving" class="openttd-button bg-openttd-green text-white"
+            <Button
+type="button" :disabled="saving" class="openttd-button bg-openttd-green text-white"
               @click="saveGoal">
               {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
             </Button>

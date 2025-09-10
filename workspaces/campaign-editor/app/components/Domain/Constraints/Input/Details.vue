@@ -1,41 +1,75 @@
 <template>
-  <FormField v-slot="{ componentField }" :name="name">
+  <FormField :name="name">
     <MoleculeFormGroup>
-      <FormField v-slot="{ componentField: playersMinField }" name="players.min">
+      <FormField
+        v-slot="{ componentField: playersMinField }"
+        name="players.min"
+      >
         <FormItem>
           <FormLabel>Minimum Players</FormLabel>
           <FormControl>
-            <Input v-bind="playersMinField" type="number" min="1" max="8" class="openttd-input" />
+            <Input
+              v-bind="playersMinField"
+              type="number"
+              min="1"
+              max="8"
+              class="openttd-input"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField: playersMaxField }" name="players.max">
+      <FormField
+        v-slot="{ componentField: playersMaxField }"
+        name="players.max"
+      >
         <FormItem>
           <FormLabel>Maximum Players</FormLabel>
           <FormControl>
-            <Input v-bind="playersMaxField" type="number" min="1" max="8" class="openttd-input" />
+            <Input
+              v-bind="playersMaxField"
+              type="number"
+              min="1"
+              max="8"
+              class="openttd-input"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField: dateMinField }" name="date.min">
+      <FormField
+        v-slot="{ componentField: dateMinField }"
+        name="date.min"
+      >
         <FormItem>
           <FormLabel>Minimum Date</FormLabel>
           <FormControl>
-            <Input v-bind="dateMinField" type="number" placeholder="e.g., 1950" class="openttd-input" />
+            <Input
+              v-bind="dateMinField"
+              type="number"
+              placeholder="e.g., 1950"
+              class="openttd-input"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField: dateMaxField }" name="date.max">
+      <FormField
+        v-slot="{ componentField: dateMaxField }"
+        name="date.max"
+      >
         <FormItem>
           <FormLabel>Maximum Date</FormLabel>
           <FormControl>
-            <Input v-bind="dateMaxField" type="number" placeholder="e.g., 2050" class="openttd-input" />
+            <Input
+              v-bind="dateMaxField"
+              type="number"
+              placeholder="e.g., 2050"
+              class="openttd-input"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -46,7 +80,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'DomainConstraintsInputDetails'
+  name: 'DomainConstraintsInputDetails',
 })
 
 interface Props {

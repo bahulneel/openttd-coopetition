@@ -5,12 +5,12 @@ defineOptions({ name: 'TemplateScreenDashboard' })
 <template>
   <TemplateLayoutSection>
     <template #actions>
-      <slot name="actions"></slot>
+      <slot name="actions" />
     </template>
 
     <TemplateLayoutSequential>
       <TemplateLayoutGrid>
-        <slot name="stats"></slot>
+        <slot name="stats" />
       </TemplateLayoutGrid>
 
       <slot />

@@ -29,7 +29,7 @@ const rootClass = computed(() => cn(props.class))
   <div :class="rootClass">
     <template v-for="name in renderOrder" :key="name">
       <div :class="classes?.[name]">
-        <slot :name="name" ></slot>
+        <slot :name="name" />
       </div>
     </template>
   </div>

@@ -8,7 +8,7 @@ v-for="goal in goals" :key="entityId(goal)" :goal="goal" @edit="$emit('edit', $e
 
     <!-- Action Slot -->
     <div v-if="$slots.actions" class="flex justify-end">
-      <slot name="actions" ></slot>
+      <slot name="actions" />
     </div>
   </div>
 </template>

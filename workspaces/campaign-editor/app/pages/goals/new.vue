@@ -6,7 +6,7 @@
       </Button>
     </template>
 
-    <Form @submit="saveGoal" :validation-schema="goalSchema">
+    <Form :validation-schema="goalSchema" @submit="saveGoal">
       <EntityGoalInputDetails v-model="form">
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">

@@ -1,11 +1,19 @@
 <template>
-  <FormField v-slot="{ componentField }" :name="name">
+  <FormField :name="name">
     <MoleculeFormGroup>
-      <FormField v-slot="{ componentField: minValueField }" name="min_value">
+      <FormField
+        v-slot="{ componentField: minValueField }"
+        name="min_value"
+      >
         <FormItem>
           <FormLabel>Minimum Company Value (£)</FormLabel>
           <FormControl>
-            <Input v-bind="minValueField" type="number" placeholder="e.g., 1000000" class="openttd-input" />
+            <Input
+              v-bind="minValueField"
+              type="number"
+              placeholder="e.g., 1000000"
+              class="openttd-input"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -16,7 +24,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'DomainObjectiveCompanyValueInputDetails'
+  name: 'DomainObjectiveCompanyValueInputDetails',
 })
 
 interface Props {

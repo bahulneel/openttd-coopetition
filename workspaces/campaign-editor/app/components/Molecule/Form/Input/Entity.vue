@@ -1,8 +1,14 @@
 <template>
-  <Combobox v-model="modelValue" class="w-full">
+  <Combobox
+    v-model="modelValue"
+    class="w-full"
+  >
     <ComboboxAnchor>
       <div class="relative w-full">
-        <ComboboxInput :placeholder="placeholder" class="openttd-input" />
+        <ComboboxInput
+          :placeholder="placeholder"
+          class="openttd-input"
+        />
         <ComboboxTrigger class="absolute right-0 top-0 h-full px-3 flex items-center">
           <ChevronDown class="h-4 w-4 opacity-50" />
         </ComboboxTrigger>
@@ -10,13 +16,18 @@
     </ComboboxAnchor>
     <ComboboxList>
       <ComboboxEmpty>
-        <slot name="empty">
-          No {{ entityType }} found.
-        </slot>
+        <slot name="empty"> No {{ entityType }} found. </slot>
       </ComboboxEmpty>
       <ComboboxGroup>
-        <ComboboxItem v-for="entity in entities" :key="entityId(entity)" :value="entity">
-          <slot name="item" :entity="entity">
+        <ComboboxItem
+          v-for="item in entities"
+          :key="entityId(item)"
+          :value="item"
+        >
+          <slot
+            name="item"
+            :entity="item"
+          >
             {{ name }}
           </slot>
           <ComboboxItemIndicator>
@@ -33,7 +44,7 @@ import { Check, ChevronDown } from 'lucide-vue-next'
 import type { AnyEntity, EntityReference } from '~/types'
 
 defineOptions({
-  name: 'MoleculeFormInputEntity'
+  name: 'MoleculeFormInputEntity',
 })
 
 interface Props<T extends AnyEntity = AnyEntity> {

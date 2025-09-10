@@ -12,7 +12,7 @@
 v-for="(item, index) in _props.items" :key="index"
         class="flex items-center gap-3 p-3 border rounded-lg bg-card">
         <div class="flex-1">
-          <slot name="item" :item="item" :index="index" ></slot>
+          <slot name="item" :item="item" :index="index" />
         </div>
         <div class="flex items-center gap-2">
           <Button variant="ghost" size="sm" class="openttd-button" @click="$emit('edit', index, item)">

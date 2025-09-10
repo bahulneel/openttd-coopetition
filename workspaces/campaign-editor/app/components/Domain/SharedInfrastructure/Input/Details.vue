@@ -1,5 +1,5 @@
 <template>
-  <FormField v-slot="{ componentField }" :name="name">
+  <FormField :name="name">
     <div class="space-y-6">
       <Card class="openttd-titlebar">
         <CardHeader>
@@ -10,44 +10,68 @@
         </CardHeader>
         <CardContent>
           <MoleculeFormGroup>
-            <FormField v-slot="{ componentField: trackField }" name="track">
+            <FormField
+              v-slot="{ componentField: trackField }"
+              name="track"
+            >
               <FormItem>
                 <FormLabel>Track</FormLabel>
                 <FormControl>
-                  <Input v-bind="trackField" placeholder="e.g., RAIL, ROAD, WATER" />
+                  <Input
+                    v-bind="trackField"
+                    placeholder="e.g., RAIL, ROAD, WATER"
+                  />
                 </FormControl>
                 <FormDescription>Type of track to share</FormDescription>
                 <FormMessage />
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField: stationsField }" name="stations">
+            <FormField
+              v-slot="{ componentField: stationsField }"
+              name="stations"
+            >
               <FormItem>
                 <FormLabel>Stations</FormLabel>
                 <FormControl>
-                  <Input v-bind="stationsField" placeholder="e.g., true, false" />
+                  <Input
+                    v-bind="stationsField"
+                    placeholder="e.g., true, false"
+                  />
                 </FormControl>
                 <FormDescription>Whether stations are shared</FormDescription>
                 <FormMessage />
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField: vehiclesField }" name="vehicles">
+            <FormField
+              v-slot="{ componentField: vehiclesField }"
+              name="vehicles"
+            >
               <FormItem>
                 <FormLabel>Vehicles</FormLabel>
                 <FormControl>
-                  <Input v-bind="vehiclesField" placeholder="e.g., true, false" />
+                  <Input
+                    v-bind="vehiclesField"
+                    placeholder="e.g., true, false"
+                  />
                 </FormControl>
                 <FormDescription>Whether vehicles are shared</FormDescription>
                 <FormMessage />
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField: depotsField }" name="depots">
+            <FormField
+              v-slot="{ componentField: depotsField }"
+              name="depots"
+            >
               <FormItem>
                 <FormLabel>Depots</FormLabel>
                 <FormControl>
-                  <Input v-bind="depotsField" placeholder="e.g., true, false" />
+                  <Input
+                    v-bind="depotsField"
+                    placeholder="e.g., true, false"
+                  />
                 </FormControl>
                 <FormDescription>Whether depots are shared</FormDescription>
                 <FormMessage />
@@ -62,7 +86,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'DomainSharedInfrastructureInputDetails'
+  name: 'DomainSharedInfrastructureInputDetails',
 })
 
 interface Props {
