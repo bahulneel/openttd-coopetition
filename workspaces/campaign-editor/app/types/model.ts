@@ -197,7 +197,7 @@ export interface CampaignSettings extends Commentable {
 }
 
 export interface Campaign extends BaseItem<'Campaign'> {
-  scenarios?: CampaignScenario[]
+  scenarios: CampaignScenario[]
   branches?: CampaignBranch
   progression?: CampaignProgression
   constraints?: Constraints
@@ -238,7 +238,7 @@ export interface ScenarioDefaults extends Commentable {
 }
 
 export interface Scenario extends BaseItem<'Scenario'> {
-  goals?: ScenarioGoal[]
+  goals: ScenarioGoal[]
   constraints?: Constraints
   defaults?: ScenarioDefaults
   settings?: CampaignSettings

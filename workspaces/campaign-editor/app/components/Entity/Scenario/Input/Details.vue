@@ -171,79 +171,84 @@
         </div>
       </CardHeader>
       <CardContent>
-        <AggregateInput
-          v-model="formData.goals"
-          :default-item="createDefaultGoal"
+        <FormField
+          v-slot="{ componentField: goalsField }"
+          name="goals"
         >
-          <template #collection="{ items }">
-            <div
-              v-for="(goal, index) in items"
-              :key="`goal-${index}`"
-              class="space-y-4"
-            >
-              <div class="p-4 border border-border rounded-lg">
-                <div class="flex items-center justify-between mb-4">
-                  <h4 class="font-medium">Goal {{ index + 1 }}</h4>
-                </div>
+          <AggregateInput
+            v-model="goalsField.modelValue"
+            :default-item="createDefaultGoal"
+          >
+            <template #collection="{ items }">
+              <div
+                v-for="(goal, index) in items"
+                :key="`goal-${index}`"
+                class="space-y-4"
+              >
+                <div class="p-4 border border-border rounded-lg">
+                  <div class="flex items-center justify-between mb-4">
+                    <h4 class="font-medium">Goal {{ index + 1 }}</h4>
+                  </div>
 
-                <MoleculeFormGroup>
-                  <FormField
-                    v-slot="{ componentField }"
-                    :name="`goals.${index}.name`"
-                  >
-                    <FormItem>
-                      <FormLabel>Goal Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          v-bind="componentField"
-                          placeholder="Goal Name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-
-                  <FormField
-                    v-slot="{ componentField }"
-                    :name="`goals.${index}.type`"
-                  >
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <Select v-bind="componentField">
+                  <MoleculeFormGroup>
+                    <FormField
+                      v-slot="{ componentField }"
+                      :name="`goals.${index}.name`"
+                    >
+                      <FormItem>
+                        <FormLabel>Goal Name</FormLabel>
                         <FormControl>
-                          <SelectTrigger class="openttd-button">
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
+                          <Input
+                            v-bind="componentField"
+                            placeholder="Goal Name"
+                          />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="player">Player Goal</SelectItem>
-                          <SelectItem value="company">Company Goal</SelectItem>
-                          <SelectItem value="scenario">Scenario Goal</SelectItem>
-                          <SelectItem value="campaign">Campaign Goal</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-                </MoleculeFormGroup>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+
+                    <FormField
+                      v-slot="{ componentField }"
+                      :name="`goals.${index}.type`"
+                    >
+                      <FormItem>
+                        <FormLabel>Type</FormLabel>
+                        <Select v-bind="componentField">
+                          <FormControl>
+                            <SelectTrigger class="openttd-button">
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="player">Player Goal</SelectItem>
+                            <SelectItem value="company">Company Goal</SelectItem>
+                            <SelectItem value="scenario">Scenario Goal</SelectItem>
+                            <SelectItem value="campaign">Campaign Goal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+                  </MoleculeFormGroup>
+                </div>
               </div>
-            </div>
-          </template>
+            </template>
 
-          <template #empty>
-            <p>No goals added yet. Click "Add Goal" to get started.</p>
-          </template>
+            <template #empty>
+              <p>No goals added yet. Click "Add Goal" to get started.</p>
+            </template>
 
-          <template #new-item>
-            <Button
-              type="button"
-              variant="outline"
-              class="openttd-button"
-            >
-              ➕ Add Goal
-            </Button>
-          </template>
-        </AggregateInput>
+            <template #new-item>
+              <Button
+                type="button"
+                variant="outline"
+                class="openttd-button"
+              >
+                ➕ Add Goal
+              </Button>
+            </template>
+          </AggregateInput>
+        </FormField>
       </CardContent>
     </Card>
 
@@ -253,17 +258,17 @@
 </template>
 
 <script setup lang="ts">
-// import type { Scenario } from '~/types' // TODO: Use when implementing scenario functionality
+import { useForm } from 'vee-validate'
 
 defineOptions({
   name: 'EntityScenarioInputDetails',
 })
 
-const formData = defineModel<ScenarioFormData>({ required: true })
+const form = useForm()
 
 // Default goal creation function
 function createDefaultGoal() {
-  const currentGoals = formData.value.goals || []
+  const currentGoals = form.values.goals || []
   return {
     include: {
       __ref: {

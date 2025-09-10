@@ -1,20 +1,34 @@
 <template>
   <div v-if="!showNewForm">
-    <TemplateScreenCollection title="Campaigns" subtitle="Manage and edit your OpenTTD Coopetition campaigns"
-      :has-content="filteredCampaigns.length > 0" empty-title="No campaigns yet"
-      empty-description="Create your first campaign to get started">
+    <TemplateScreenCollection
+      title="Campaigns"
+      subtitle="Manage and edit your OpenTTD Coopetition campaigns"
+      :has-content="filteredCampaigns.length > 0"
+      empty-title="No campaigns yet"
+      empty-description="Create your first campaign to get started"
+    >
       <template #actions>
-        <Button class="openttd-button bg-openttd-green text-white" @click="newCampaign">
+        <Button
+          class="openttd-button bg-openttd-green text-white"
+          @click="newCampaign"
+        >
           ➕ New Campaign
         </Button>
 
-        <Button variant="outline" class="openttd-button" @click="refreshCampaigns">
+        <Button
+          variant="outline"
+          class="openttd-button"
+          @click="refreshCampaigns"
+        >
           ↻ Refresh
         </Button>
       </template>
 
       <template #empty-actions>
-        <Button class="openttd-button bg-openttd-green text-white" @click="newCampaign">
+        <Button
+          class="openttd-button bg-openttd-green text-white"
+          @click="newCampaign"
+        >
           ➕ Create Campaign
         </Button>
       </template>
@@ -24,7 +38,11 @@
         <CardContent class="pt-6">
           <div class="flex flex-col sm:flex-row gap-4">
             <div class="flex-1">
-              <Input v-model="searchQuery" placeholder="🔍 Search campaigns..." class="w-full" />
+              <Input
+                v-model="searchQuery"
+                placeholder="🔍 Search campaigns..."
+                class="w-full"
+              />
             </div>
 
             <div class="flex items-center space-x-2">
@@ -59,25 +77,41 @@
       </Card>
 
       <!-- Campaigns Grid -->
-      <AggregateCampaigns v-if="filteredCampaigns.length > 0" :campaigns="filteredCampaigns" @edit="editCampaignHandler"
-        @duplicate="handleDuplicate" @delete="handleDelete" />
+      <AggregateCampaigns
+        v-if="filteredCampaigns.length > 0"
+        :campaigns="filteredCampaigns"
+        @edit="editCampaignHandler"
+        @duplicate="handleDuplicate"
+        @delete="handleDelete"
+      />
 
       <!-- Pagination -->
-      <div v-if="totalPages > 1" class="flex justify-center">
+      <div
+        v-if="totalPages > 1"
+        class="flex justify-center"
+      >
         <div class="flex items-center space-x-2">
-          <Button variant="outline" size="sm" :disabled="currentPage === 1" class="openttd-button"
-            @click="currentPage--">
+          <Button
+            variant="outline"
+            size="sm"
+            :disabled="currentPage === 1"
+            class="openttd-button"
+            @click="currentPage--"
+          >
             ← Previous
           </Button>
 
           <div class="flex items-center space-x-1">
-            <span class="text-sm text-muted-foreground">
-              Page {{ currentPage }} of {{ totalPages }}
-            </span>
+            <span class="text-sm text-muted-foreground"> Page {{ currentPage }} of {{ totalPages }} </span>
           </div>
 
-          <Button variant="outline" size="sm" :disabled="currentPage === totalPages" class="openttd-button"
-            @click="currentPage++">
+          <Button
+            variant="outline"
+            size="sm"
+            :disabled="currentPage === totalPages"
+            class="openttd-button"
+            @click="currentPage++"
+          >
             Next →
           </Button>
         </div>
@@ -85,26 +119,46 @@
     </TemplateScreenCollection>
   </div>
 
-  <TemplateScreenArticle v-else title="New Campaign" subtitle="Create a new campaign">
+  <TemplateScreenArticle
+    v-else
+    title="New Campaign"
+    subtitle="Create a new campaign"
+  >
     <template #actions>
-      <Button :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white"
-        @click="saveCampaign">
+      <Button
+        :disabled="!meta.valid || saving"
+        class="openttd-button bg-openttd-green text-white"
+        @click="saveCampaign"
+      >
         {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
       </Button>
 
-      <Button variant="outline" class="openttd-button" @click="closeNewForm">
+      <Button
+        variant="outline"
+        class="openttd-button"
+        @click="closeNewForm"
+      >
         ← Back to List
       </Button>
     </template>
 
-    <Form @submit="saveCampaign">
-      <EntityCampaignInputDetails v-model="formData">
+    <Form @submit="form.handleSubmit(saveCampaign)">
+      <EntityCampaignInputDetails>
         <template #actions>
           <div class="flex justify-end space-x-4 pt-6 border-t">
-            <Button type="button" variant="outline" class="openttd-button" @click="closeNewForm">
+            <Button
+              type="button"
+              variant="outline"
+              class="openttd-button"
+              @click="closeNewForm"
+            >
               Cancel
             </Button>
-            <Button type="submit" :disabled="!meta.valid || saving" class="openttd-button bg-openttd-green text-white">
+            <Button
+              type="submit"
+              :disabled="!meta.valid || saving"
+              class="openttd-button bg-openttd-green text-white"
+            >
               {{ saving ? '💾 Saving...' : '✨ Create Campaign' }}
             </Button>
           </div>
@@ -116,7 +170,7 @@
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
-import type { Campaign } from '~/types'
+import type { Campaign, CampaignValue } from '~/types'
 import { storableMeta } from '~/utils/storable'
 
 const entityStore = useEntityStore()
@@ -139,7 +193,6 @@ const saving = ref(false)
 const form = useForm({
   validationSchema: campaignSchema,
   initialValues: {
-    id: '',
     name: '',
     meta: {
       description: '',
@@ -147,10 +200,10 @@ const form = useForm({
       tags: [],
     },
     scenarios: [],
-  }
+  },
 })
 
-const { values: formData, meta } = form
+const { meta } = form
 
 // Hash-based routing
 const handleHashChange = () => {
@@ -178,14 +231,14 @@ const _difficultyOptions = [
   { value: 'medium', label: 'Medium' },
   { value: 'hard', label: 'Hard' },
   { value: 'expert', label: 'Expert' },
-  { value: 'legendary', label: 'Legendary' }
+  { value: 'legendary', label: 'Legendary' },
 ]
 
 const _sortOptions = [
   { value: 'lastModified', label: 'Last Modified' },
   { value: 'title', label: 'Title' },
   { value: 'id', label: 'ID' },
-  { value: 'difficulty', label: 'Difficulty' }
+  { value: 'difficulty', label: 'Difficulty' },
 ]
 
 // Computed
@@ -197,11 +250,12 @@ const filteredCampaigns = computed(() => {
   // Search filter
   if (searchQuery.value) {
     const lowerQuery = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(campaign =>
-      entityId(campaign).toLowerCase().includes(lowerQuery) ||
-      campaign.name.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery))
+    filtered = filtered.filter(
+      (campaign) =>
+        entityId(campaign).toLowerCase().includes(lowerQuery) ||
+        campaign.name.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery)),
     )
   }
 
@@ -239,11 +293,12 @@ const totalPages = computed(() => {
 
   if (searchQuery.value) {
     const lowerQuery = searchQuery.value.toLowerCase()
-    totalCount = campaigns.value.filter(campaign =>
-      entityId(campaign).toLowerCase().includes(lowerQuery) ||
-      campaign.name?.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
-      campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery))
+    totalCount = campaigns.value.filter(
+      (campaign) =>
+        entityId(campaign).toLowerCase().includes(lowerQuery) ||
+        campaign.name?.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.description?.toLowerCase().includes(lowerQuery) ||
+        campaign.meta?.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery)),
     ).length
   }
 
@@ -259,7 +314,6 @@ const totalPages = computed(() => {
 // Form methods
 function initializeNewCampaign() {
   form.setValues({
-    id: '',
     name: '',
     meta: {
       author: '',
@@ -271,8 +325,7 @@ function initializeNewCampaign() {
   })
 }
 
-
-const saveCampaign = form.handleSubmit(async (values) => {
+function saveCampaign(values: CampaignValue) {
   saving.value = true
 
   try {
@@ -284,7 +337,7 @@ const saveCampaign = form.handleSubmit(async (values) => {
     toast.add({
       title: '✨ Campaign Created',
       description: `Campaign "${values.name}" has been created.`,
-      color: 'green'
+      color: 'green',
     })
 
     // Return to list view
@@ -294,17 +347,16 @@ const saveCampaign = form.handleSubmit(async (values) => {
     toast.add({
       title: '❌ Error',
       description: 'Failed to save campaign',
-      color: 'red'
+      color: 'red',
     })
   } finally {
     saving.value = false
   }
-})
+}
 
 function closeNewForm() {
   router.push('/campaigns')
 }
-
 
 // Navigation and actions
 function newCampaign() {
@@ -343,14 +395,14 @@ async function handleDuplicate(campaign: Campaign) {
     toast.add({
       title: '📄 Campaign Duplicated',
       description: `Campaign "${duplicate.name}" has been created.`,
-      color: 'green'
+      color: 'green',
     })
   } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate campaign',
-      color: 'red'
+      color: 'red',
     })
   }
 }
@@ -359,9 +411,7 @@ async function handleDelete(campaign: Campaign) {
   const id = entityId(campaign)
 
   // Show confirmation dialog
-  const confirmed = confirm(
-    `Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`
-  )
+  const confirmed = confirm(`Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`)
 
   if (!confirmed) return
 
@@ -371,14 +421,14 @@ async function handleDelete(campaign: Campaign) {
     toast.add({
       title: '🗑️ Campaign Deleted',
       description: `Campaign "${campaign.name}" has been deleted.`,
-      color: 'green'
+      color: 'green',
     })
   } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
       description: 'Failed to delete campaign',
-      color: 'red'
+      color: 'red',
     })
   }
 }

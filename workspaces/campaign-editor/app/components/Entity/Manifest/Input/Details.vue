@@ -90,11 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ManifestFormData } from '~/utils/schemas'
-
 defineOptions({
   name: 'EntityManifestInputDetails',
 })
-
-defineModel<ManifestFormData>({ required: true })
 </script>

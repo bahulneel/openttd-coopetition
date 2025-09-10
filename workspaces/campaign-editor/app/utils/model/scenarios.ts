@@ -1,9 +1,10 @@
 import defu from 'defu'
-import type { Scenario, EntityOptions, ModelOptions, ScenarioFormData } from '~/types'
+import type { Scenario, EntityOptions, ModelOptions } from '~/types'
 
 export const scenarioTemplate = {
   defaults: {
     meta: {},
+    goals: [],
   },
   newItem: {
     comment: 'New scenario created with the editor',
@@ -33,12 +34,4 @@ export function isScenario(value: unknown): value is Scenario {
 
 export function asScenario<T extends ModelOptions<Scenario>>(value: T): Scenario {
   return asEntity('Scenario', defu(scenarioTemplate.defaults, value))
-}
-
-export function scenarioToFormData(scenario: Scenario): ScenarioFormData {
-  const { __id, __type, ...value } = scenario
-  return {
-    ...value,
-    id: __id,
-  }
 }
