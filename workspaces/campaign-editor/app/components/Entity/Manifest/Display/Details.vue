@@ -7,7 +7,11 @@
         <p class="text-muted-foreground">ID: {{ entityId(manifest) }}</p>
       </div>
       <div class="flex items-center space-x-2">
-        <Button variant="outline" class="openttd-button" @click="$emit('edit', manifest)">
+        <Button
+          variant="outline"
+          class="openttd-button"
+          @click="$emit('edit', manifest)"
+        >
           ✏️ Edit Manifest
         </Button>
       </div>
@@ -33,14 +37,23 @@
           </div>
         </div>
 
-        <DomainMetaInfoDisplayCard :meta-info="manifest.meta" as-partial />
+        <DomainMetaInfoDisplayCard
+          :meta-info="manifest.meta"
+          as-partial
+        />
       </CardContent>
     </Card>
 
     <!-- Contents -->
     <Card
-      v-if="manifest.contents && (manifest.contents.campaigns.length > 0 || manifest.contents.scenarios.length > 0 || manifest.contents.goals.length > 0)"
-      class="openttd-titlebar">
+      v-if="
+        manifest.contents &&
+        (manifest.contents.campaigns.length > 0 ||
+          manifest.contents.scenarios.length > 0 ||
+          manifest.contents.goals.length > 0)
+      "
+      class="openttd-titlebar"
+    >
       <CardHeader>
         <CardTitle class="flex items-center space-x-2">
           <span>📁</span>
@@ -49,15 +62,24 @@
       </CardHeader>
       <CardContent>
         <div class="space-y-3">
-          <div v-if="manifest.contents.campaigns.length > 0" class="text-sm">
+          <div
+            v-if="manifest.contents.campaigns.length > 0"
+            class="text-sm"
+          >
             <span class="font-medium text-foreground">Campaigns:</span>
             <span class="text-muted-foreground ml-2">{{ manifest.contents.campaigns.length }}</span>
           </div>
-          <div v-if="manifest.contents.scenarios.length > 0" class="text-sm">
+          <div
+            v-if="manifest.contents.scenarios.length > 0"
+            class="text-sm"
+          >
             <span class="font-medium text-foreground">Scenarios:</span>
             <span class="text-muted-foreground ml-2">{{ manifest.contents.scenarios.length }}</span>
           </div>
-          <div v-if="manifest.contents.goals.length > 0" class="text-sm">
+          <div
+            v-if="manifest.contents.goals.length > 0"
+            class="text-sm"
+          >
             <span class="font-medium text-foreground">Goals:</span>
             <span class="text-muted-foreground ml-2">{{ manifest.contents.goals.length }}</span>
           </div>
@@ -84,7 +106,7 @@
 import type { Manifest } from '~/types'
 
 defineOptions({
-  name: 'EntityManifestDisplayDetails'
+  name: 'EntityManifestDisplayDetails',
 })
 
 interface Props {

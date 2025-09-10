@@ -7,22 +7,33 @@
     empty-description="Create your first scenario to combine goals into a cohesive experience."
   >
     <template #actions>
-      <Button class="openttd-button bg-openttd-purple text-white" @click="createScenario">
+      <Button
+        class="openttd-button bg-openttd-purple text-white"
+        @click="createScenario"
+      >
         ➕ New Scenario
       </Button>
 
-      <Button variant="outline" :disabled="loading" class="openttd-button" @click="refreshScenarios">
+      <Button
+        variant="outline"
+        :disabled="loading"
+        class="openttd-button"
+        @click="refreshScenarios"
+      >
         {{ loading ? '🔄' : '↻' }} Refresh
       </Button>
     </template>
 
     <template #empty-actions>
-      <Button class="openttd-button bg-openttd-purple text-white" @click="createScenario">
+      <Button
+        class="openttd-button bg-openttd-purple text-white"
+        @click="createScenario"
+      >
         ➕ Create Your First Scenario
       </Button>
     </template>
 
-    <AggregateScenarios 
+    <AggregateScenarios
       :scenarios="scenarios"
       @edit="editScenario"
       @duplicate="duplicateScenarioHandler"
@@ -61,19 +72,19 @@ async function duplicateScenarioHandler(scenario: Scenario) {
 
     // Use entity store copy method to create a duplicate
     entityStore.copy(scenarioId, {
-      name: `${scenario.name} (Copy)`
+      name: `${scenario.name} (Copy)`,
     })
 
     toast.add({
       title: '✅ Scenario Duplicated',
       description: `Scenario "${scenario.name}" has been duplicated`,
-      color: 'green'
+      color: 'green',
     })
   } catch {
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate scenario',
-      color: 'red'
+      color: 'red',
     })
   }
 }
@@ -87,13 +98,13 @@ async function deleteScenario(scenario: Scenario) {
       toast.add({
         title: '✅ Scenario Deleted',
         description: `Scenario "${scenario.name}" has been deleted`,
-        color: 'green'
+        color: 'green',
       })
     } catch {
       toast.add({
         title: '❌ Error',
         description: 'Failed to delete scenario',
-        color: 'red'
+        color: 'red',
       })
     }
   }
@@ -113,9 +124,8 @@ async function refreshScenarios() {
     toast.add({
       title: '❌ Error',
       description: 'Failed to refresh scenarios',
-      color: 'red'
+      color: 'red',
     })
   }
 }
-
 </script>

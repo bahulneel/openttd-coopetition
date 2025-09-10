@@ -2,7 +2,11 @@ import { toast } from 'vue-sonner'
 
 export const useToast = () => {
   return {
-    add: ({ title, description, color }: { 
+    add: ({
+      title,
+      description,
+      color,
+    }: {
       title: string
       description?: string
       color?: 'green' | 'red' | 'blue' | 'yellow' | 'purple'
@@ -24,6 +28,6 @@ export const useToast = () => {
           toast(title, { description })
           break
       }
-    }
+    },
   }
 }

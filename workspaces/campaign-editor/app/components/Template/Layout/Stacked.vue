@@ -13,7 +13,7 @@ defineOptions({ name: 'TemplateLayoutStacked' })
 const props = withDefaults(defineProps<StackedLayoutProps>(), {
   order: undefined,
   classes: undefined,
-  class: undefined
+  class: undefined,
 })
 
 const slots = useSlots()
@@ -27,7 +27,10 @@ const rootClass = computed(() => cn(props.class))
 
 <template>
   <div :class="rootClass">
-    <template v-for="name in renderOrder" :key="name">
+    <template
+      v-for="name in renderOrder"
+      :key="name"
+    >
       <div :class="classes?.[name]">
         <slot :name="name" />
       </div>

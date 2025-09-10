@@ -11,7 +11,10 @@
           <p class="text-muted-foreground mb-3">
             {{ goal.comment || 'No description available' }}
           </p>
-          <DomainMetaInfoDisplayCard :meta-info="goal.meta" as-partial />
+          <DomainMetaInfoDisplayCard
+            :meta-info="goal.meta"
+            as-partial
+          />
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
@@ -24,21 +27,40 @@
             </div>
             <div v-if="goal.constraints">
               <span class="font-medium text-foreground">Constraints:</span>
-              <DomainConstraintsDisplayCard :constraints="goal.constraints" as-partial />
+              <DomainConstraintsDisplayCard
+                :constraints="goal.constraints"
+                as-partial
+              />
             </div>
           </div>
         </div>
 
-        <div v-if="!asPartial" class="flex items-center space-x-2 ml-4">
-          <Button variant="outline" size="sm" class="openttd-button" @click="$emit('edit', goal)">
+        <div
+          v-if="!asPartial"
+          class="flex items-center space-x-2 ml-4"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            class="openttd-button"
+            @click="$emit('edit', goal)"
+          >
             ✏️ Edit
           </Button>
-          <Button variant="outline" size="sm" class="openttd-button" @click="$emit('duplicate', goal)">
+          <Button
+            variant="outline"
+            size="sm"
+            class="openttd-button"
+            @click="$emit('duplicate', goal)"
+          >
             📋 Copy
           </Button>
           <Button
-variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
-            @click="$emit('delete', goal)">
+            variant="outline"
+            size="sm"
+            class="openttd-button text-red-600 hover:text-red-700"
+            @click="$emit('delete', goal)"
+          >
             🗑️ Delete
           </Button>
         </div>
@@ -47,7 +69,10 @@ variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-70
   </DefineContent>
 
   <!-- Standalone mode (default) -->
-  <Card v-if="!asPartial" class="openttd-titlebar">
+  <Card
+    v-if="!asPartial"
+    class="openttd-titlebar"
+  >
     <CardContent>
       <Content />
     </CardContent>
@@ -62,7 +87,7 @@ import { createReusableTemplate } from '@vueuse/core'
 import type { Goal } from '~/types'
 
 defineOptions({
-  name: 'EntityGoalDisplayCard'
+  name: 'EntityGoalDisplayCard',
 })
 
 interface Props {

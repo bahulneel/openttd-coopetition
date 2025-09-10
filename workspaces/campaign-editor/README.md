@@ -23,19 +23,22 @@ A modern web-based authoring tool for creating and editing OpenTTD Coopetition c
 This project has been migrated to use the latest web technologies:
 
 ### **Nuxt 4 (Compatibility Mode)**
+
 - New `app/` directory structure for better organization
 - Enhanced performance with shallow reactivity
 - Improved file watching and development experience
 - Future-ready architecture
 
-### **Tailwind CSS 4** 
+### **Tailwind CSS 4**
+
 - **5x faster full builds**, 100x faster incremental builds
 - **CSS-first configuration** using `@theme` directive
 - **Modern CSS features**: cascade layers, OKLCH colors, color-mix()
 - **OpenTTD authentic colors** using wide-gamut OKLCH color space
 
 ### **shadcn-vue Components**
-- **Copy-paste components** instead of external dependencies  
+
+- **Copy-paste components** instead of external dependencies
 - **Full customization control** over every aspect of components
 - **Reka UI foundation** for accessibility and modern patterns
 - **Perfect OpenTTD integration** with authentic game styling
@@ -46,7 +49,7 @@ All official installation steps from [shadcn-vue.com/docs/installation/nuxt](htt
 
 - ✅ **@nuxtjs/color-mode** installed and configured for dark/light mode
 - ✅ **@iconify/vue** with radix icons for theme toggle
-- ✅ **tw-animate-css** for component animations  
+- ✅ **tw-animate-css** for component animations
 - ✅ **Proper @theme inline** configuration in CSS
 - ✅ **CSS variables** and dark mode support
 - ✅ **shadcn-vue components** with OpenTTD theming
@@ -69,6 +72,7 @@ npm run dev
 ```
 
 This mode provides:
+
 - Full access to the `campaigns/` folder
 - Real-time file synchronization
 - Server-side API endpoints
@@ -85,6 +89,7 @@ npm run preview
 ```
 
 This mode provides:
+
 - Browser-only operation
 - localStorage persistence
 - Import/export via ZIP files
@@ -137,6 +142,7 @@ npm run dev:editor
 The campaign editor uses an authentic OpenTTD color scheme based on the official [OpenTTD GUI Style Guide](https://wiki.openttd.org/en/Development/GUI%20Style%20Guide):
 
 ### Color Scheme
+
 - **Green** (`--openttd-green`): Construction windows and primary actions (like OpenTTD toolbars)
 - **Brown** (`--openttd-brown`): Neutral windows and general UI elements
 - **Grey** (`--openttd-grey`): Company windows and secondary information
@@ -146,6 +152,7 @@ The campaign editor uses an authentic OpenTTD color scheme based on the official
 - **Cream** (`--openttd-cream`): Background accents
 
 ### UI Elements
+
 - **Beveled Buttons**: Classic OpenTTD-style 3D buttons with inset/outset shadows
 - **Window Frames**: Styled like OpenTTD dialog windows with proper borders
 - **Toolbars**: Green-themed like construction toolbars in the game
@@ -261,6 +268,7 @@ The editor provides REST API endpoints when running in development mode:
 ### Runtime Configuration
 
 The app automatically detects its mode and configures itself accordingly:
+
 - **Development**: Full file system access via server API
 - **SPA**: Browser-only with localStorage persistence
 
@@ -269,14 +277,17 @@ The app automatically detects its mode and configures itself accordingly:
 ### Common Issues
 
 **"Failed to load campaigns"**
+
 - In development mode, ensure you're running from the correct directory
 - Check that the `campaigns/` folder exists and is readable
 
 **"Storage quota exceeded" (SPA mode)**
+
 - Browser localStorage has limits (usually 5-10MB)
 - Use the export function to back up data, then clear browser data
 
 **Docker container won't start**
+
 - Ensure port 3000 is not already in use
 - Check Docker logs: `docker logs [container-id]`
 

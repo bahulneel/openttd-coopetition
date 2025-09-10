@@ -1,5 +1,9 @@
 <template>
-  <TemplateLayoutStacked :order="layoutOrder" class="min-h-screen bg-background" :classes="layoutClasses">
+  <TemplateLayoutStacked
+    :order="layoutOrder"
+    class="min-h-screen bg-background"
+    :classes="layoutClasses"
+  >
     <!-- Header/Navigation - OpenTTD Style -->
     <template #header>
       <MoleculeHeader>
@@ -27,6 +31,6 @@ const layoutOrder = ['header', 'default', 'footer']
 const layoutClasses = {
   header: 'sticky top-0 z-50',
   default: 'container mx-auto px-4 sm:px-6 lg:px-8 py-8',
-  footer: 'mt-16'
+  footer: 'mt-16',
 }
 </script>

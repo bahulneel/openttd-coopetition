@@ -172,6 +172,7 @@
 import { useForm } from 'vee-validate'
 import type { Campaign, CampaignValue } from '~/types'
 import { storableMeta } from '~/utils/storable'
+import { asCampaign } from '~/utils/model/campaigns'
 
 const entityStore = useEntityStore()
 const route = useRoute()

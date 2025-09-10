@@ -1,9 +1,26 @@
 <template>
-  <FormField v-slot="{ componentField }" :name="name">
+  <FormField
+    v-slot="{ componentField }"
+    :name="name"
+  >
     <FormItem>
       <FormLabel>{{ label }}</FormLabel>
       <FormControl>
-        <TagsInput v-bind="componentField" :placeholder="placeholder" class="openttd-input" />
+        <TagsInput
+          v-bind="componentField"
+          :placeholder="placeholder"
+          class="openttd-input"
+        >
+          <TagsInputItem
+            v-for="tag in componentField.modelValue"
+            :key="tag"
+            :value="tag"
+          >
+            <TagsInputItemText />
+            <TagsInputItemDelete />
+          </TagsInputItem>
+          <TagsInputInput :placeholder="placeholder" />
+        </TagsInput>
       </FormControl>
       <FormDescription v-if="description">{{ description }}</FormDescription>
       <FormMessage />
@@ -13,7 +30,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'MoleculeFormInputTags'
+  name: 'MoleculeFormInputTags',
 })
 
 interface Props {

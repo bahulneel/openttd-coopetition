@@ -8,12 +8,17 @@ interface Props extends ActionInfo {
 }
 
 withDefaults(defineProps<Props>(), {
-  disabled: false
+  disabled: false,
 })
 </script>
 
 <template>
-  <Button :variant="'outline'" size="sm" class="openttd-button" :disabled="disabled">
+  <Button
+    :variant="'outline'"
+    size="sm"
+    class="openttd-button"
+    :disabled="disabled"
+  >
     {{ label }}
   </Button>
 </template>

@@ -1,6 +1,10 @@
 <template>
   <div class="text-sm text-muted-foreground">
-    <span v-if="rewardSet && hasRewards" class="font-medium">{{ getRewardDescription(rewardSet) }}</span>
+    <span
+      v-if="rewardSet && hasRewards"
+      class="font-medium"
+      >{{ getRewardDescription(rewardSet) }}</span
+    >
     <span v-else>No rewards defined</span>
   </div>
 </template>
@@ -9,7 +13,7 @@
 import type { RewardSet } from '~/types'
 
 defineOptions({
-  name: 'DomainRewardSetDisplaySummary'
+  name: 'DomainRewardSetDisplaySummary',
 })
 
 interface Props {
@@ -21,8 +25,12 @@ const props = defineProps<Props>()
 
 const hasRewards = computed(() => {
   if (!props.rewardSet) return false
-  return !!(props.rewardSet.cash || props.rewardSet.score || props.rewardSet.reputation ||
-    (props.rewardSet.unlocks && props.rewardSet.unlocks.length > 0))
+  return !!(
+    props.rewardSet.cash ||
+    props.rewardSet.score ||
+    props.rewardSet.reputation ||
+    (props.rewardSet.unlocks && props.rewardSet.unlocks.length > 0)
+  )
 })
 
 function getRewardDescription(rewardSet: RewardSet): string {

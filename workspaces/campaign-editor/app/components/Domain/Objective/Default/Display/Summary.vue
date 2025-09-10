@@ -1,6 +1,10 @@
 <template>
   <div class="text-sm text-muted-foreground">
-    <span v-if="objective" class="font-medium">{{ getObjectiveDescription(objective) }}</span>
+    <span
+      v-if="objective"
+      class="font-medium"
+      >{{ getObjectiveDescription(objective) }}</span
+    >
     <span v-else>No objective defined</span>
   </div>
 </template>
@@ -9,7 +13,7 @@
 import type { Objective } from '~/types'
 
 defineOptions({
-  name: 'DomainObjectiveDefaultDisplaySummary'
+  name: 'DomainObjectiveDefaultDisplaySummary',
 })
 
 interface Props {

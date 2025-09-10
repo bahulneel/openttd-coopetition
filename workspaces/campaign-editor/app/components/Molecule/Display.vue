@@ -1,6 +1,10 @@
 <template>
   <div class="space-y-2">
-    <div v-for="(value, key) in data" :key="key" class="flex justify-between">
+    <div
+      v-for="(value, key) in data"
+      :key="key"
+      class="flex justify-between"
+    >
       <span class="font-medium text-foreground">{{ formatKey(key) }}:</span>
       <span class="text-muted-foreground">{{ formatValue(value) }}</span>
     </div>
@@ -9,7 +13,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'MoleculeDisplay'
+  name: 'MoleculeDisplay',
 })
 
 interface Props {
@@ -19,7 +23,7 @@ interface Props {
 defineProps<Props>()
 
 function formatKey(key: string): string {
-  return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 function formatValue(value: unknown): string {

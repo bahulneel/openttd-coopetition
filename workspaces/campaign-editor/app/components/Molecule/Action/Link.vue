@@ -12,7 +12,11 @@ defineProps<Props>()
 
 <template>
   <NuxtLink :to="to">
-    <Button :variant="'outline'" size="sm" class="openttd-button">
+    <Button
+      :variant="'outline'"
+      size="sm"
+      class="openttd-button"
+    >
       {{ label }}
     </Button>
   </NuxtLink>

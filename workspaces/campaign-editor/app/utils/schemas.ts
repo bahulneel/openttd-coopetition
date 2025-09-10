@@ -338,7 +338,7 @@ const packageStructureSchema: z.ZodType<Types.PackageStructure> = z.object({
 
 // Main entity schemas - using EntityValue types for form validation
 const goalSchemaBase: z.ZodType<Types.GoalValue> = z.object({
-  name: z.string(),
+  name: z.string().min(1, 'Goal name is required'),
   comment: z.string().optional(),
   meta: metaInfoSchema,
   type: goalTypeSchema.optional(),
@@ -349,7 +349,7 @@ const goalSchemaBase: z.ZodType<Types.GoalValue> = z.object({
 })
 
 const scenarioSchemaBase: z.ZodType<Types.ScenarioValue> = z.object({
-  name: z.string(),
+  name: z.string().min(1, 'Scenario name is required'),
   comment: z.string().optional(),
   meta: metaInfoSchema,
   goals: z.array(scenarioGoalSchema),
@@ -359,7 +359,7 @@ const scenarioSchemaBase: z.ZodType<Types.ScenarioValue> = z.object({
 })
 
 const campaignSchemaBase: z.ZodType<Types.CampaignValue> = z.object({
-  name: z.string(),
+  name: z.string().min(1, 'Campaign name is required'),
   comment: z.string().optional(),
   meta: metaInfoSchema,
   scenarios: z.array(campaignScenarioSchema),
