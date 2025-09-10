@@ -36,7 +36,8 @@
         <FormItem>
           <FormLabel>Description</FormLabel>
           <FormControl>
-            <Textarea v-bind="descriptionField" placeholder="Describe what this requires..." class="openttd-input"
+            <Textarea
+v-bind="descriptionField" placeholder="Describe what this requires..." class="openttd-input"
               rows="3" />
           </FormControl>
           <FormMessage />

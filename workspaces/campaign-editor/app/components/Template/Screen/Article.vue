@@ -12,14 +12,14 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <slot name="actions" />
+        <slot name="actions" ></slot>
       </div>
     </div>
 
     <!-- Content -->
     <Card class="openttd-titlebar">
       <CardContent class="pt-6">
-        <slot />
+        <slot ></slot>
       </CardContent>
     </Card>
   </div>

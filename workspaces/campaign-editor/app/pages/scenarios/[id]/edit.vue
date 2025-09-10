@@ -1,34 +1,57 @@
 <template>
-  <div v-if="loading" class="flex justify-center py-12">
+  <div
+    v-if="loading"
+    class="flex justify-center py-12"
+  >
     <div class="text-center">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
       <p class="text-muted-foreground">Loading scenario...</p>
     </div>
   </div>
 
-  <div v-else-if="error" class="space-y-6">
+  <div
+    v-else-if="error"
+    class="space-y-6"
+  >
     <Alert class="border-destructive bg-destructive/10">
       <AlertTitle class="text-destructive">⚠️ Error</AlertTitle>
       <AlertDescription class="text-destructive">
         {{ error }}
-        <Button variant="ghost" size="sm" class="ml-2 text-destructive" @click="error = undefined">
+        <Button
+          variant="ghost"
+          size="sm"
+          class="ml-2 text-destructive"
+          @click="error = undefined"
+        >
           ✕ Dismiss
         </Button>
       </AlertDescription>
     </Alert>
 
     <div class="flex justify-center">
-      <Button variant="outline" class="openttd-button" @click="navigateTo('/scenarios')">
+      <Button
+        variant="outline"
+        class="openttd-button"
+        @click="navigateTo('/scenarios')"
+      >
         ← Back to Scenarios
       </Button>
     </div>
   </div>
 
-  <div v-else class="space-y-6">
+  <div
+    v-else
+    class="space-y-6"
+  >
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div class="flex items-center space-x-4">
-        <Button variant="ghost" size="sm" class="openttd-button" @click="navigateTo('/scenarios')">
+        <Button
+          variant="ghost"
+          size="sm"
+          class="openttd-button"
+          @click="navigateTo('/scenarios')"
+        >
           ← Back to Scenarios
         </Button>
 
@@ -36,25 +59,34 @@
           <h1 class="text-2xl font-bold text-foreground">
             {{ scenario?.name }}
           </h1>
-          <p class="text-muted-foreground">
-            Edit scenario details and configuration
-          </p>
+          <p class="text-muted-foreground">Edit scenario details and configuration</p>
         </div>
       </div>
 
       <div class="flex items-center space-x-2">
-        <Button variant="outline" class="openttd-button" @click="duplicateScenario">
+        <Button
+          variant="outline"
+          class="openttd-button"
+          @click="duplicateScenario"
+        >
           📄 Duplicate
         </Button>
 
-        <Button variant="outline" class="openttd-button" @click="previewScenario">
+        <Button
+          variant="outline"
+          class="openttd-button"
+          @click="previewScenario"
+        >
           👁️ Preview
         </Button>
       </div>
     </div>
 
     <!-- Scenario Form -->
-    <EntityScenarioInputDetails v-if="scenario" v-model="scenario">
+    <EntityScenarioInputDetails
+      v-if="scenario"
+      v-model="scenario"
+    >
       <template #actions>
         <div class="flex items-center justify-between pt-6 border-t border-border">
           <div class="flex items-center space-x-4">
@@ -64,12 +96,21 @@
           </div>
 
           <div class="flex items-center space-x-2">
-            <Button type="button" variant="outline" class="openttd-button" @click="resetScenario">
+            <Button
+              type="button"
+              variant="outline"
+              class="openttd-button"
+              @click="resetScenario"
+            >
               ↺ Reset
             </Button>
 
-            <Button type="button" :disabled="saving" class="openttd-button bg-openttd-purple text-white"
-              @click="saveScenario">
+            <Button
+              type="button"
+              :disabled="saving"
+              class="openttd-button bg-openttd-purple text-white"
+              @click="saveScenario"
+            >
               {{ saving ? '💾 Saving...' : '💾 Save Changes' }}
             </Button>
           </div>
@@ -137,14 +178,14 @@ async function saveScenario() {
     toast.add({
       title: '💾 Scenario Saved',
       description: `Scenario "${scenario.value.name}" has been saved.`,
-      color: 'green'
+      color: 'green',
     })
   } catch {
     const toast = useToast()
     toast.add({
       title: '❌ Error',
       description: 'Failed to save scenario',
-      color: 'red'
+      color: 'red',
     })
   } finally {
     saving.value = false
@@ -169,7 +210,7 @@ async function duplicateScenario() {
     toast.add({
       title: '📄 Scenario Duplicated',
       description: `Scenario "${duplicate.name}" has been created.`,
-      color: 'green'
+      color: 'green',
     })
     router.push(`/scenarios/${entityId(duplicate)}`)
   } catch {
@@ -177,7 +218,7 @@ async function duplicateScenario() {
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate scenario',
-      color: 'red'
+      color: 'red',
     })
   }
 }

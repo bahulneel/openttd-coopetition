@@ -6,7 +6,8 @@
         <FormItem>
           <FormLabel>Goal</FormLabel>
           <FormControl>
-            <MoleculeFormInputEntity v-bind="includeField" :entities="goals" entity-type="goal"
+            <MoleculeFormInputEntity
+v-bind="includeField" :entities="goals" entity-type="goal"
               placeholder="Select a goal..." by="id" />
           </FormControl>
           <FormMessage />

@@ -18,6 +18,6 @@ const forwarded = useForwardProps(delegatedProps)
     v-bind="forwarded"
     :class="cn('ml-auto', props.class)"
   >
-    <slot />
+    <slot ></slot>
   </ComboboxItemIndicator>
 </template>

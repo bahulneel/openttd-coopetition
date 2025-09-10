@@ -33,7 +33,7 @@ const hasHeader = computed(() => !!props.title || !!props.subtitle || !!slots.ac
     </div>
 
     <div class="space-y-8">
-      <slot />
+      <slot ></slot>
     </div>
   </section>
 </template>

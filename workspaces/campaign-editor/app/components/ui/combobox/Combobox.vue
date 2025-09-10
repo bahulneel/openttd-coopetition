@@ -13,6 +13,6 @@ const forwarded = useForwardPropsEmits(props, emits)
     data-slot="combobox"
     v-bind="forwarded"
   >
-    <slot />
+    <slot ></slot>
   </ComboboxRoot>
 </template>

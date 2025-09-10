@@ -36,7 +36,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 
       v-bind="{ ...forwarded, ...$attrs }"
     >
-      <slot />
+      <slot ></slot>
     </ComboboxInput>
   </div>
 </template>

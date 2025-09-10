@@ -16,7 +16,7 @@ const rootClass = computed(() => cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-col
 
 <template>
   <div :class="rootClass">
-    <slot />
+    <slot ></slot>
   </div>
 </template>
 

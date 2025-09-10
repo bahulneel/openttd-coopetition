@@ -16,7 +16,7 @@ const rootClass = computed(() => cn('space-y-6 md:space-y-8', props.class))
 
 <template>
   <div :class="rootClass">
-    <slot />
+    <slot ></slot>
   </div>
 </template>
 

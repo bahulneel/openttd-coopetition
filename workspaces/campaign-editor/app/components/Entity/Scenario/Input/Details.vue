@@ -10,51 +10,79 @@
       </CardHeader>
       <CardContent>
         <MoleculeFormGroup>
-          <FormField v-slot="{ componentField }" name="id">
+          <FormField
+            v-slot="{ componentField }"
+            name="id"
+          >
             <FormItem>
               <FormLabel>Scenario ID *</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" placeholder="scenario_unique_id" />
+                <Input
+                  v-bind="componentField"
+                  placeholder="scenario_unique_id"
+                />
               </FormControl>
               <FormDescription>Unique identifier for this scenario</FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="name">
+          <FormField
+            v-slot="{ componentField }"
+            name="name"
+          >
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" placeholder="Scenario Name" />
+                <Input
+                  v-bind="componentField"
+                  placeholder="Scenario Name"
+                />
               </FormControl>
               <FormDescription>Display name for the scenario</FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="include">
+          <FormField
+            v-slot="{ componentField }"
+            name="include"
+          >
             <FormItem>
               <FormLabel>Include File *</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" placeholder="scenario_file.nut" />
+                <Input
+                  v-bind="componentField"
+                  placeholder="scenario_file.nut"
+                />
               </FormControl>
               <FormDescription>Scenario file to include</FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="order">
+          <FormField
+            v-slot="{ componentField }"
+            name="order"
+          >
             <FormItem>
               <FormLabel>Order</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" type="number" placeholder="1" />
+                <Input
+                  v-bind="componentField"
+                  type="number"
+                  placeholder="1"
+                />
               </FormControl>
               <FormDescription>Display order in campaign</FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="meta.difficulty">
+          <FormField
+            v-slot="{ componentField }"
+            name="meta.difficulty"
+          >
             <FormItem>
               <FormLabel>Difficulty</FormLabel>
               <Select v-bind="componentField">
@@ -76,11 +104,17 @@
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="meta.estimated_time">
+          <FormField
+            v-slot="{ componentField }"
+            name="meta.estimated_time"
+          >
             <FormItem>
               <FormLabel>Estimated Time</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" placeholder="e.g., 1-2 hours" />
+                <Input
+                  v-bind="componentField"
+                  placeholder="e.g., 1-2 hours"
+                />
               </FormControl>
               <FormDescription>Expected time to complete</FormDescription>
               <FormMessage />
@@ -89,11 +123,18 @@
         </MoleculeFormGroup>
 
         <div class="mt-6">
-          <FormField v-slot="{ componentField }" name="meta.description">
+          <FormField
+            v-slot="{ componentField }"
+            name="meta.description"
+          >
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea v-bind="componentField" placeholder="Describe your scenario..." class="min-h-24" />
+                <Textarea
+                  v-bind="componentField"
+                  placeholder="Describe your scenario..."
+                  class="min-h-24"
+                />
               </FormControl>
               <FormDescription>Detailed description of the scenario</FormDescription>
               <FormMessage />
@@ -112,8 +153,12 @@
         </div>
       </CardHeader>
       <CardContent>
-        <MoleculeFormInputTags name="meta.tags" label="Tags" placeholder="Add tags..."
-          description="Add relevant tags for categorization" />
+        <MoleculeFormInputTags
+          name="meta.tags"
+          label="Tags"
+          placeholder="Add tags..."
+          description="Add relevant tags for categorization"
+        />
       </CardContent>
     </Card>
 
@@ -126,30 +171,42 @@
         </div>
       </CardHeader>
       <CardContent>
-        <AggregateInput v-model="formData.goals" @add-item="addGoal">
-          <template #collection="{ items, remove }">
-            <div v-for="(goal, index) in items" :key="index" class="space-y-4">
+        <AggregateInput
+          v-model="formData.goals"
+          :default-item="createDefaultGoal"
+        >
+          <template #collection="{ items }">
+            <div
+              v-for="(goal, index) in items"
+              :key="`goal-${index}`"
+              class="space-y-4"
+            >
               <div class="p-4 border border-border rounded-lg">
                 <div class="flex items-center justify-between mb-4">
                   <h4 class="font-medium">Goal {{ index + 1 }}</h4>
-                  <Button type="button" variant="ghost" size="sm"
-                    class="text-destructive hover:text-destructive-foreground" @click="remove(index)">
-                    🗑️ Remove
-                  </Button>
                 </div>
 
                 <MoleculeFormGroup>
-                  <FormField v-slot="{ componentField }" :name="`goals.${index}.name`">
+                  <FormField
+                    v-slot="{ componentField }"
+                    :name="`goals.${index}.name`"
+                  >
                     <FormItem>
                       <FormLabel>Goal Name</FormLabel>
                       <FormControl>
-                        <Input v-bind="componentField" placeholder="Goal Name" />
+                        <Input
+                          v-bind="componentField"
+                          placeholder="Goal Name"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   </FormField>
 
-                  <FormField v-slot="{ componentField }" :name="`goals.${index}.type`">
+                  <FormField
+                    v-slot="{ componentField }"
+                    :name="`goals.${index}.type`"
+                  >
                     <FormItem>
                       <FormLabel>Type</FormLabel>
                       <Select v-bind="componentField">
@@ -177,8 +234,12 @@
             <p>No goals added yet. Click "Add Goal" to get started.</p>
           </template>
 
-          <template #new-item="{ add }">
-            <Button type="button" variant="outline" class="openttd-button" @click="add">
+          <template #new-item>
+            <Button
+              type="button"
+              variant="outline"
+              class="openttd-button"
+            >
               ➕ Add Goal
             </Button>
           </template>
@@ -195,37 +256,23 @@
 // import type { Scenario } from '~/types' // TODO: Use when implementing scenario functionality
 
 defineOptions({
-  name: 'EntityScenarioInputDetails'
+  name: 'EntityScenarioInputDetails',
 })
 
 const formData = defineModel<ScenarioFormData>({ required: true })
 
-// Form methods
-
-function addGoal() {
+// Default goal creation function
+function createDefaultGoal() {
   const currentGoals = formData.value.goals || []
-  const newGoal = {
+  return {
     include: {
       __ref: {
         id: '',
-        type: 'Goal' as const
-      }
+        type: 'Goal' as const,
+      },
     },
     order: currentGoals.length + 1,
-    required: true
-  }
-  formData.value = {
-    ...formData.value,
-    goals: [...currentGoals, newGoal]
-  }
-}
-
-function removeGoal(index: number) {
-  const currentGoals = formData.value.goals || []
-  const newGoals = currentGoals.filter((_: unknown, i: number) => i !== index)
-  formData.value = {
-    ...formData.value,
-    goals: newGoals
+    required: true,
   }
 }
 </script>

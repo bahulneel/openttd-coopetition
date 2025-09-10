@@ -10,29 +10,44 @@
       </CardHeader>
       <CardContent>
         <MoleculeFormGroup>
-          <FormField v-slot="{ componentField }" name="id">
+          <FormField
+            v-slot="{ componentField }"
+            name="id"
+          >
             <FormItem>
               <FormLabel>Campaign ID *</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" placeholder="campaign_unique_id" />
+                <Input
+                  v-bind="componentField"
+                  placeholder="campaign_unique_id"
+                />
               </FormControl>
               <FormDescription>Unique identifier for this campaign</FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="meta.title">
+          <FormField
+            v-slot="{ componentField }"
+            name="meta.title"
+          >
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" placeholder="Campaign Title" />
+                <Input
+                  v-bind="componentField"
+                  placeholder="Campaign Title"
+                />
               </FormControl>
               <FormDescription>Display name for the campaign</FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="meta.difficulty">
+          <FormField
+            v-slot="{ componentField }"
+            name="meta.difficulty"
+          >
             <FormItem>
               <FormLabel>Difficulty</FormLabel>
               <Select v-bind="componentField">
@@ -54,11 +69,17 @@
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="meta.estimated_time">
+          <FormField
+            v-slot="{ componentField }"
+            name="meta.estimated_time"
+          >
             <FormItem>
               <FormLabel>Estimated Time</FormLabel>
               <FormControl>
-                <Input v-bind="componentField" placeholder="e.g., 2-3 hours" />
+                <Input
+                  v-bind="componentField"
+                  placeholder="e.g., 2-3 hours"
+                />
               </FormControl>
               <FormDescription>Expected time to complete</FormDescription>
               <FormMessage />
@@ -67,11 +88,18 @@
         </MoleculeFormGroup>
 
         <div class="mt-6">
-          <FormField v-slot="{ componentField }" name="meta.description">
+          <FormField
+            v-slot="{ componentField }"
+            name="meta.description"
+          >
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea v-bind="componentField" placeholder="Describe your campaign..." class="min-h-24" />
+                <Textarea
+                  v-bind="componentField"
+                  placeholder="Describe your campaign..."
+                  class="min-h-24"
+                />
               </FormControl>
               <FormDescription>Detailed description of the campaign</FormDescription>
               <FormMessage />
@@ -90,8 +118,12 @@
         </div>
       </CardHeader>
       <CardContent>
-        <MoleculeFormInputTags name="meta.tags" label="Tags" placeholder="Add tags..."
-          description="Add relevant tags for categorization" />
+        <MoleculeFormInputTags
+          name="meta.tags"
+          label="Tags"
+          placeholder="Add tags..."
+          description="Add relevant tags for categorization"
+        />
       </CardContent>
     </Card>
 
@@ -104,44 +136,66 @@
         </div>
       </CardHeader>
       <CardContent>
-        <AggregateInput v-model="formData.scenarios" @add-item="addScenario">
-          <template #collection="{ items, remove }">
-            <div v-for="(scenario, index) in items" :key="index" class="space-y-4">
+        <AggregateInput
+          v-model="formData.scenarios"
+          :default-item="createDefaultScenario"
+        >
+          <template #collection="{ items }">
+            <div
+              v-for="(scenario, index) in items"
+              :key="`scenario-${index}`"
+              class="space-y-4"
+            >
               <div class="p-4 border border-border rounded-lg">
                 <div class="flex items-center justify-between mb-4">
                   <h4 class="font-medium">Scenario {{ scenario.order }}</h4>
-                  <Button type="button" variant="ghost" size="sm"
-                    class="text-destructive hover:text-destructive-foreground" @click="remove(index)">
-                    🗑️ Remove
-                  </Button>
                 </div>
 
                 <MoleculeFormGroup>
-                  <FormField v-slot="{ componentField }" :name="`scenarios.${index}.include.id`">
+                  <FormField
+                    v-slot="{ componentField }"
+                    :name="`scenarios.${index}.include.id`"
+                  >
                     <FormItem>
                       <FormLabel>Include</FormLabel>
                       <FormControl>
-                        <Input v-bind="componentField" placeholder="scenario_file.nut" />
+                        <Input
+                          v-bind="componentField"
+                          placeholder="scenario_file.nut"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   </FormField>
 
-                  <FormField v-slot="{ componentField }" :name="`scenarios.${index}.order`">
+                  <FormField
+                    v-slot="{ componentField }"
+                    :name="`scenarios.${index}.order`"
+                  >
                     <FormItem>
                       <FormLabel>Order</FormLabel>
                       <FormControl>
-                        <Input v-bind="componentField" type="number" :value="scenario.order"
-                          @input="updateScenarioOrder(index, $event)" />
+                        <Input
+                          v-bind="componentField"
+                          type="number"
+                          :value="scenario.order"
+                          @input="updateScenarioOrder(index, $event)"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   </FormField>
 
-                  <FormField v-slot="{ componentField }" :name="`scenarios.${index}.required`">
+                  <FormField
+                    v-slot="{ componentField }"
+                    :name="`scenarios.${index}.required`"
+                  >
                     <FormItem class="flex items-center space-x-2">
                       <FormControl>
-                        <Toggle v-bind="componentField" :pressed="scenario.required" />
+                        <Toggle
+                          v-bind="componentField"
+                          :pressed="scenario.required"
+                        />
                       </FormControl>
                       <FormLabel class="text-sm">Required</FormLabel>
                       <FormMessage />
@@ -156,8 +210,12 @@
             <p>No scenarios added yet. Click "Add Scenario" to get started.</p>
           </template>
 
-          <template #new-item="{ add }">
-            <Button type="button" variant="outline" class="openttd-button" @click="add">
+          <template #new-item>
+            <Button
+              type="button"
+              variant="outline"
+              class="openttd-button"
+            >
               ➕ Add Scenario
             </Button>
           </template>
@@ -184,44 +242,26 @@
 </template>
 
 <script setup lang="ts">
-import type { CampaignScenario, CampaignFormData, CampaignSettings } from '~/types'
+import type { CampaignFormData } from '~/types'
 
 defineOptions({
-  name: 'EntityCampaignInputDetails'
+  name: 'EntityCampaignInputDetails',
 })
 
 const formData = defineModel<CampaignFormData>({ required: true })
 
-// Form methods
-
-function addScenario() {
+// Default scenario creation function
+function createDefaultScenario() {
   const currentScenarios = formData.value.scenarios || []
-  const newScenario = {
+  return {
     include: {
       __ref: {
         id: '',
-        type: 'Scenario' as const
-      }
+        type: 'Scenario' as const,
+      },
     },
     order: currentScenarios.length + 1,
-    required: true
-  }
-  formData.value = {
-    ...formData.value,
-    scenarios: [...currentScenarios, newScenario]
-  }
-}
-
-function removeScenario(index: number) {
-  const currentScenarios = formData.value.scenarios || []
-  const newScenarios = currentScenarios.filter((_: unknown, i: number) => i !== index)
-  // Reorder remaining scenarios
-  newScenarios.forEach((scenario: CampaignScenario, idx: number) => {
-    scenario.order = idx + 1
-  })
-  formData.value = {
-    ...formData.value,
-    scenarios: newScenarios
+    required: true,
   }
 }
 
@@ -236,12 +276,12 @@ function updateScenarioOrder(index: number, event: Event) {
       ...currentScenario,
       order: newOrder,
       include: currentScenario.include || '',
-      required: currentScenario.required ?? true
+      required: currentScenario.required ?? true,
     }
   }
   formData.value = {
     ...formData.value,
-    scenarios: updatedScenarios
+    scenarios: updatedScenarios,
   }
 }
 </script>

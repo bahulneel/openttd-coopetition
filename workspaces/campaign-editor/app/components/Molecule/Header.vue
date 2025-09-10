@@ -54,7 +54,7 @@ const resetAll = () => {
         </div>
 
         <!-- Middle: default slot -->
-        <slot />
+        <slot ></slot>
 
         <!-- Right: Actions (no choice) -->
         <div class="flex items-center space-x-3">

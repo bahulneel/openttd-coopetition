@@ -1,24 +1,35 @@
 <template>
-  <form class="space-y-6" @submit.prevent="$emit('submit')">
+  <form
+    class="space-y-6"
+    @submit.prevent="$emit('submit')"
+  >
     <!-- Basic Information -->
     <div class="space-y-4">
       <h3 class="text-lg font-semibold text-foreground">Basic Information</h3>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField v-slot="{ componentField }" name="id">
+        <FormField
+          v-slot="{ componentField }"
+          name="id"
+        >
           <FormItem>
             <FormLabel>Goal ID</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" placeholder="e.g., coal_delivery_goal" class="openttd-input" />
+              <Input
+                v-bind="componentField"
+                placeholder="e.g., coal_delivery_goal"
+                class="openttd-input"
+              />
             </FormControl>
-            <FormDescription>
-              Unique identifier for this goal
-            </FormDescription>
+            <FormDescription> Unique identifier for this goal </FormDescription>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="type">
+        <FormField
+          v-slot="{ componentField }"
+          name="type"
+        >
           <FormItem>
             <FormLabel>Goal Type</FormLabel>
             <Select v-bind="componentField">
@@ -39,11 +50,18 @@
         </FormField>
       </div>
 
-      <FormField v-slot="{ componentField }" name="name">
+      <FormField
+        v-slot="{ componentField }"
+        name="name"
+      >
         <FormItem>
           <FormLabel>Name</FormLabel>
           <FormControl>
-            <Input v-bind="componentField" placeholder="e.g., Coal Delivery Challenge" class="openttd-input" />
+            <Input
+              v-bind="componentField"
+              placeholder="e.g., Coal Delivery Challenge"
+              class="openttd-input"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -95,41 +113,72 @@
       <h3 class="text-lg font-semibold text-foreground">Rewards</h3>
 
       <MoleculeFormGroup>
-        <FormField v-slot="{ componentField }" name="result.cash">
+        <FormField
+          v-slot="{ componentField }"
+          name="result.cash"
+        >
           <FormItem>
             <FormLabel>Cash Reward</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" type="number" placeholder="e.g., 50000" class="openttd-input" />
+              <Input
+                v-bind="componentField"
+                type="number"
+                placeholder="e.g., 50000"
+                class="openttd-input"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="result.score">
+        <FormField
+          v-slot="{ componentField }"
+          name="result.score"
+        >
           <FormItem>
             <FormLabel>Score Reward</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" type="number" placeholder="e.g., 100" class="openttd-input" />
+              <Input
+                v-bind="componentField"
+                type="number"
+                placeholder="e.g., 100"
+                class="openttd-input"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="result.reputation">
+        <FormField
+          v-slot="{ componentField }"
+          name="result.reputation"
+        >
           <FormItem>
             <FormLabel>Reputation Reward</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" type="number" placeholder="e.g., 10" class="openttd-input" />
+              <Input
+                v-bind="componentField"
+                type="number"
+                placeholder="e.g., 10"
+                class="openttd-input"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="result.unlock">
+        <FormField
+          v-slot="{ componentField }"
+          name="result.unlock"
+        >
           <FormItem>
             <FormLabel>Unlock</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" placeholder="e.g., new_vehicle_type" class="openttd-input" />
+              <Input
+                v-bind="componentField"
+                placeholder="e.g., new_vehicle_type"
+                class="openttd-input"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -145,7 +194,7 @@
 import { useFormValues } from 'vee-validate'
 
 defineOptions({
-  name: 'EntityGoalInputDetails'
+  name: 'EntityGoalInputDetails',
 })
 
 defineEmits<{

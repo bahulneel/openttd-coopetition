@@ -1,14 +1,15 @@
 <template>
   <div class="space-y-4">
     <TemplateLayoutList>
-      <DomainCampaignScenarioDisplayItem v-for="campaignScenario in campaignScenarios"
+      <DomainCampaignScenarioDisplayItem
+v-for="campaignScenario in campaignScenarios"
         :key="`${referenceId(campaignScenario.include)}-${campaignScenario.order || 0}`"
         :campaign-scenario="campaignScenario" @edit="$emit('edit', $event)" />
     </TemplateLayoutList>
 
     <!-- Action Slot -->
     <div v-if="$slots.actions" class="flex justify-end">
-      <slot name="actions" />
+      <slot name="actions" ></slot>
     </div>
   </div>
 </template>

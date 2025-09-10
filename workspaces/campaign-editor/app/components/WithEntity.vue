@@ -9,6 +9,12 @@ const entity = computed(() => useResolveEntity<T, E>(props.entity))
 </script>
 
 <template>
-  <slot v-if="entity" :value="entity" />
-  <slot v-else name="fallback" />
+  <slot
+    v-if="entity"
+    :value="entity"
+  />
+  <slot
+    v-else
+    name="fallback"
+  />
 </template>

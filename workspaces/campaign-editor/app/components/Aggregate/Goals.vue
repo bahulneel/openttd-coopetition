@@ -1,13 +1,14 @@
 <template>
   <div class="space-y-4">
     <TemplateLayoutList>
-      <EntityGoalDisplayCard v-for="goal in goals" :key="entityId(goal)" :goal="goal" @edit="$emit('edit', $event)"
+      <EntityGoalDisplayCard
+v-for="goal in goals" :key="entityId(goal)" :goal="goal" @edit="$emit('edit', $event)"
         @duplicate="$emit('duplicate', $event)" @delete="$emit('delete', $event)" />
     </TemplateLayoutList>
 
     <!-- Action Slot -->
     <div v-if="$slots.actions" class="flex justify-end">
-      <slot name="actions" />
+      <slot name="actions" ></slot>
     </div>
   </div>
 </template>

@@ -12,13 +12,13 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <slot name="actions" />
+        <slot name="actions" ></slot>
       </div>
     </div>
 
     <!-- Content -->
     <div v-if="_props.hasContent" class="space-y-4">
-      <slot />
+      <slot ></slot>
     </div>
 
     <!-- Empty State -->
@@ -32,7 +32,7 @@
           <p class="text-muted-foreground mb-6">
             <slot name="empty-description">{{ _props.emptyDescription }}</slot>
           </p>
-          <slot name="empty-actions" />
+          <slot name="empty-actions" ></slot>
         </div>
       </CardContent>
     </Card>

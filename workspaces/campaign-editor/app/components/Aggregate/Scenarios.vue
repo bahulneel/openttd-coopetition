@@ -1,13 +1,14 @@
 <template>
   <div class="space-y-4">
     <TemplateLayoutList>
-      <EntityScenarioDisplayCard v-for="scenario in scenarios" :key="entityId(scenario)" :scenario="scenario"
+      <EntityScenarioDisplayCard
+v-for="scenario in scenarios" :key="entityId(scenario)" :scenario="scenario"
         @edit="$emit('edit', $event)" @duplicate="$emit('duplicate', $event)" @delete="$emit('delete', $event)" />
     </TemplateLayoutList>
 
     <!-- Action Slot -->
     <div v-if="$slots.actions" class="flex justify-end">
-      <slot name="actions" />
+      <slot name="actions" ></slot>
     </div>
   </div>
 </template>

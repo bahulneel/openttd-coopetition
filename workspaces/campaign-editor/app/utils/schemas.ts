@@ -28,9 +28,7 @@ import type {
   Scenario,
   PackageStructure,
   Manifest,
-  AnyItem,
 } from '~/types/model'
-
 // Form data utility type and aliases - just use EntityValue directly
 export type GoalFormData = EntityValue<Goal>
 export type ScenarioFormData = EntityValue<Scenario>
@@ -454,4 +452,3 @@ export const schemas = {
   campaign: campaignSchemaBase,
   campaignManifest: campaignManifestSchemaBase,
 } as const
-

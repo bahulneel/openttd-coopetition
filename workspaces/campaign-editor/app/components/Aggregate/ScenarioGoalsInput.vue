@@ -1,13 +1,15 @@
 <template>
   <AggregateInput v-model="modelValue" class="space-y-4">
     <template #collection="{ items, remove }">
-      <div v-for="(scenarioGoal, index) in items"
+      <div
+v-for="(scenarioGoal, index) in items"
         :key="`${referenceId(scenarioGoal.include)}-${scenarioGoal.order || 0}`" class="space-y-2">
         <div class="flex items-center justify-between p-3 border border-border rounded-lg">
           <div class="flex-1">
             <DomainScenarioGoalDisplayItem :scenario-goal="scenarioGoal" @edit="handleEdit(index)" />
           </div>
-          <Button type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
+          <Button
+type="button" variant="ghost" size="sm" class="text-destructive hover:text-destructive-foreground"
             @click="remove(index)">
             🗑️ Remove
           </Button>

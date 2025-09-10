@@ -27,7 +27,8 @@
           <Button variant="outline" size="sm" class="openttd-button" @click="$emit('duplicate', scenario)">
             📋 Copy
           </Button>
-          <Button variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
+          <Button
+variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
             @click="$emit('delete', scenario)">
             🗑️ Delete
           </Button>
