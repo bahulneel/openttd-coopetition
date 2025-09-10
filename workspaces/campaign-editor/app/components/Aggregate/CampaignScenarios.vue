@@ -2,13 +2,18 @@
   <div class="space-y-4">
     <TemplateLayoutList>
       <DomainCampaignScenarioDisplayItem
-v-for="campaignScenario in campaignScenarios"
+        v-for="campaignScenario in campaignScenarios"
         :key="`${referenceId(campaignScenario.include)}-${campaignScenario.order || 0}`"
-        :campaign-scenario="campaignScenario" @edit="$emit('edit', $event)" />
+        :campaign-scenario="campaignScenario"
+        @edit="$emit('edit', $event)"
+      />
     </TemplateLayoutList>
 
     <!-- Action Slot -->
-    <div v-if="$slots.actions" class="flex justify-end">
+    <div
+      v-if="$slots.actions"
+      class="flex justify-end"
+    >
       <slot name="actions" />
     </div>
   </div>
@@ -18,7 +23,7 @@ v-for="campaignScenario in campaignScenarios"
 import type { CampaignScenario } from '~/types'
 
 defineOptions({
-  name: 'AggregateCampaignScenarios'
+  name: 'AggregateCampaignScenarios',
 })
 
 interface Props {

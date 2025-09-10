@@ -1,19 +1,34 @@
 <template>
   <TemplateScreenDashboard
-title="Campaign Editor Dashboard"
-    subtitle="Create, edit, and manage OpenTTD Coopetition campaigns">
+    title="Campaign Editor Dashboard"
+    subtitle="Create, edit, and manage OpenTTD Coopetition campaigns"
+  >
     <template #actions>
-      <Button size="sm" class="openttd-button bg-openttd-green text-white" @click="createNewCampaign">
+      <Button
+        size="sm"
+        class="openttd-button bg-openttd-green text-white"
+        @click="createNewCampaign"
+      >
         ➕ New Campaign
       </Button>
 
-      <Button variant="outline" size="sm" :disabled="refreshing" class="openttd-button" @click="refreshData">
+      <Button
+        variant="outline"
+        size="sm"
+        :disabled="refreshing"
+        class="openttd-button"
+        @click="refreshData"
+      >
         {{ refreshing ? '🔄' : '↻' }} Refresh
       </Button>
     </template>
 
     <template #stats>
-      <MoleculeCardDashboard v-for="stat in stats" :key="stat.label" v-bind="stat" />
+      <MoleculeCardDashboard
+        v-for="stat in stats"
+        :key="stat.label"
+        v-bind="stat"
+      />
     </template>
 
     <!-- Recent Activity / Quick Actions -->
@@ -25,7 +40,11 @@ title="Campaign Editor Dashboard"
             <div class="flex items-center justify-between">
               <CardTitle class="text-lg font-semibold">Recent Campaigns</CardTitle>
               <NuxtLink to="/campaigns">
-                <Button variant="ghost" size="sm" class="openttd-button">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  class="openttd-button"
+                >
                   📂 View All
                 </Button>
               </NuxtLink>
@@ -34,11 +53,18 @@ title="Campaign Editor Dashboard"
           <CardContent>
             <div class="space-y-3">
               <EntityCampaignDisplayCard
-v-for="campaign in recentCampaigns" :key="entityId(campaign)"
-                :campaign="campaign" as-partial class="cursor-pointer hover:bg-accent/50 transition-colors"
-                @click="editCampaign(entityId(campaign))" />
+                v-for="campaign in recentCampaigns"
+                :key="entityId(campaign)"
+                :campaign="campaign"
+                as-partial
+                class="cursor-pointer hover:bg-accent/50 transition-colors"
+                @click="editCampaign(entityId(campaign))"
+              />
 
-              <div v-if="recentCampaigns.length === 0" class="text-center py-8 text-muted-foreground">
+              <div
+                v-if="recentCampaigns.length === 0"
+                class="text-center py-8 text-muted-foreground"
+              >
                 <div class="text-lg mb-2">🚂</div>
                 <p>No campaigns found. Create your first campaign to get started!</p>
               </div>
@@ -56,26 +82,44 @@ v-for="campaign in recentCampaigns" :key="entityId(campaign)"
           <CardContent>
             <div class="space-y-3">
               <Button
-class="w-full justify-start openttd-button bg-openttd-green text-white" variant="outline"
-                @click="createNewCampaign">
+                class="w-full justify-start openttd-button bg-openttd-green text-white"
+                variant="outline"
+                @click="createNewCampaign"
+              >
                 ➕ New Campaign
               </Button>
 
-              <Button class="w-full justify-start openttd-button" variant="outline" @click="createNewGoal">
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="createNewGoal"
+              >
                 🎯 New Goal
               </Button>
 
-              <Button class="w-full justify-start openttd-button" variant="outline" @click="createNewScenario">
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="createNewScenario"
+              >
                 🗺️ New Scenario
               </Button>
 
               <div class="border-t border-border my-3" />
 
-              <Button class="w-full justify-start openttd-button" variant="outline" @click="importData">
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="importData"
+              >
                 📤 Import Data
               </Button>
 
-              <Button class="w-full justify-start openttd-button" variant="outline" @click="exportAll">
+              <Button
+                class="w-full justify-start openttd-button"
+                variant="outline"
+                @click="exportAll"
+              >
                 📥 Export All
               </Button>
             </div>
@@ -102,19 +146,19 @@ onMounted(async () => {
 
 // Computed stats
 const campaignStats = computed(() => ({
-  total: campaigns.value.length
+  total: campaigns.value.length,
 }))
 
 const goalStats = computed(() => ({
-  total: goals.value.length
+  total: goals.value.length,
 }))
 
 const scenarioStats = computed(() => ({
-  total: scenarios.value.length
+  total: scenarios.value.length,
 }))
 
 const modifiedStats = computed(() => ({
-  count: campaigns.value.filter(c => meta.modified(c)).length
+  count: campaigns.value.filter((c) => meta.modified(c)).length,
 }))
 type StatTone = 'brown' | 'green' | 'purple' | 'blue'
 interface DashboardStat {
@@ -129,32 +173,30 @@ const stats = computed<DashboardStat[]>(() => [
     label: '📁 Campaigns',
     value: campaignStats.value.total,
     tone: 'brown',
-    action: { label: '📁', variant: 'brown', type: 'link', to: '/campaigns' }
+    action: { label: '📁', variant: 'brown', type: 'link', to: '/campaigns' },
   },
   {
     label: '🎯 Goals',
     value: goalStats.value.total,
     tone: 'green',
-    action: { label: '🎯', variant: 'green', type: 'link', to: '/goals' }
+    action: { label: '🎯', variant: 'green', type: 'link', to: '/goals' },
   },
   {
     label: '🗺️ Scenarios',
     value: scenarioStats.value.total,
     tone: 'purple',
-    action: { label: '🗺️', variant: 'purple', type: 'link', to: '/scenarios' }
+    action: { label: '🗺️', variant: 'purple', type: 'link', to: '/scenarios' },
   },
   {
     label: '⚡ Modified',
     value: modifiedStats.value.count,
     tone: 'blue',
-    action: { label: '⚡', variant: 'blue', type: 'link', to: '/campaigns' }
-  }
+    action: { label: '⚡', variant: 'blue', type: 'link', to: '/campaigns' },
+  },
 ])
 
 const recentCampaigns = computed(() =>
-  [...campaigns.value]
-    .sort((a, b) => (meta.modified(b) || 0) - (meta.modified(a) || 0))
-    .slice(0, 5)
+  [...campaigns.value].sort((a, b) => (meta.modified(b) || 0) - (meta.modified(a) || 0)).slice(0, 5),
 )
 
 // Methods
@@ -178,7 +220,6 @@ async function refreshData() {
     refreshing.value = false
   }
 }
-
 
 // Navigation methods
 function createNewCampaign() {

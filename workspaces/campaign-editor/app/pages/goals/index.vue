@@ -7,22 +7,32 @@
     empty-description="Create your first goal to get started with the campaign editor."
   >
     <template #actions>
-      <Button class="openttd-button bg-openttd-green text-white" @click="createGoal">
+      <Button
+        class="openttd-button bg-openttd-green text-white"
+        @click="createGoal"
+      >
         ➕ New Goal
       </Button>
 
-      <Button variant="outline" class="openttd-button" @click="refreshGoals">
+      <Button
+        variant="outline"
+        class="openttd-button"
+        @click="refreshGoals"
+      >
         ↻ Refresh
       </Button>
     </template>
 
     <template #empty-actions>
-      <Button class="openttd-button bg-openttd-green text-white" @click="createGoal">
+      <Button
+        class="openttd-button bg-openttd-green text-white"
+        @click="createGoal"
+      >
         ➕ Create Your First Goal
       </Button>
     </template>
 
-    <AggregateGoals 
+    <AggregateGoals
       :goals="goals"
       @edit="editGoal"
       @duplicate="duplicateGoalHandler"
@@ -58,19 +68,19 @@ async function duplicateGoalHandler(goal: Goal) {
 
     // Use entity store copy method to create a duplicate
     const duplicate = entityStore.copy(goalId, {
-      name: `${goal.name} (Copy)`
+      name: `${goal.name} (Copy)`,
     })
 
     toast.add({
       title: '✅ Goal Duplicated',
       description: `Goal "${duplicate.name}" has been duplicated`,
-      color: 'green'
+      color: 'green',
     })
   } catch {
     toast.add({
       title: '❌ Error',
       description: 'Failed to duplicate goal',
-      color: 'red'
+      color: 'red',
     })
   }
 }
@@ -82,13 +92,13 @@ async function deleteGoal(goal: Goal) {
       toast.add({
         title: '✅ Goal Deleted',
         description: `Goal "${goal.name}" has been deleted`,
-        color: 'green'
+        color: 'green',
       })
     } catch {
       toast.add({
         title: '❌ Error',
         description: 'Failed to delete goal',
-        color: 'red'
+        color: 'red',
       })
     }
   }

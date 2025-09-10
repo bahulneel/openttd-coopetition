@@ -9,7 +9,7 @@
 import type { Goal } from '~/types'
 
 defineOptions({
-  name: 'EntityGoalDisplaySummary'
+  name: 'EntityGoalDisplaySummary',
 })
 
 interface Props {

@@ -12,7 +12,7 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <slot name="actions"/>
+        <slot name="actions" />
       </div>
     </div>
 

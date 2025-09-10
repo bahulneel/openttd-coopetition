@@ -12,27 +12,10 @@
         <MoleculeFormGroup>
           <FormField
             v-slot="{ componentField }"
-            name="id"
-          >
-            <FormItem>
-              <FormLabel>Scenario ID *</FormLabel>
-              <FormControl>
-                <Input
-                  v-bind="componentField"
-                  placeholder="scenario_unique_id"
-                />
-              </FormControl>
-              <FormDescription>Unique identifier for this scenario</FormDescription>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-
-          <FormField
-            v-slot="{ componentField }"
             name="name"
           >
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Scenario Name *</FormLabel>
               <FormControl>
                 <Input
                   v-bind="componentField"

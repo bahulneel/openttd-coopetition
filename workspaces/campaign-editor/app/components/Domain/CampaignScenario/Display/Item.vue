@@ -2,14 +2,25 @@
   <div class="space-y-2">
     <!-- Join-specific details -->
     <div class="flex items-center space-x-2 text-sm">
-      <Badge v-if="campaignScenario.required" variant="default" class="text-xs">
+      <Badge
+        v-if="campaignScenario.required"
+        variant="default"
+        class="text-xs"
+      >
         Required
       </Badge>
-      <Badge v-else variant="secondary" class="text-xs">
+      <Badge
+        v-else
+        variant="secondary"
+        class="text-xs"
+      >
         Optional
       </Badge>
       <span class="text-muted-foreground">Order: {{ campaignScenario.order || 0 }}</span>
-      <span v-if="campaignScenario.branch" class="text-muted-foreground">
+      <span
+        v-if="campaignScenario.branch"
+        class="text-muted-foreground"
+      >
         Branch: {{ campaignScenario.branch }}
       </span>
     </div>
@@ -21,12 +32,14 @@
           <h4 class="font-medium text-foreground truncate">
             {{ campaignScenario.include }}
           </h4>
-          <p class="text-sm text-muted-foreground mt-1">
-            Include file: {{ campaignScenario.include }}
-          </p>
+          <p class="text-sm text-muted-foreground mt-1">Include file: {{ campaignScenario.include }}</p>
         </div>
         <div class="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" @click="$emit('edit', campaignScenario)">
+          <Button
+            variant="ghost"
+            size="sm"
+            @click="$emit('edit', campaignScenario)"
+          >
             ✏️
           </Button>
         </div>
@@ -34,7 +47,10 @@
     </div>
 
     <!-- Join-specific comment -->
-    <p v-if="campaignScenario.comment" class="text-sm text-muted-foreground italic">
+    <p
+      v-if="campaignScenario.comment"
+      class="text-sm text-muted-foreground italic"
+    >
       {{ campaignScenario.comment }}
     </p>
   </div>
@@ -44,7 +60,7 @@
 import type { CampaignScenario } from '~/types'
 
 defineOptions({
-  name: 'DomainCampaignScenarioDisplayItem'
+  name: 'DomainCampaignScenarioDisplayItem',
 })
 
 interface Props {

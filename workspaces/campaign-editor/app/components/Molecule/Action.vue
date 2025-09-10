@@ -12,11 +12,18 @@ defineProps<Props>()
 
 <template>
   <MoleculeActionLink
-v-if="action.type === 'link'" :label="action.label" :variant="action.variant"
-    :to="action.to || '#'" />
+    v-if="action.type === 'link'"
+    :label="action.label"
+    :variant="action.variant"
+    :to="action.to || '#'"
+  />
   <MoleculeActionButton
-v-else :label="action.label" :variant="action.variant" :disabled="action.disabled"
-    @click="action.action?.()" />
+    v-else
+    :label="action.label"
+    :variant="action.variant"
+    :disabled="action.disabled"
+    @click="action.action?.()"
+  />
 </template>
 
 <style scoped></style>

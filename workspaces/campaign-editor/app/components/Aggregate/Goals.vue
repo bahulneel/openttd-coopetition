@@ -2,12 +2,20 @@
   <div class="space-y-4">
     <TemplateLayoutList>
       <EntityGoalDisplayCard
-v-for="goal in goals" :key="entityId(goal)" :goal="goal" @edit="$emit('edit', $event)"
-        @duplicate="$emit('duplicate', $event)" @delete="$emit('delete', $event)" />
+        v-for="goal in goals"
+        :key="entityId(goal)"
+        :goal="goal"
+        @edit="$emit('edit', $event)"
+        @duplicate="$emit('duplicate', $event)"
+        @delete="$emit('delete', $event)"
+      />
     </TemplateLayoutList>
 
     <!-- Action Slot -->
-    <div v-if="$slots.actions" class="flex justify-end">
+    <div
+      v-if="$slots.actions"
+      class="flex justify-end"
+    >
       <slot name="actions" />
     </div>
   </div>
@@ -17,7 +25,7 @@ v-for="goal in goals" :key="entityId(goal)" :goal="goal" @edit="$emit('edit', $e
 import type { Goal } from '~/types'
 
 defineOptions({
-  name: 'AggregateGoals'
+  name: 'AggregateGoals',
 })
 
 interface Props {

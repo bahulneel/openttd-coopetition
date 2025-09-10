@@ -17,40 +17,49 @@ defineOptions({ name: 'MoleculeCardDashboard' })
 
 const props = withDefaults(defineProps<DashboardCardProps>(), {
   class: undefined,
-  action: undefined
+  action: undefined,
 })
 
 const toneToRoot = {
   brown: 'bg-openttd-brown/20 border-openttd-brown/40',
   green: 'bg-openttd-green/20 border-openttd-green/40',
   purple: 'bg-openttd-purple/20 border-openttd-purple/40',
-  blue: 'bg-openttd-blue/20 border-openttd-blue/40'
+  blue: 'bg-openttd-blue/20 border-openttd-blue/40',
 } as const
 
 const toneToLabel = {
   brown: 'text-openttd-brown',
   green: 'text-openttd-green',
   purple: 'text-openttd-purple',
-  blue: 'text-openttd-blue'
+  blue: 'text-openttd-blue',
 } as const
 
 const toneToIconBg = {
   brown: 'bg-openttd-brown',
   green: 'bg-openttd-green',
   purple: 'bg-openttd-purple',
-  blue: 'bg-openttd-blue'
+  blue: 'bg-openttd-blue',
 } as const
 
 const rootClass = computed(() => cn('campaign-card', toneToRoot[props.tone], props.class))
 const labelClass = computed(() => cn('text-sm font-medium', toneToLabel[props.tone]))
-const iconBoxClass = computed(() => cn('h-12 w-12 rounded border-2 border-border flex items-center justify-center openttd-button', toneToIconBg[props.tone]))
+const iconBoxClass = computed(() =>
+  cn(
+    'h-12 w-12 rounded border-2 border-border flex items-center justify-center openttd-button',
+    toneToIconBg[props.tone],
+  ),
+)
 
 function defaultEmoji(tone: Tone): string {
   switch (tone) {
-    case 'brown': return '📂'
-    case 'green': return '🎯'
-    case 'purple': return '🗺️'
-    case 'blue': return '⚡'
+    case 'brown':
+      return '📂'
+    case 'green':
+      return '🎯'
+    case 'purple':
+      return '🗺️'
+    case 'blue':
+      return '⚡'
   }
 }
 </script>
@@ -66,7 +75,10 @@ function defaultEmoji(tone: Tone): string {
         <template v-if="action">
           <MoleculeAction :action="action" />
         </template>
-        <div v-else :class="iconBoxClass">
+        <div
+          v-else
+          :class="iconBoxClass"
+        >
           <slot name="icon">
             <span class="text-lg">{{ defaultEmoji(tone) }}</span>
           </slot>

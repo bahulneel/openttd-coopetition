@@ -4,7 +4,7 @@ services:
   campaign-editor:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - NUXT_SPA_MODE=true
@@ -15,15 +15,21 @@ services:
       # - ../../campaigns:/app/campaigns:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "--input-type=module", "--eval", "
-        import { request } from 'http';
-        const req = request('http://localhost:3000', { timeout: 5000 }, (res) => {
+      test: [
+          'CMD',
+          'node',
+          '--input-type=module',
+          '--eval',
+          "
+          import { request } from 'http';
+          const req = request('http://localhost:3000', { timeout: 5000 }, (res) => {
           process.exit(res.statusCode === 200 ? 0 : 1);
-        });
-        req.on('error', () => process.exit(1));
-        req.on('timeout', () => process.exit(1));
-        req.end();
-      "]
+          });
+          req.on('error', () => process.exit(1));
+          req.on('timeout', () => process.exit(1));
+          req.end();
+          ",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -33,7 +39,7 @@ services:
   campaign-editor-dev:
     build: .
     ports:
-      - "3001:3000"
+      - '3001:3000'
     environment:
       - NODE_ENV=development
       - NUXT_SPA_MODE=false

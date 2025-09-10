@@ -11,7 +11,7 @@ defineOptions({ name: 'MoleculeFooter' })
 
 const props = withDefaults(defineProps<FooterProps>(), {
   version: '',
-  class: undefined
+  class: undefined,
 })
 
 const rootClass = computed(() => cn('openttd-titlebar', props.class))
@@ -23,14 +23,15 @@ const rootClass = computed(() => cn('openttd-titlebar', props.class))
       <div class="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
         <div class="flex items-center space-x-2">
           <span class="text-sm text-foreground">🚂</span>
-          <span class="text-sm text-foreground font-medium">
-            OpenTTD Coopetition Campaign Editor
-          </span>
+          <span class="text-sm text-foreground font-medium"> OpenTTD Coopetition Campaign Editor </span>
         </div>
         <div class="flex items-center space-x-4 text-sm text-foreground/80">
           <a
-href="https://github.com/bahulneel/openttd-coopetition" target="_blank" rel="noopener noreferrer"
-            class="hover:text-foreground transition-colors underline">
+            href="https://github.com/bahulneel/openttd-coopetition"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-foreground transition-colors underline"
+          >
             📂 GitHub
           </a>
           <span>•</span>

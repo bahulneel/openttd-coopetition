@@ -1,7 +1,10 @@
 <template>
   <div class="flex items-center space-x-3">
     <span class="font-medium text-foreground">{{ manifest.name }}</span>
-    <Badge variant="secondary" class="text-xs">
+    <Badge
+      variant="secondary"
+      class="text-xs"
+    >
       {{ manifest.dependencies.coopetition_version }}
     </Badge>
     <span class="text-sm text-muted-foreground">
@@ -15,7 +18,7 @@
 import type { Manifest } from '~/types'
 
 defineOptions({
-  name: 'EntityManifestDisplaySummary'
+  name: 'EntityManifestDisplaySummary',
 })
 
 interface Props {

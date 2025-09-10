@@ -13,7 +13,7 @@ useSeoMeta({
   description: 'Create and edit campaigns for OpenTTD Coopetition GameScript',
   ogTitle: 'OpenTTD Coopetition Campaign Editor',
   ogDescription: 'Create and edit campaigns for OpenTTD Coopetition GameScript',
-  ogType: 'website'
+  ogType: 'website',
 })
 
 // Check if we have backend capabilities

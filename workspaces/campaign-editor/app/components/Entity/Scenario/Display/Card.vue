@@ -10,7 +10,10 @@
           <p class="text-muted-foreground mb-3">
             {{ scenario.comment || 'No description available' }}
           </p>
-          <DomainMetaInfoDisplayCard :meta-info="scenario.meta" as-partial />
+          <DomainMetaInfoDisplayCard
+            :meta-info="scenario.meta"
+            as-partial
+          />
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div v-if="scenario.goals && scenario.goals.length > 0">
@@ -20,16 +23,32 @@
           </div>
         </div>
 
-        <div v-if="!asPartial" class="flex items-center space-x-2 ml-4">
-          <Button variant="outline" size="sm" class="openttd-button" @click="$emit('edit', scenario)">
+        <div
+          v-if="!asPartial"
+          class="flex items-center space-x-2 ml-4"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            class="openttd-button"
+            @click="$emit('edit', scenario)"
+          >
             ✏️ Edit
           </Button>
-          <Button variant="outline" size="sm" class="openttd-button" @click="$emit('duplicate', scenario)">
+          <Button
+            variant="outline"
+            size="sm"
+            class="openttd-button"
+            @click="$emit('duplicate', scenario)"
+          >
             📋 Copy
           </Button>
           <Button
-variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-700"
-            @click="$emit('delete', scenario)">
+            variant="outline"
+            size="sm"
+            class="openttd-button text-red-600 hover:text-red-700"
+            @click="$emit('delete', scenario)"
+          >
             🗑️ Delete
           </Button>
         </div>
@@ -38,7 +57,10 @@ variant="outline" size="sm" class="openttd-button text-red-600 hover:text-red-70
   </DefineContent>
 
   <!-- Standalone mode (default) -->
-  <Card v-if="!asPartial" class="openttd-titlebar">
+  <Card
+    v-if="!asPartial"
+    class="openttd-titlebar"
+  >
     <CardContent>
       <Content />
     </CardContent>
@@ -53,7 +75,7 @@ import { createReusableTemplate } from '@vueuse/core'
 import type { Scenario } from '~/types'
 
 defineOptions({
-  name: 'EntityScenarioDisplayCard'
+  name: 'EntityScenarioDisplayCard',
 })
 
 interface Props {
