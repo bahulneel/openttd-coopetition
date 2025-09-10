@@ -9,14 +9,14 @@ interface SequentialProps {
 defineOptions({ name: 'TemplateLayoutSequential' })
 
 const props = withDefaults(defineProps<SequentialProps>(), {
-  class: undefined
+  class: undefined,
 })
 const rootClass = computed(() => cn('space-y-6 md:space-y-8', props.class))
 </script>
 
 <template>
   <div :class="rootClass">
-    <slot ></slot>
+    <slot />
   </div>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
   <div v-if="condition">
-    <slot ></slot>
+    <slot />
   </div>
 </template>
 
 <script setup lang="ts">
 defineOptions({
-  name: 'MoleculeFormConditional'
+  name: 'MoleculeFormConditional',
 })
 
 interface Props {

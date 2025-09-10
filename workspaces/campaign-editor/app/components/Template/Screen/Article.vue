@@ -12,14 +12,14 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <slot name="actions" ></slot>
+        <slot name="actions"></slot>
       </div>
     </div>
 
     <!-- Content -->
     <Card class="openttd-titlebar">
       <CardContent class="pt-6">
-        <slot ></slot>
+        <slot />
       </CardContent>
     </Card>
   </div>
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'TemplateScreenArticle'
+  name: 'TemplateScreenArticle',
 })
 
 interface Props {
@@ -37,6 +37,6 @@ interface Props {
 
 const _props = withDefaults(defineProps<Props>(), {
   title: 'Article',
-  subtitle: 'Edit your content'
+  subtitle: 'Edit your content',
 })
 </script>

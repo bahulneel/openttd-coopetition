@@ -12,17 +12,23 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <slot name="actions" ></slot>
+        <slot name="actions"></slot>
       </div>
     </div>
 
     <!-- Content -->
-    <div v-if="_props.hasContent" class="space-y-4">
-      <slot ></slot>
+    <div
+      v-if="_props.hasContent"
+      class="space-y-4"
+    >
+      <slot />
     </div>
 
     <!-- Empty State -->
-    <Card v-else class="openttd-titlebar">
+    <Card
+      v-else
+      class="openttd-titlebar"
+    >
       <CardContent class="pt-12 pb-12">
         <div class="text-center">
           <div class="text-6xl mb-4">🎯</div>
@@ -32,7 +38,7 @@
           <p class="text-muted-foreground mb-6">
             <slot name="empty-description">{{ _props.emptyDescription }}</slot>
           </p>
-          <slot name="empty-actions" ></slot>
+          <slot name="empty-actions"></slot>
         </div>
       </CardContent>
     </Card>
@@ -41,7 +47,7 @@
 
 <script setup lang="ts">
 defineOptions({
-  name: 'TemplateScreenCollection'
+  name: 'TemplateScreenCollection',
 })
 
 interface Props {
@@ -57,6 +63,6 @@ const _props = withDefaults(defineProps<Props>(), {
   subtitle: 'Manage your items',
   emptyTitle: 'No Items Yet',
   emptyDescription: 'Create your first item to get started.',
-  hasContent: true
+  hasContent: true,
 })
 </script>

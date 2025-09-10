@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <slot ></slot>
+    <slot />
   </div>
 </template>
 
@@ -15,7 +15,7 @@ interface ListProps {
 defineOptions({ name: 'TemplateLayoutList' })
 
 const props = withDefaults(defineProps<ListProps>(), {
-  class: undefined
+  class: undefined,
 })
 const _rootClass = computed(() => cn('space-y-4', props.class))
 </script>

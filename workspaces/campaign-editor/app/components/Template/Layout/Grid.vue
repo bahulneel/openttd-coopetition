@@ -9,14 +9,14 @@ interface GridProps {
 defineOptions({ name: 'TemplateLayoutGrid' })
 
 const props = withDefaults(defineProps<GridProps>(), {
-  class: undefined
+  class: undefined,
 })
 const rootClass = computed(() => cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6', props.class))
 </script>
 
 <template>
   <div :class="rootClass">
-    <slot ></slot>
+    <slot />
   </div>
 </template>
 
