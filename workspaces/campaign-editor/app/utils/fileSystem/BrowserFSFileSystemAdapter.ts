@@ -7,7 +7,8 @@ import * as BrowserFS from 'browserfs'
 
 // BrowserFS adapter using IndexedDB backend
 export class BrowserFSFileSystemAdapter implements FileSystemAdapter, FeatureZipImport, FeatureZipExport {
-  private fs: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private fs: any // BrowserFS provides a different interface than Node.js fs
   private initialized = false
 
   constructor() {
