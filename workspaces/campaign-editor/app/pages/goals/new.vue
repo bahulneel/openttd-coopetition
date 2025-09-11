@@ -27,17 +27,17 @@
             Select from common goal templates: profit tracking, cargo delivery, network building, station construction, company value, or town growth. You can always modify these later.
           </p>
           
-          <MultiselectPopover
-            :items="templatePieces"
-            :selected-items="selectedPieces"
-            title="Goal Templates"
-            description="Choose which template pieces to include"
-            placeholder="Select goal templates..."
-            @update:selected-items="updateSelectedPieces"
-          />
+                      <MultiselectPopover
+                        :items="availablePieces"
+                        :selected-items="selectedPieces"
+                        title="Goal Templates"
+                        description="Choose which template pieces to include"
+                        placeholder="Select goal templates..."
+                        @update:selected-items="updateSelectedPieces"
+                      />
           
           <div v-if="selectedPieces.length > 0" class="text-sm text-muted-foreground">
-            <strong>Selected:</strong> {{ selectedPieces.map(key => templatePieces[key].name).join(', ') }}
+            <strong>Selected:</strong> {{ selectedPieces.map(key => templatePieces[key]?.name || key).join(', ') }}
           </div>
         </div>
       </CardContent>
