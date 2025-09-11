@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import type { Goal, GoalValue } from '~/types'
-import { createGoal } from '~/utils/model/goals'
+import { createGoal, goalTemplate } from '~/utils/model/goals'
 import { goalSchema } from '~/utils/schemas'
 
 const store = useEntityStore()
@@ -52,13 +52,8 @@ const toast = useToast()
 const form = useForm({
   validationSchema: goalSchema,
   initialValues: {
+    ...goalTemplate.defaults,
     name: 'New Goal',
-    meta: {},
-    type: 'player' as const,
-    objective: undefined,
-    constraints: {},
-    shared: {},
-    result: {},
   } as GoalValue,
 })
 
