@@ -7,7 +7,7 @@ export type TemplateCategory =
   | 'progression'
   | 'learning'
 
-export interface TemplatePiece<T = any> {
+export interface TemplatePiece<T = unknown> {
   name: string
   description: string
   category: TemplateCategory
@@ -15,4 +15,4 @@ export interface TemplatePiece<T = any> {
   data: T
 }
 
-export type TemplatePieces<T = any> = Record<string, TemplatePiece<T>>
+export type TemplatePieces<T = unknown> = Record<string, TemplatePiece<T>>

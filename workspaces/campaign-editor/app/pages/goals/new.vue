@@ -37,7 +37,7 @@
                       />
           
           <div v-if="selectedPieces.length > 0" class="text-sm text-muted-foreground">
-            <strong>Selected:</strong> {{ selectedPieces.map(key => templatePieces[key]?.name || key).join(', ') }}
+            <strong>Selected:</strong> {{ selectedPieces.map(key => availablePieces[key]?.name || key).join(', ') }}
           </div>
         </div>
       </CardContent>
@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
-import type { Goal, GoalValue } from '~/types'
+import type { Goal, GoalValue, EntityOptions } from '~/types'
 import { createGoal } from '~/utils/model/goals'
 import { goalSchema } from '~/utils/schemas'
 import { toEntityValue } from '~/utils/entities'
@@ -83,7 +83,7 @@ const toast = useToast()
 // Template composer
 const {
   selectedPieces,
-  templatePieces,
+  availablePieces,
   composedTemplate,
   updateSelectedPieces,
 } = useTemplateComposer('goal')
@@ -91,14 +91,14 @@ const {
 // Initialize form with validation
 const form = useForm({
   validationSchema: goalSchema,
-  initialValues: toEntityValue(createGoal('New Goal', composedTemplate.value)),
+  initialValues: toEntityValue(createGoal('New Goal', composedTemplate.value as EntityOptions<Goal>)),
 })
 
 const { meta } = form
 
 // Watch for template changes and update form
 watch(composedTemplate, (newTemplate) => {
-  form.setValues(toEntityValue(createGoal('New Goal', newTemplate)))
+  form.setValues(toEntityValue(createGoal('New Goal', newTemplate as EntityOptions<Goal>)))
 }, { deep: true })
 
 function saveGoal(values: GoalValue) {

@@ -25,17 +25,17 @@
         <div class="space-y-2">
           <div
             v-for="(item, key) in items"
-            :key="key"
+            :key="String(key)"
             class="flex items-center space-x-2"
           >
             <Checkbox
-              :id="key"
-              :checked="selectedItems.includes(key)"
+              :id="String(key)"
+              :checked="selectedItems.includes(String(key))"
               :disabled="key === 'defaults'"
-              @update:checked="toggleItem(key)"
+              @update:checked="toggleItem(String(key))"
             />
             <label
-              :for="key"
+              :for="String(key)"
               class="flex-1 cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               :class="{ 'opacity-50': key === 'defaults' }"
             >
@@ -77,19 +77,19 @@
   </Popover>
 </template>
 
-<script setup lang="ts" generic="T extends Record<string, { name: string; description: string; data: any }>">
+<script setup lang="ts" generic="T extends Record<string, { name: string; description: string; category: string; icon: string; data: any }>">
 import { ChevronDown } from 'lucide-vue-next'
 
 interface Props {
   items: T
-  selectedItems: (keyof T)[]
+  selectedItems: string[]
   title?: string
   description?: string
   placeholder?: string
 }
 
 interface Emits {
-  (e: 'update:selectedItems', items: (keyof T)[]): void
+  (e: 'update:selectedItems', items: string[]): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -100,7 +100,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-function toggleItem(key: keyof T) {
+function toggleItem(key: string) {
   const newSelected = props.selectedItems.includes(key)
     ? props.selectedItems.filter(item => item !== key)
     : [...props.selectedItems, key]
@@ -112,6 +112,6 @@ function clearAll() {
 }
 
 function selectAll() {
-  emit('update:selectedItems', Object.keys(props.items) as (keyof T)[])
+  emit('update:selectedItems', Object.keys(props.items))
 }
 </script>
