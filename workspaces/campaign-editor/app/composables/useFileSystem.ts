@@ -11,8 +11,12 @@ function useFileSystemImpl(): FileSystemAdapter {
   const hasBackend = useHasBackend()
   const isTestEnvironment = useIsTestEnvironment()
 
+  // Get runtime config to check if we should force in-memory adapter
+  const config = useRuntimeConfig()
+  const forceInMemory = config.public.forceInMemoryFileSystem
+
   // Create the appropriate adapter based on backend availability, test environment, and runtime config
-  return createFileSystemAdapter(hasBackend.value, isTestEnvironment.value)
+  return createFileSystemAdapter(hasBackend.value, isTestEnvironment.value, forceInMemory)
 }
 
 export const useFileSystem = createSharedComposable(useFileSystemImpl)
