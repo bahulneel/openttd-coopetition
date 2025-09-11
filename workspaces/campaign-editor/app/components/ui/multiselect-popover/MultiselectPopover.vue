@@ -31,13 +31,16 @@
             <Checkbox
               :id="key"
               :checked="selectedItems.includes(key)"
+              :disabled="key === 'defaults'"
               @update:checked="toggleItem(key)"
             />
             <label
               :for="key"
               class="flex-1 cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              :class="{ 'opacity-50': key === 'defaults' }"
             >
               {{ item.name }}
+              <span v-if="key === 'defaults'" class="text-xs text-muted-foreground ml-1">(required)</span>
             </label>
           </div>
         </div>

@@ -24,7 +24,7 @@
       <CardContent>
         <div class="space-y-4">
           <p class="text-sm text-muted-foreground">
-            Select which template pieces to include in your goal. You can always modify these later.
+            Choose between a basic goal (minimal fields) or complete goal (with all default values). You can always modify these later.
           </p>
           
           <MultiselectPopover
