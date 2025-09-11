@@ -12,7 +12,16 @@ export function hasFeatureZipExport<T extends FileSystemAdapter>(fs: T): fs is T
 }
 
 // Factory function to create the appropriate adapter
-export function createFileSystemAdapter(hasBackend: boolean, isTestEnvironment: boolean = false): FileSystemAdapter {
+export function createFileSystemAdapter(
+  hasBackend: boolean,
+  isTestEnvironment: boolean = false,
+  forceInMemory: boolean = false
+): FileSystemAdapter {
+  // Force in-memory adapter if requested (useful for testing or specific use cases)
+  if (forceInMemory) {
+    return new InMemFileSystemAdapter()
+  }
+
   // Use hasBackend parameter to detect if we have backend capabilities
   if (hasBackend) {
     return new BackendFileSystemAdapter()
