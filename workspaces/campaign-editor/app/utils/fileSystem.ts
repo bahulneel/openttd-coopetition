@@ -14,10 +14,13 @@ export function hasFeatureZipExport<T extends FileSystemAdapter>(fs: T): fs is T
 // Factory function to create the appropriate adapter
 export function createFileSystemAdapter(
   hasBackend: boolean,
-  isTestEnvironment: boolean = false,
-  forceInMemory: boolean = false
+  isTestEnvironment: boolean = false
 ): FileSystemAdapter {
-  // Force in-memory adapter if requested (useful for testing or specific use cases)
+  // Get runtime config to check if we should force in-memory adapter
+  const config = useRuntimeConfig()
+  const forceInMemory = config.public.forceInMemoryFileSystem
+
+  // Force in-memory adapter if requested via runtime config
   if (forceInMemory) {
     return new InMemFileSystemAdapter()
   }

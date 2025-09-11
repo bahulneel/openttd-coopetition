@@ -4,14 +4,15 @@ import { useIsTestEnvironment } from './useIsTestEnvironment'
 /**
  * Composable that provides the appropriate file system adapter
  * Automatically detects backend capabilities and test environment to return the correct adapter
+ * Can be forced to use in-memory adapter via NUXT_FORCE_IN_MEMORY_FS environment variable
  * Shared across multiple Vue instances to ensure consistency
  */
-function useFileSystemImpl(forceInMemory: boolean = false): FileSystemAdapter {
+function useFileSystemImpl(): FileSystemAdapter {
   const hasBackend = useHasBackend()
   const isTestEnvironment = useIsTestEnvironment()
 
-  // Create the appropriate adapter based on backend availability, test environment, and force parameter
-  return createFileSystemAdapter(hasBackend.value, isTestEnvironment.value, forceInMemory)
+  // Create the appropriate adapter based on backend availability, test environment, and runtime config
+  return createFileSystemAdapter(hasBackend.value, isTestEnvironment.value)
 }
 
 export const useFileSystem = createSharedComposable(useFileSystemImpl)
