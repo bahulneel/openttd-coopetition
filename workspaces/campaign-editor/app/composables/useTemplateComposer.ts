@@ -15,10 +15,155 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
             description: 'Minimal goal with just required fields',
             data: goalTemplate.defaults,
           },
-          newItem: {
-            name: 'Complete Goal',
-            description: 'Goal with all default values and settings',
-            data: goalTemplate.newItem,
+          profit: {
+            name: 'Profit Goal',
+            description: 'Track company profit with cash rewards',
+            data: {
+              type: 'player' as const,
+              objective: {
+                type: 'profit' as const,
+                amount: 1000000,
+                comment: 'Track company profit - requires £1M total profit',
+              },
+              constraints: {
+                players: { min: 1, max: 8 },
+              },
+              result: {
+                cash: 500000,
+                score: 25,
+                reputation: 10,
+              },
+            },
+          },
+          cargo: {
+            name: 'Cargo Delivery Goal',
+            description: 'Deliver specific cargo with time constraints',
+            data: {
+              type: 'company' as const,
+              objective: {
+                type: 'cargo_delivered' as const,
+                cargo: 'PASSENGERS',
+                amount: 1000,
+                time_limit: 365,
+                comment: 'Deliver 1000 passengers within 365 days',
+              },
+              constraints: {
+                players: { min: 2, max: 4 },
+                date: { min: 1950, max: 2000 },
+              },
+              shared: {
+                track: true,
+                stations: true,
+                vehicles: false,
+              },
+              result: {
+                cash: 200000,
+                score: 15,
+                reputation: 5,
+                unlocks: ['high_speed_trains'],
+              },
+            },
+          },
+          network: {
+            name: 'Network Building Goal',
+            description: 'Build network infrastructure with shared resources',
+            data: {
+              type: 'scenario' as const,
+              objective: {
+                type: 'network_length' as const,
+                amount: 5000,
+                track_type: 'RAIL',
+                comment: 'Build 5000 tiles of rail network',
+              },
+              constraints: {
+                players: { min: 2, max: 6 },
+                map_size: { min: 256, max: 1024 },
+              },
+              shared: {
+                track: true,
+                stations: true,
+                vehicles: true,
+                depots: true,
+              },
+              result: {
+                cash: 1000000,
+                score: 50,
+                reputation: 20,
+                unlocks: ['advanced_networks'],
+              },
+            },
+          },
+          station: {
+            name: 'Station Building Goal',
+            description: 'Build stations in specific locations',
+            data: {
+              type: 'player' as const,
+              objective: {
+                type: 'station_built' as const,
+                count: 10,
+                location: 'industrial',
+                comment: 'Build 10 stations in industrial areas',
+              },
+              constraints: {
+                players: { min: 1, max: 8 },
+                date: { min: 1960, max: 1980 },
+              },
+              result: {
+                cash: 100000,
+                score: 10,
+                reputation: 5,
+              },
+            },
+          },
+          company: {
+            name: 'Company Value Goal',
+            description: 'Reach minimum company value target',
+            data: {
+              type: 'company' as const,
+              objective: {
+                type: 'company_value' as const,
+                min_value: 5000000,
+                comment: 'Reach £5M company value',
+              },
+              constraints: {
+                players: { min: 1, max: 4 },
+                date: { min: 1970, max: 2010 },
+              },
+              result: {
+                cash: 2000000,
+                score: 100,
+                reputation: 50,
+                unlocks: ['premium_vehicles'],
+              },
+            },
+          },
+          town: {
+            name: 'Town Growth Goal',
+            description: 'Grow specific town to target population',
+            data: {
+              type: 'scenario' as const,
+              objective: {
+                type: 'town_growth' as const,
+                target_population: 50000,
+                town_id: 'main_city',
+                comment: 'Grow main city to 50,000 population',
+              },
+              constraints: {
+                players: { min: 2, max: 6 },
+                date: { min: 1950, max: 2000 },
+              },
+              shared: {
+                track: true,
+                stations: true,
+                vehicles: false,
+              },
+              result: {
+                cash: 500000,
+                score: 75,
+                reputation: 25,
+                unlocks: ['city_services'],
+              },
+            },
           },
         }
       case 'scenario':
@@ -28,10 +173,98 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
             description: 'Minimal scenario with just required fields',
             data: scenarioTemplate.defaults,
           },
-          newItem: {
-            name: 'Complete Scenario',
-            description: 'Scenario with all default values and settings',
-            data: scenarioTemplate.newItem,
+          industrial: {
+            name: 'Industrial Hub Scenario',
+            description: 'Develop industrial areas with shared infrastructure',
+            data: {
+              goals: [],
+              constraints: {
+                players: { min: 2, max: 6 },
+                date: { min: 1950, max: 2000 },
+                map_size: { min: 256, max: 1024 },
+                difficulty: { min: 'easy', max: 'hard' },
+              },
+              defaults: {
+                shared: {
+                  track: true,
+                  stations: true,
+                  vehicles: false,
+                },
+                result: {
+                  cash: 50000,
+                  score: 5,
+                  reputation: 2,
+                },
+              },
+              settings: {
+                economy: 'realistic',
+                disasters: true,
+                breakdowns: true,
+                inflation: true,
+              },
+            },
+          },
+          transport: {
+            name: 'Transport Challenge Scenario',
+            description: 'Efficient cargo transport with time pressure',
+            data: {
+              goals: [],
+              constraints: {
+                players: { min: 2, max: 4 },
+                date: { min: 1960, max: 1980 },
+                map_size: { min: 128, max: 512 },
+              },
+              defaults: {
+                shared: {
+                  track: false,
+                  stations: false,
+                  vehicles: false,
+                },
+                result: {
+                  cash: 100000,
+                  score: 10,
+                  reputation: 5,
+                },
+              },
+              settings: {
+                economy: 'normal',
+                disasters: false,
+                breakdowns: true,
+                inflation: false,
+              },
+            },
+          },
+          multiplayer: {
+            name: 'Multiplayer Cooperation Scenario',
+            description: 'Collaborative scenario with shared resources',
+            data: {
+              goals: [],
+              constraints: {
+                players: { min: 4, max: 8 },
+                date: { min: 1950, max: 2050 },
+                map_size: { min: 512, max: 2048 },
+              },
+              defaults: {
+                shared: {
+                  track: true,
+                  stations: true,
+                  vehicles: true,
+                  depots: true,
+                },
+                result: {
+                  cash: 25000,
+                  score: 3,
+                  reputation: 1,
+                },
+              },
+              settings: {
+                economy: 'realistic',
+                disasters: true,
+                breakdowns: true,
+                inflation: true,
+                seasons: true,
+              },
+            },
           },
         }
       case 'campaign':
@@ -41,10 +274,137 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
             description: 'Minimal campaign with just required fields',
             data: campaignTemplate.defaults,
           },
-          newItem: {
-            name: 'Complete Campaign',
-            description: 'Campaign with all default values and settings',
-            data: campaignTemplate.newItem,
+          linear: {
+            name: 'Linear Progression Campaign',
+            description: 'Sequential scenarios with clear progression',
+            data: {
+              scenarios: [],
+              progression: {
+                type: 'linear' as const,
+                unlock_requirements: [],
+                unlock_order: ['basic_construction', 'advanced_vehicles', 'complex_networks'],
+              },
+              constraints: {
+                players: { min: 2, max: 8 },
+                date: { min: 1950, max: 2000 },
+                map_size: { min: 256, max: 1024 },
+                difficulty: { min: 'easy', max: 'expert' },
+              },
+              rewards: {
+                completion: {
+                  cash: 10000000,
+                  score: 1000,
+                  reputation: 100,
+                  unlocks: ['campaign_master'],
+                },
+                milestones: [
+                  {
+                    name: 'First Steps',
+                    description: 'Complete your first scenario',
+                    reward: {
+                      cash: 1000000,
+                      score: 100,
+                      reputation: 10,
+                    },
+                  },
+                ],
+              },
+              settings: {
+                economy: 'realistic',
+                disasters: true,
+                breakdowns: true,
+                inflation: true,
+                seasons: true,
+              },
+            },
+          },
+          branching: {
+            name: 'Branching Campaign',
+            description: 'Multiple paths with different scenarios',
+            data: {
+              scenarios: [],
+              branches: {
+                name: 'Main Branch',
+                description: 'Primary campaign path',
+                scenarios: [],
+              },
+              progression: {
+                type: 'branching' as const,
+                unlock_requirements: [],
+                unlock_order: ['path_choice', 'advanced_techniques'],
+              },
+              constraints: {
+                players: { min: 1, max: 6 },
+                date: { min: 1950, max: 2050 },
+                map_size: { min: 128, max: 2048 },
+              },
+              rewards: {
+                completion: {
+                  cash: 5000000,
+                  score: 500,
+                  reputation: 50,
+                  unlocks: ['branch_master'],
+                },
+              },
+              settings: {
+                economy: 'normal',
+                disasters: false,
+                breakdowns: true,
+                inflation: false,
+              },
+            },
+          },
+          tutorial: {
+            name: 'Tutorial Campaign',
+            description: 'Learning-focused campaign with guided progression',
+            data: {
+              scenarios: [],
+              progression: {
+                type: 'linear' as const,
+                unlock_requirements: [],
+                unlock_order: ['basic_controls', 'construction', 'management', 'advanced'],
+              },
+              constraints: {
+                players: { min: 1, max: 4 },
+                date: { min: 1950, max: 1970 },
+                map_size: { min: 64, max: 256 },
+                difficulty: { min: 'easy', max: 'medium' },
+              },
+              rewards: {
+                completion: {
+                  cash: 1000000,
+                  score: 100,
+                  reputation: 25,
+                  unlocks: ['tutorial_complete'],
+                },
+                milestones: [
+                  {
+                    name: 'First Station',
+                    description: 'Build your first station',
+                    reward: {
+                      cash: 10000,
+                      score: 5,
+                      reputation: 1,
+                    },
+                  },
+                  {
+                    name: 'First Route',
+                    description: 'Create your first transport route',
+                    reward: {
+                      cash: 25000,
+                      score: 10,
+                      reputation: 2,
+                    },
+                  },
+                ],
+              },
+              settings: {
+                economy: 'normal',
+                disasters: false,
+                breakdowns: false,
+                inflation: false,
+              },
+            },
           },
         }
       default:

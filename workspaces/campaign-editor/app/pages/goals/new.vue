@@ -24,7 +24,7 @@
       <CardContent>
         <div class="space-y-4">
           <p class="text-sm text-muted-foreground">
-            Choose between a basic goal (minimal fields) or complete goal (with all default values). You can always modify these later.
+            Select from common goal templates: profit tracking, cargo delivery, network building, station construction, company value, or town growth. You can always modify these later.
           </p>
           
           <MultiselectPopover
