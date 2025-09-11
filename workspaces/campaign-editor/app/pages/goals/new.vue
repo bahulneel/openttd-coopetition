@@ -52,7 +52,7 @@ const toast = useToast()
 // Initialize form with validation
 const form = useForm({
   validationSchema: goalSchema,
-  initialValues: toEntityValue(createGoal('New Goal')) as GoalValue,
+  initialValues: toEntityValue(createGoal('New Goal')),
 })
 
 const { meta } = form

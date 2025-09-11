@@ -195,7 +195,7 @@ const saving = ref(false)
 // Form setup
 const form = useForm({
   validationSchema: campaignSchema,
-  initialValues: toEntityValue(createCampaign('New Campaign')) as CampaignValue,
+  initialValues: toEntityValue(createCampaign('New Campaign')),
 })
 
 const { meta } = form
@@ -308,7 +308,7 @@ const totalPages = computed(() => {
 
 // Form methods
 function initializeNewCampaign() {
-  form.setValues(toEntityValue(createCampaign('New Campaign')) as CampaignValue)
+  form.setValues(toEntityValue(createCampaign('New Campaign')))
 }
 
 function saveCampaign(values: CampaignValue) {

@@ -58,7 +58,7 @@ const toast = useToast()
 // Initialize form with validation
 const form = useForm({
   validationSchema: scenarioSchema,
-  initialValues: toEntityValue(createScenario('New Scenario')) as ScenarioValue,
+  initialValues: toEntityValue(createScenario('New Scenario')),
 })
 
 const { meta } = form
