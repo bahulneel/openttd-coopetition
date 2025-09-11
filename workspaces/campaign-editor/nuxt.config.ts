@@ -69,6 +69,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseUrl: process.env.NUXT_BASE_URL || '/',
+      forceInMemoryFileSystem: process.env.NUXT_FORCE_IN_MEMORY_FS === 'true',
     },
   },
 
