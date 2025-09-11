@@ -48,8 +48,9 @@
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import type { Scenario, ScenarioValue } from '~/types'
-import { createScenario, scenarioTemplate } from '~/utils/model/scenarios'
+import { createScenario } from '~/utils/model/scenarios'
 import { scenarioSchema } from '~/utils/schemas'
+import { toEntityValue } from '~/utils/entities'
 
 const store = useEntityStore()
 const toast = useToast()
@@ -57,10 +58,7 @@ const toast = useToast()
 // Initialize form with validation
 const form = useForm({
   validationSchema: scenarioSchema,
-  initialValues: {
-    ...scenarioTemplate.defaults,
-    name: 'New Scenario',
-  } as ScenarioValue,
+  initialValues: toEntityValue(createScenario('New Scenario')) as ScenarioValue,
 })
 
 const { meta } = form
