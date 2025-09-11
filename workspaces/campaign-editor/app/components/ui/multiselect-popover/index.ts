@@ -1,0 +1,1 @@
+export { default as MultiselectPopover } from './MultiselectPopover.vue'
