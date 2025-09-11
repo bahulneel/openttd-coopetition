@@ -13,11 +13,15 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           defaults: {
             name: 'Basic Goal',
             description: 'Minimal goal with just required fields',
+            category: 'basic',
+            icon: '📝',
             data: goalTemplate.defaults,
           },
           profit: {
             name: 'Profit Goal',
             description: 'Track company profit with cash rewards',
+            category: 'objective',
+            icon: '💰',
             data: {
               type: 'player' as const,
               objective: {
@@ -38,6 +42,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           cargo: {
             name: 'Cargo Delivery Goal',
             description: 'Deliver specific cargo with time constraints',
+            category: 'objective',
+            icon: '🚚',
             data: {
               type: 'company' as const,
               objective: {
@@ -67,6 +73,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           network: {
             name: 'Network Building Goal',
             description: 'Build network infrastructure with shared resources',
+            category: 'infrastructure',
+            icon: '🛤️',
             data: {
               type: 'scenario' as const,
               objective: {
@@ -96,6 +104,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           station: {
             name: 'Station Building Goal',
             description: 'Build stations in specific locations',
+            category: 'infrastructure',
+            icon: '🏗️',
             data: {
               type: 'player' as const,
               objective: {
@@ -118,6 +128,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           company: {
             name: 'Company Value Goal',
             description: 'Reach minimum company value target',
+            category: 'objective',
+            icon: '🏢',
             data: {
               type: 'company' as const,
               objective: {
@@ -140,6 +152,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           town: {
             name: 'Town Growth Goal',
             description: 'Grow specific town to target population',
+            category: 'objective',
+            icon: '🏘️',
             data: {
               type: 'scenario' as const,
               objective: {
@@ -171,11 +185,15 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           defaults: {
             name: 'Basic Scenario',
             description: 'Minimal scenario with just required fields',
+            category: 'basic',
+            icon: '📝',
             data: scenarioTemplate.defaults,
           },
           industrial: {
             name: 'Industrial Hub Scenario',
             description: 'Develop industrial areas with shared infrastructure',
+            category: 'theme',
+            icon: '🏭',
             data: {
               goals: [],
               constraints: {
@@ -207,6 +225,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           transport: {
             name: 'Transport Challenge Scenario',
             description: 'Efficient cargo transport with time pressure',
+            category: 'theme',
+            icon: '🚛',
             data: {
               goals: [],
               constraints: {
@@ -237,6 +257,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           multiplayer: {
             name: 'Multiplayer Cooperation Scenario',
             description: 'Collaborative scenario with shared resources',
+            category: 'multiplayer',
+            icon: '👥',
             data: {
               goals: [],
               constraints: {
@@ -272,11 +294,15 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           defaults: {
             name: 'Basic Campaign',
             description: 'Minimal campaign with just required fields',
+            category: 'basic',
+            icon: '📝',
             data: campaignTemplate.defaults,
           },
           linear: {
             name: 'Linear Progression Campaign',
             description: 'Sequential scenarios with clear progression',
+            category: 'progression',
+            icon: '📈',
             data: {
               scenarios: [],
               progression: {
@@ -321,6 +347,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           branching: {
             name: 'Branching Campaign',
             description: 'Multiple paths with different scenarios',
+            category: 'progression',
+            icon: '🌳',
             data: {
               scenarios: [],
               branches: {
@@ -357,6 +385,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
           tutorial: {
             name: 'Tutorial Campaign',
             description: 'Learning-focused campaign with guided progression',
+            category: 'learning',
+            icon: '🎓',
             data: {
               scenarios: [],
               progression: {
@@ -417,6 +447,8 @@ export function useTemplateComposer(type: 'goal' | 'scenario' | 'campaign') {
       key,
       name: value.name,
       description: value.description,
+      category: value.category,
+      icon: value.icon,
       data: value.data,
     }))
   })

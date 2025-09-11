@@ -39,8 +39,19 @@
               class="flex-1 cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               :class="{ 'opacity-50': key === 'defaults' }"
             >
-              {{ item.name }}
-              <span v-if="key === 'defaults'" class="text-xs text-muted-foreground ml-1">(required)</span>
+              <div class="flex items-center space-x-2">
+                <span class="text-base">{{ item.icon }}</span>
+                <div class="flex-1">
+                  <div class="font-medium">{{ item.name }}</div>
+                  <div class="text-xs text-muted-foreground">{{ item.description }}</div>
+                  <div v-if="item.category" class="text-xs text-muted-foreground">
+                    <span class="inline-block px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                      {{ item.category }}
+                    </span>
+                  </div>
+                </div>
+                <span v-if="key === 'defaults'" class="text-xs text-muted-foreground">(required)</span>
+              </div>
             </label>
           </div>
         </div>
