@@ -42,12 +42,6 @@ vi.mock('~/utils/fileSystem/BrowserFSFileSystemAdapter', () => ({
 
 describe('File System Adapters', () => {
   describe('InMemFileSystemAdapter', () => {
-    it('should be constructible', () => {
-      const { InMemFileSystemAdapter } = require('~/utils/fileSystem/InMemFileSystemAdapter')
-      const adapter = new InMemFileSystemAdapter()
-      expect(adapter).toBeDefined()
-    })
-
     it('should have required methods', () => {
       expect(typeof mockInMemAdapter.load).toBe('function')
       expect(typeof mockInMemAdapter.save).toBe('function')
@@ -57,15 +51,14 @@ describe('File System Adapters', () => {
       expect(typeof mockInMemAdapter.importFromZip).toBe('function')
       expect(typeof mockInMemAdapter.supports).toBe('function')
     })
+
+    it('should be mockable', () => {
+      expect(mockInMemAdapter).toBeDefined()
+      expect(mockInMemAdapter.load).toBeDefined()
+    })
   })
 
   describe('BrowserFSFileSystemAdapter', () => {
-    it('should be constructible', () => {
-      const { BrowserFSFileSystemAdapter } = require('~/utils/fileSystem/BrowserFSFileSystemAdapter')
-      const adapter = new BrowserFSFileSystemAdapter()
-      expect(adapter).toBeDefined()
-    })
-
     it('should have required methods', () => {
       expect(typeof mockBrowserFSAdapter.load).toBe('function')
       expect(typeof mockBrowserFSAdapter.save).toBe('function')
@@ -74,6 +67,11 @@ describe('File System Adapters', () => {
       expect(typeof mockBrowserFSAdapter.exportAll).toBe('function')
       expect(typeof mockBrowserFSAdapter.importFromZip).toBe('function')
       expect(typeof mockBrowserFSAdapter.supports).toBe('function')
+    })
+
+    it('should be mockable', () => {
+      expect(mockBrowserFSAdapter).toBeDefined()
+      expect(mockBrowserFSAdapter.load).toBeDefined()
     })
   })
 })

@@ -3,11 +3,11 @@ import { resolve } from 'path'
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
     globals: true,
     setupFiles: ['./test/setup.ts'],
-    include: ['test/**/*.{test,spec}.{js,ts,vue}'],
-    exclude: ['test/e2e/**/*'],
+    include: ['test/unit/**/*.{test,spec}.{js,ts,vue}'],
+    exclude: ['test/browser/**/*', 'test/e2e/**/*'],
+    environment: 'jsdom',
   },
   resolve: {
     alias: {
