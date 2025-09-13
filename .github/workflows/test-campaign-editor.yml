@@ -1,0 +1,116 @@
+name: Test Campaign Editor
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'workspaces/campaign-editor/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'workspaces/campaign-editor/**'
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: 'workspaces/campaign-editor/package-lock.json'
+    
+    - name: Install dependencies
+      working-directory: workspaces/campaign-editor
+      run: npm ci
+    
+    - name: Run unit tests
+      working-directory: workspaces/campaign-editor
+      run: npm run test:run
+    
+    - name: Run tests with coverage
+      working-directory: workspaces/campaign-editor
+      run: npm run test:coverage
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: workspaces/campaign-editor/coverage/lcov.info
+        flags: campaign-editor
+        name: campaign-editor-coverage
+
+  browser-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: 'workspaces/campaign-editor/package-lock.json'
+    
+    - name: Install dependencies
+      working-directory: workspaces/campaign-editor
+      run: npm ci
+    
+    - name: Install Playwright browsers
+      working-directory: workspaces/campaign-editor
+      run: npx playwright install --with-deps
+    
+    - name: Build application
+      working-directory: workspaces/campaign-editor
+      run: npm run build
+    
+    - name: Start development server
+      working-directory: workspaces/campaign-editor
+      run: npm run dev &
+      env:
+        NUXT_HOST: localhost
+        NUXT_PORT: 3000
+    
+    - name: Wait for server to start
+      run: npx wait-on http://localhost:3000
+    
+    - name: Run browser tests
+      working-directory: workspaces/campaign-editor
+      run: npm run test:browser
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: vitest-report
+        path: workspaces/campaign-editor/test-results/
+        retention-days: 30
+
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: 'workspaces/campaign-editor/package-lock.json'
+    
+    - name: Install dependencies
+      working-directory: workspaces/campaign-editor
+      run: npm ci
+    
+    - name: Run linting
+      working-directory: workspaces/campaign-editor
+      run: npm run lint
+    
+    - name: Run type checking
+      working-directory: workspaces/campaign-editor
+      run: npm run typecheck
